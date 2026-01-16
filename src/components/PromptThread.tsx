@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { TaskExecutionPanel } from './TaskExecutionPanel';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
+  query?: string;
 }
 
 export function PromptThread() {
@@ -12,20 +14,23 @@ export function PromptThread() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Welcome! Ask me about your business performance metrics.',
+      content: 'Welcome! Ask me about your business performance metrics. Try: "Show me all customers who had a failed payment this week"',
       timestamp: new Date(),
     },
   ]);
   const [input, setInput] = useState('');
+  const [showExecutionPanel, setShowExecutionPanel] = useState(false);
+  const [selectedQuery, setSelectedQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
+    const queryText = input;
     const newMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: queryText,
       timestamp: new Date(),
     };
 
@@ -37,11 +42,17 @@ export function PromptThread() {
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: `I received your query: "${input}". This is a placeholder response.`,
+        content: `I received your query: "${queryText}". This is a placeholder response.`,
         timestamp: new Date(),
+        query: queryText,
       };
       setMessages((prev) => [...prev, aiResponse]);
     }, 500);
+  };
+
+  const handleViewExecution = (query: string) => {
+    setSelectedQuery(query);
+    setShowExecutionPanel(true);
   };
 
   return (
@@ -67,11 +78,22 @@ export function PromptThread() {
             >
               <div className="text-sm">{message.content}</div>
               <div
-                className={`text-xs mt-1 ${
+                className={`text-xs mt-2 flex items-center gap-2 ${
                   message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
                 }`}
               >
-                {message.timestamp.toLocaleTimeString()}
+                <span>{message.timestamp.toLocaleTimeString()}</span>
+                {message.role === 'assistant' && message.query && (
+                  <>
+                    <span>•</span>
+                    <button
+                      onClick={() => handleViewExecution(message.query!)}
+                      className="text-blue-600 hover:text-blue-700 underline"
+                    >
+                      View execution
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -96,6 +118,14 @@ export function PromptThread() {
           </button>
         </form>
       </div>
+
+      {/* Task Execution Panel */}
+      {showExecutionPanel && (
+        <TaskExecutionPanel
+          query={selectedQuery}
+          onClose={() => setShowExecutionPanel(false)}
+        />
+      )}
     </div>
   );
 }
