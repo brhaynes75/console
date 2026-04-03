@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console UI Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'surface-0': '#0d0d0d',
+                        'surface-1': '#141414',
+                        'surface-2': '#1a1a1a',
+                        'surface-3': '#222222',
+                        'border': '#2a2a2a',
+                        'border-hover': '#3a3a3a',
+                        'text-primary': '#e5e5e5',
+                        'text-secondary': '#888888',
+                        'text-muted': '#555555',
+                        'accent': '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        /* Smooth transitions for layout changes */
+        .panel-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.2s ease,
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
+        }
+        
+        /* Chat list item hover */
+        .chat-item {
+            transition: background-color 0.15s ease;
+        }
+        .chat-item:hover {
+            background-color: #222;
+        }
+        .chat-item.active {
+            background-color: #1f1f1f;
+        }
+        
+        /* Tab styling */
+        .tab {
+            transition: all 0.15s ease;
+        }
+        .tab:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+        .tab.active {
+            background-color: rgba(255,255,255,0.08);
+        }
+        
+        /* Config panel */
+        .config-panel {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
+    <div id="app" class="h-full flex">
+        
+        <!-- Left Sidebar - Chat List -->
+        <aside id="sidebar" class="panel-transition flex flex-col bg-surface-1 border-r border-border" style="width: 280px;">
+            <!-- Sidebar Header -->
+            <div class="h-12 flex items-center justify-between px-3 border-b border-border">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded bg-surface-3 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium">Console</span>
+                </div>
+                <button id="newChatBtn" class="w-7 h-7 rounded hover:bg-surface-3 flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Chat List -->
+            <div class="flex-1 overflow-y-auto py-2">
+                <div class="px-2 space-y-0.5">
+                    <div class="chat-item active rounded-md px-3 py-2 cursor-pointer">
+                        <div class="text-sm text-text-primary truncate">Conversation title</div>
+                        <div class="text-xs text-text-muted mt-0.5">Just now</div>
+                    </div>
+                    <div class="chat-item rounded-md px-3 py-2 cursor-pointer">
+                        <div class="text-sm text-text-primary truncate">Previous conversation</div>
+                        <div class="text-xs text-text-muted mt-0.5">2 hours ago</div>
+                    </div>
+                    <div class="chat-item rounded-md px-3 py-2 cursor-pointer">
+                        <div class="text-sm text-text-primary truncate">Another chat session</div>
+                        <div class="text-xs text-text-muted mt-0.5">Yesterday</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar Footer -->
+            <div class="border-t border-border p-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center">
+                        <span class="text-xs text-accent font-medium">B</span>
+                    </div>
+                    <span class="text-sm text-text-secondary">Brad</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Middle Panel - Conversation -->
+        <main id="conversation" class="panel-transition flex-1 flex flex-col bg-surface-0 min-w-0">
+            <!-- Conversation Header -->
+            <div class="h-12 flex items-center px-4 border-b border-border">
+                <button id="sidebarToggle" class="w-7 h-7 rounded hover:bg-surface-3 flex items-center justify-center transition-colors mr-3">
+                    <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+                <span class="text-sm text-text-primary">Conversation title</span>
+            </div>
+            
+            <!-- Messages Area -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="max-w-3xl mx-auto py-6 px-4 space-y-6">
+                    <!-- User Message -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-accent/20 flex-shrink-0 flex items-center justify-center">
+                            <span class="text-xs text-accent font-medium">B</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="bg-surface-2 rounded-lg px-4 py-3">
+                                <p class="text-sm text-text-primary">User initiated message</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Assistant Message -->
+                    <div class="flex gap-3">
+                        <div class="w-7 h-7 rounded-full bg-surface-3 flex-shrink-0 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm text-text-primary">Console reply.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="border-t border-border p-4">
+                <div class="max-w-3xl mx-auto">
+                    <div class="bg-surface-2 rounded-lg border border-border focus-within:border-border-hover">
+                        <textarea 
+                            class="w-full bg-transparent px-4 py-3 text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none"
+                            rows="1"
+                            placeholder="Type a message..."
+                        ></textarea>
+                        <div class="flex items-center justify-between px-3 py-2 border-t border-border">
+                            <div class="flex items-center gap-2">
+                                <button class="w-7 h-7 rounded hover:bg-surface-3 flex items-center justify-center transition-colors">
+                                    <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <button class="px-3 py-1.5 bg-accent text-white text-sm rounded-md hover:bg-accent/90 transition-colors">
+                                Send
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Right Panel - Canvas -->
+        <aside id="canvas" class="panel-transition flex flex-col bg-surface-1 border-l border-border" style="width: 480px;">
+            <!-- Canvas Header with Tabs -->
+            <div class="h-12 flex items-center px-3 border-b border-border gap-1">
+                <div class="tab active flex items-center gap-1.5 px-2.5 py-1.5 rounded text-sm">
+                    <span class="text-text-primary">Active tab</span>
+                    <button class="w-4 h-4 rounded hover:bg-surface-3 flex items-center justify-center">
+                        <svg class="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="tab flex items-center gap-1.5 px-2.5 py-1.5 rounded text-sm">
+                    <span class="text-text-secondary">Inactive tab</span>
+                    <button class="w-4 h-4 rounded hover:bg-surface-3 flex items-center justify-center">
+                        <svg class="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Canvas Title -->
+            <div class="flex items-center justify-between px-4 py-3 border-b border-border">
+                <span class="text-sm font-medium text-text-primary">Canvas heading</span>
+                <button class="w-7 h-7 rounded hover:bg-surface-3 flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Canvas Content -->
+            <div class="flex-1 flex items-center justify-center bg-surface-2 m-3 rounded-lg">
+                <span class="text-sm text-text-muted">Canvas contents</span>
+            </div>
+        </aside>
+    </div>
+    
+    <!-- Configuration Panel (Bottom Right) -->
+    <div id="configPanel" class="config-panel fixed bottom-4 right-4 bg-surface-2/90 border border-border rounded-lg shadow-xl overflow-hidden" style="width: 240px;">
+        <!-- Panel Header -->
+        <div class="flex items-center justify-between px-3 py-2 border-b border-border bg-surface-3/50">
+            <span class="text-xs font-medium text-text-secondary uppercase tracking-wide">Options</span>
+            <button id="configToggle" class="w-5 h-5 rounded hover:bg-surface-3 flex items-center justify-center transition-colors">
+                <svg class="w-3 h-3 text-text-muted transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Panel Content -->
+        <div id="configContent" class="p-3 space-y-4">
+            <!-- Layout Variant -->
+            <div>
+                <label class="text-xs text-text-muted block mb-2">Layout</label>
+                <div class="flex gap-1">
+                    <button class="variant-btn active flex-1 px-2 py-1.5 text-xs rounded bg-surface-3 text-text-primary border border-transparent hover:border-border-hover transition-all" data-variant="default">
+                        Default
+                    </button>
+                    <button class="variant-btn flex-1 px-2 py-1.5 text-xs rounded bg-transparent text-text-secondary border border-border hover:border-border-hover transition-all" data-variant="compact">
+                        Compact
+                    </button>
+                    <button class="variant-btn flex-1 px-2 py-1.5 text-xs rounded bg-transparent text-text-secondary border border-border hover:border-border-hover transition-all" data-variant="wide">
+                        Wide
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Sidebar Toggle -->
+            <div>
+                <label class="text-xs text-text-muted block mb-2">Sidebar</label>
+                <div class="flex gap-1">
+                    <button class="sidebar-btn active flex-1 px-2 py-1.5 text-xs rounded bg-surface-3 text-text-primary border border-transparent" data-state="expanded">
+                        Expanded
+                    </button>
+                    <button class="sidebar-btn flex-1 px-2 py-1.5 text-xs rounded bg-transparent text-text-secondary border border-border hover:border-border-hover transition-all" data-state="collapsed">
+                        Collapsed
+                    </button>
+                    <button class="sidebar-btn flex-1 px-2 py-1.5 text-xs rounded bg-transparent text-text-secondary border border-border hover:border-border-hover transition-all" data-state="hidden">
+                        Hidden
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Canvas Toggle -->
+            <div>
+                <label class="text-xs text-text-muted block mb-2">Canvas</label>
+                <div class="flex gap-1">
+                    <button class="canvas-btn active flex-1 px-2 py-1.5 text-xs rounded bg-surface-3 text-text-primary border border-transparent" data-state="visible">
+                        Visible
+                    </button>
+                    <button class="canvas-btn flex-1 px-2 py-1.5 text-xs rounded bg-transparent text-text-secondary border border-border hover:border-border-hover transition-all" data-state="hidden">
+                        Hidden
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Animation Speed -->
+            <div>
+                <label class="text-xs text-text-muted block mb-2">Transition Speed</label>
+                <input type="range" min="100" max="500" value="300" class="w-full h-1 bg-surface-3 rounded-lg appearance-none cursor-pointer" id="transitionSpeed">
+                <div class="flex justify-between text-xs text-text-muted mt-1">
+                    <span>Fast</span>
+                    <span>Slow</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        const state = {
+            sidebarState: 'expanded', // expanded, collapsed, hidden
+            canvasVisible: true,
+            variant: 'default',
+            transitionSpeed: 300
+        };
+        
+        // Elements
+        const sidebar = document.getElementById('sidebar');
+        const canvas = document.getElementById('canvas');
+        const conversation = document.getElementById('conversation');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const configPanel = document.getElementById('configPanel');
+        const configContent = document.getElementById('configContent');
+        const configToggle = document.getElementById('configToggle');
+        
+        // Update transition speeds
+        function updateTransitionSpeed(speed) {
+            state.transitionSpeed = speed;
+            document.querySelectorAll('.panel-transition').forEach(el => {
+                el.style.transitionDuration = `${speed}ms`;
+            });
+        }
+        
+        // Sidebar states
+        function setSidebarState(newState) {
+            state.sidebarState = newState;
+            
+            switch (newState) {
+                case 'expanded':
+                    sidebar.style.width = '280px';
+                    sidebar.style.opacity = '1';
+                    sidebar.style.transform = 'translateX(0)';
+                    sidebar.style.display = 'flex';
+                    break;
+                case 'collapsed':
+                    sidebar.style.width = '60px';
+                    sidebar.style.opacity = '1';
+                    sidebar.style.transform = 'translateX(0)';
+                    sidebar.style.display = 'flex';
+                    // Hide text, show only icons
+                    sidebar.querySelectorAll('.chat-item > div, .text-sm:not(.chat-item)').forEach(el => {
+                        el.style.display = newState === 'collapsed' ? 'none' : '';
+                    });
+                    break;
+                case 'hidden':
+                    sidebar.style.width = '0';
+                    sidebar.style.opacity = '0';
+                    sidebar.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        if (state.sidebarState === 'hidden') {
+                            sidebar.style.display = 'none';
+                        }
+                    }, state.transitionSpeed);
+                    break;
+            }
+            
+            updateButtonStates();
+        }
+        
+        // Canvas visibility
+        function setCanvasVisible(visible) {
+            state.canvasVisible = visible;
+            
+            if (visible) {
+                canvas.style.display = 'flex';
+                setTimeout(() => {
+                    canvas.style.width = state.variant === 'wide' ? '560px' : '480px';
+                    canvas.style.opacity = '1';
+                    canvas.style.transform = 'translateX(0)';
+                }, 10);
+            } else {
+                canvas.style.width = '0';
+                canvas.style.opacity = '0';
+                canvas.style.transform = 'translateX(20px)';
+                setTimeout(() => {
+                    if (!state.canvasVisible) {
+                        canvas.style.display = 'none';
+                    }
+                }, state.transitionSpeed);
+            }
+            
+            updateButtonStates();
+        }
+        
+        // Layout variants
+        function setVariant(variant) {
+            state.variant = variant;
+            
+            switch (variant) {
+                case 'default':
+                    if (state.sidebarState === 'expanded') sidebar.style.width = '280px';
+                    if (state.canvasVisible) canvas.style.width = '480px';
+                    break;
+                case 'compact':
+                    if (state.sidebarState === 'expanded') sidebar.style.width = '240px';
+                    if (state.canvasVisible) canvas.style.width = '400px';
+                    break;
+                case 'wide':
+                    if (state.sidebarState === 'expanded') sidebar.style.width = '320px';
+                    if (state.canvasVisible) canvas.style.width = '560px';
+                    break;
+            }
+            
+            updateButtonStates();
+        }
+        
+        // Update button active states
+        function updateButtonStates() {
+            // Variant buttons
+            document.querySelectorAll('.variant-btn').forEach(btn => {
+                const isActive = btn.dataset.variant === state.variant;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('bg-surface-3', isActive);
+                btn.classList.toggle('text-text-primary', isActive);
+                btn.classList.toggle('border-transparent', isActive);
+                btn.classList.toggle('bg-transparent', !isActive);
+                btn.classList.toggle('text-text-secondary', !isActive);
+                btn.classList.toggle('border-border', !isActive);
+            });
+            
+            // Sidebar buttons
+            document.querySelectorAll('.sidebar-btn').forEach(btn => {
+                const isActive = btn.dataset.state === state.sidebarState;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('bg-surface-3', isActive);
+                btn.classList.toggle('text-text-primary', isActive);
+                btn.classList.toggle('border-transparent', isActive);
+                btn.classList.toggle('bg-transparent', !isActive);
+                btn.classList.toggle('text-text-secondary', !isActive);
+                btn.classList.toggle('border-border', !isActive);
+            });
+            
+            // Canvas buttons
+            document.querySelectorAll('.canvas-btn').forEach(btn => {
+                const isActive = (btn.dataset.state === 'visible') === state.canvasVisible;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('bg-surface-3', isActive);
+                btn.classList.toggle('text-text-primary', isActive);
+                btn.classList.toggle('border-transparent', isActive);
+                btn.classList.toggle('bg-transparent', !isActive);
+                btn.classList.toggle('text-text-secondary', !isActive);
+                btn.classList.toggle('border-border', !isActive);
+            });
+        }
+        
+        // Event Listeners
+        
+        // Sidebar toggle button
+        sidebarToggle.addEventListener('click', () => {
+            const states = ['expanded', 'collapsed', 'hidden'];
+            const currentIndex = states.indexOf(state.sidebarState);
+            const nextState = states[(currentIndex + 1) % states.length];
+            setSidebarState(nextState);
+        });
+        
+        // Config panel collapse
+        configToggle.addEventListener('click', () => {
+            const isCollapsed = configContent.style.display === 'none';
+            configContent.style.display = isCollapsed ? 'block' : 'none';
+            configToggle.querySelector('svg').style.transform = isCollapsed ? '' : 'rotate(180deg)';
+        });
+        
+        // Variant buttons
+        document.querySelectorAll('.variant-btn').forEach(btn => {
+            btn.addEventListener('click', () => setVariant(btn.dataset.variant));
+        });
+        
+        // Sidebar state buttons
+        document.querySelectorAll('.sidebar-btn').forEach(btn => {
+            btn.addEventListener('click', () => setSidebarState(btn.dataset.state));
+        });
+        
+        // Canvas visibility buttons
+        document.querySelectorAll('.canvas-btn').forEach(btn => {
+            btn.addEventListener('click', () => setCanvasVisible(btn.dataset.state === 'visible'));
+        });
+        
+        // Transition speed slider
+        document.getElementById('transitionSpeed').addEventListener('input', (e) => {
+            updateTransitionSpeed(parseInt(e.target.value));
+        });
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.metaKey || e.ctrlKey) {
+                if (e.key === 'b') {
+                    e.preventDefault();
+                    const states = ['expanded', 'collapsed', 'hidden'];
+                    const currentIndex = states.indexOf(state.sidebarState);
+                    setSidebarState(states[(currentIndex + 1) % states.length]);
+                }
+                if (e.key === '\\') {
+                    e.preventDefault();
+                    setCanvasVisible(!state.canvasVisible);
+                }
+            }
+        });
+        
+        // Initialize
+        updateTransitionSpeed(300);
+    </script>
+</body>
+</html>

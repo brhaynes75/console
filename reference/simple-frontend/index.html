@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console Prototype</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/css/xterm.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.3.0/lib/xterm.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Remove all gradients */
+        * {
+            background-image: none !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-gray-800 px-4 py-2 border-b border-gray-700 flex items-center justify-between">
+            <h1 class="text-xl font-bold">Console Prototype</h1>
+            <button id="toggleLayout" class="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors">
+                Toggle Layout
+            </button>
+        </header>
+        
+        <!-- Main Content -->
+        <div id="mainContainer" class="flex-1 flex flex-row overflow-hidden">
+            <!-- Terminal Panel -->
+            <div class="w-1/2 border-r border-gray-700 flex flex-col">
+                <div class="px-4 py-2 bg-gray-800 border-b border-gray-700">
+                    <h2 class="text-sm font-semibold">Terminal</h2>
+                </div>
+                <!-- Text Area -->
+                <div class="p-5 bg-gray-900">
+                    <textarea 
+                        id="terminalInput" 
+                        class="w-full h-24 px-3 py-2 bg-gray-800 text-gray-100 border border-gray-600 rounded focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none font-mono text-sm shadow-lg"
+                        placeholder="Enter commands or notes here..."
+                    ></textarea>
+                </div>
+                <div id="terminal" class="flex-1 p-2"></div>
+            </div>
+            
+            <!-- Chart Panel -->
+            <div class="w-1/2 flex flex-col">
+                <div class="px-4 py-2 bg-gray-800 border-b border-gray-700">
+                    <h2 class="text-sm font-semibold">Metrics</h2>
+                </div>
+                <div class="flex-1 p-4">
+                    <canvas id="metricsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Layout toggle
+        let isHorizontal = true;
+        const mainContainer = document.getElementById('mainContainer');
+        const toggleBtn = document.getElementById('toggleLayout');
+        
+        toggleBtn.addEventListener('click', () => {
+            isHorizontal = !isHorizontal;
+            if (isHorizontal) {
+                mainContainer.className = 'flex-1 flex flex-row overflow-hidden';
+                document.querySelectorAll('#mainContainer > div').forEach(div => {
+                    div.className = div.className.replace(/h-1\/2/g, 'w-1/2');
+                });
+            } else {
+                mainContainer.className = 'flex-1 flex flex-col overflow-hidden';
+                document.querySelectorAll('#mainContainer > div').forEach(div => {
+                    div.className = div.className.replace(/w-1\/2/g, 'h-1/2');
+                });
+            }
+        });
+
+        // Initialize Terminal
+        const term = new Terminal({
+            cursorBlink: true,
+            fontSize: 14,
+            fontFamily: 'Menlo, Monaco, "Courier New", monospace',
+            theme: {
+                background: '#1a1b26',
+                foreground: '#c0caf5',
+                cursor: '#c0caf5',
+                black: '#15161e',
+                red: '#f7768e',
+                green: '#9ece6a',
+                yellow: '#e0af68',
+                blue: '#7aa2f7',
+                magenta: '#bb9af7',
+                cyan: '#7dcfff',
+                white: '#a9b1d6',
+            }
+        });
+
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById('terminal'));
+        fitAddon.fit();
+
+        // Connect to backend
+        const socket = io('http://localhost:3001');
+        
+        socket.on('connect', () => {
+            console.log('Connected to terminal server');
+            term.writeln('Connected to server...');
+        });
+
+        socket.on('terminal:data', (data) => {
+            term.write(data);
+        });
+
+        term.onData((data) => {
+            socket.emit('terminal:input', data);
+        });
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            fitAddon.fit();
+            socket.emit('terminal:resize', {
+                cols: term.cols,
+                rows: term.rows
+            });
+        });
+
+        // Initialize Chart
+        const ctx = document.getElementById('metricsChart').getContext('2d');
+        let chart = null;
+
+        function initChart(data) {
+            if (chart) {
+                chart.destroy();
+            }
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.name),
+                    datasets: [{
+                        label: 'Value',
+                        data: data.map(d => d.value),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#374151'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#9ca3af'
+                            },
+                            grid: {
+                                color: '#374151'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch metrics data
+        fetch('http://localhost:3001/api/metrics')
+            .then(res => res.json())
+            .then(result => {
+                initChart(result.data);
+            })
+            .catch(err => {
+                console.error('Failed to fetch metrics:', err);
+            });
+    </script>
+</body>
+</html>
+
