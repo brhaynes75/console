@@ -172,6 +172,7 @@
             background: #171719;
         }
         .tab-pill.inactive:hover {
+            border-color: #3e3e44;
             color: #D3D3D3;
         }
         .tab-close {
@@ -323,10 +324,8 @@
             <div class="flex-1 overflow-y-auto" style="padding: 4px 24px 20px 24px;">
                 <div style="display: flex; flex-direction: column; gap: 16px; max-width: 900px;">
                     <!-- User message -->
-                    <div class="relative flex items-center justify-between w-full" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #1e1e21;">
-                        <div class="absolute inset-0 rounded-lg pointer-events-none" style="background: #171719;"></div>
-                        <span class="relative flex-1 truncate" style="font-size: 13px; line-height: 1.6; color: #a0a0aa;">User initiated message</span>
-                        <div class="absolute inset-0 pointer-events-none" style="border-radius: inherit; box-shadow: inset 0px 1px 0px 0px #333336;"></div>
+                    <div class="flex items-center justify-between w-full" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                        <span class="flex-1 truncate" style="font-size: 13px; line-height: 1.6; color: #a0a0aa;">User initiated message</span>
                     </div>
 
                     <!-- Assistant message -->
@@ -358,14 +357,14 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex-1 flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="gap: 12px;">
             <!-- Tab bar -->
-            <div class="flex items-center w-full" style="padding: 12px 24px; gap: 8px;">
-                <div class="tab-pill active">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 12px 24px; gap: 8px;">
+                <div class="tab-pill active" data-tab="a">
                     <span>Active tab</span>
                     <div class="tab-close">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </div>
                 </div>
-                <div class="tab-pill inactive">
+                <div class="tab-pill inactive" data-tab="b">
                     <span>Inactive tab</span>
                     <div class="tab-close">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -377,7 +376,7 @@
             <div class="flex flex-col flex-1 w-full" style="gap: 24px; padding: 4px 32px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
                 <div class="flex items-start justify-between w-full shrink-0" style="height: 39px;">
-                    <span style="font-size: 13px; font-weight: 600;" class="text-text-primary">Canvas heading</span>
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Canvas heading</span>
                     <div class="flex items-center" style="gap: 12px; color: #c9c9c9;">
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" fill="currentColor"/>
@@ -387,7 +386,7 @@
                     </div>
                 </div>
                 <!-- Content -->
-                <div class="flex-1 flex items-center justify-center w-full" style="background: #09090a; border-radius: 0; padding: 4px 8px; min-height: 0;">
+                <div id="canvasContent" class="flex-1 flex items-center justify-center w-full" style="background: #09090a; border-radius: 0; padding: 4px 8px; min-height: 0;">
                     <span style="font-size: 13px;" class="text-text-muted">Canvas contents</span>
                 </div>
             </div>
@@ -542,6 +541,27 @@
         els.collapseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             setRailOpen(false);
+        });
+
+        // ── Tab switching ───────────────────────────────
+        const tabContent = {
+            a: { heading: 'Canvas heading', body: 'Canvas contents' },
+            b: { heading: 'Canvas B heading', body: 'Canvas B' },
+        };
+
+        document.getElementById('tabBar').addEventListener('click', (e) => {
+            const pill = e.target.closest('.tab-pill');
+            if (!pill || pill.classList.contains('active')) return;
+            const tab = pill.dataset.tab;
+
+            document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
+                t.classList.toggle('active', t === pill);
+                t.classList.toggle('inactive', t !== pill);
+            });
+
+            document.getElementById('canvasHeading').textContent = tabContent[tab].heading;
+            const contentEl = document.getElementById('canvasContent');
+            contentEl.querySelector('span').textContent = tabContent[tab].body;
         });
 
         // ── Layout application ────────────────────────────
