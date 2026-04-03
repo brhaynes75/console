@@ -16,15 +16,15 @@ Rapid UI prototypes for Console — an AI-powered IDE-like interface with a chat
 All prototypes use this shared color system in the Tailwind config:
 
 ```
-surface-0: #0d0d0d  (deepest background)
-surface-1: #141414  (panels)
-surface-2: #1a1a1a  (elevated surfaces)
-surface-3: #222222  (hover states, active items)
-border:    #2a2a2a  (default borders)
+surface-0: #171719  (deepest background)
+surface-1: #1E1E21  (panels)
+surface-2: #252528  (elevated surfaces)
+surface-3: #1E1E21  (hover states, active items)
+border:    #1E1E21  (default borders)
 border-hover: #3a3a3a  (hover borders)
-text-primary:   #e5e5e5
-text-secondary: #888888
-text-muted:     #555555
+text-primary:   #D3D3D3
+text-secondary: #A0A0AA
+text-muted:     #6D6D77
 accent:         #3b82f6
 ```
 
