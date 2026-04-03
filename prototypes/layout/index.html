@@ -175,6 +175,14 @@
             border-color: #3e3e44;
             color: #D3D3D3;
         }
+
+        .sidebar-item:not(.active) {
+            background: transparent;
+            transition: background-color 600ms ease;
+        }
+        .sidebar-item:not(.active):hover {
+            background-color: #1E1E21;
+        }
         .tab-close {
             width: 14px;
             height: 14px;
@@ -209,13 +217,31 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease;">
 
-            <!-- ── Collapsed view (icon rail) ── -->
-            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 4px; transition: opacity 250ms ease;">
-                <div class="flex flex-col items-center w-full">
-                    <div class="flex items-center justify-center w-full" style="padding: 8px 0;">
-                        <div style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
+            <!-- ── Top header (persistent across states) ── -->
+            <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
+                <div class="flex items-center" style="padding: 12px 18px 0 18px; gap: 8px; overflow: hidden;">
+                    <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
+                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
+                    <div class="rail-top-label flex items-center shrink-0" style="gap: 2px; opacity: 0; transition: opacity 150ms ease;">
+                        <div class="rail-icon-sm" title="Search" style="width: 24px; height: 24px;">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div id="collapseBtn" class="rail-icon-sm" title="Collapse sidebar" style="width: 24px; height: 24px; cursor: pointer;">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M14.125 1C14.6082 1 15 1.39175 15 1.875V14.125C15 14.6082 14.6082 15 14.125 15C13.6418 15 13.25 14.6082 13.25 14.125V1.875C13.25 1.39175 13.6418 1 14.125 1Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.22604 1.86689C7.57569 2.20047 7.58873 2.75433 7.25515 3.10399L3.41907 7.125H10.125C10.6082 7.125 11 7.51675 11 8C11 8.48325 10.6082 8.875 10.125 8.875H3.4866L7.24094 12.6315C7.58255 12.9733 7.5824 13.5273 7.24059 13.8689C6.89879 14.2105 6.34477 14.2103 6.00316 13.8685L0.756108 8.61854C0.58559 8.44793 0.500015 8.22406 0.5 8C0.499985 7.78272 0.580429 7.56526 0.741895 7.39601L5.98894 1.89601C6.32252 1.54636 6.87638 1.53332 7.22604 1.86689Z" fill="currentColor"/>
+                            </svg>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-center w-full" style="margin-top: 12px;">
+                </div>
+            </div>
+
+            <!-- ── Collapsed view (icon rail) ── -->
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 56px; transition: opacity 250ms ease;">
+                <div class="flex flex-col items-center w-full">
+                    <div class="flex items-center justify-center w-full">
                         <div class="relative flex items-center justify-center" title="New conversation" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                             <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
                                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
@@ -228,33 +254,11 @@
             </div>
 
             <!-- ── Expanded view (sidebar) ── -->
-            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 4px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 56px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div class="flex flex-col" style="gap: 22px; min-height: 0;">
-                    <!-- Header + New section -->
-                    <div class="flex flex-col" style="gap: 12px;">
-                        <!-- Header row -->
-                        <div class="flex items-center" style="gap: 8px; padding: 8px 0;">
-                            <div style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30; flex-shrink: 0;"></div>
-                            <span style="font-size: 13px; font-weight: 500; min-width: 0;" class="text-text-secondary truncate flex-1">OpenAI Production</span>
-                            <div class="flex items-center shrink-0" style="gap: 2px;">
-                                <div class="rail-icon-sm" title="Search" style="width: 24px; height: 24px;">
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/>
-                                    </svg>
-                                </div>
-                                <div id="collapseBtn" class="rail-icon-sm" title="Collapse sidebar" style="width: 24px; height: 24px; cursor: pointer;">
-                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M14.125 1C14.6082 1 15 1.39175 15 1.875V14.125C15 14.6082 14.6082 15 14.125 15C13.6418 15 13.25 14.6082 13.25 14.125V1.875C13.25 1.39175 13.6418 1 14.125 1Z" fill="currentColor"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M7.22604 1.86689C7.57569 2.20047 7.58873 2.75433 7.25515 3.10399L3.41907 7.125H10.125C10.6082 7.125 11 7.51675 11 8C11 8.48325 10.6082 8.875 10.125 8.875H3.4866L7.24094 12.6315C7.58255 12.9733 7.5824 13.5273 7.24059 13.8689C6.89879 14.2105 6.34477 14.2103 6.00316 13.8685L0.756108 8.61854C0.58559 8.44793 0.500015 8.22406 0.5 8C0.499985 7.78272 0.580429 7.56526 0.741895 7.39601L5.98894 1.89601C6.32252 1.54636 6.87638 1.53332 7.22604 1.86689Z" fill="currentColor"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- + New button -->
-                        <div class="flex items-center justify-center border border-surface-4" style="height: 28px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
-                            <span class="text-text-primary">+ New</span>
-                        </div>
+                    <!-- + New button -->
+                    <div class="flex items-center justify-center border border-surface-4" style="height: 28px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                        <span class="text-text-primary">+ New</span>
                     </div>
 
                     <!-- Conversation list -->
@@ -263,15 +267,15 @@
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-primary truncate">Active conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                     </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#1E1E21'" onmouseout="this.style.background='transparent'">
+                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Thinking</div>
                     </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#1E1E21'" onmouseout="this.style.background='transparent'">
+                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                     </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='#1E1E21'" onmouseout="this.style.background='transparent'">
+                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
                     </div>
@@ -308,7 +312,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL                                  -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0 border-r border-border" style="width: 480px; gap: 8px;">
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="width: 480px; gap: 8px;">
             <!-- Header -->
             <div class="flex flex-col w-full" style="padding: 10px 24px; height: 48px;">
                 <div class="flex items-center" style="gap: 6px; padding: 4px 8px 4px 0; border-radius: 6px;">
@@ -349,19 +353,26 @@
         </section>
 
         <!-- ═══════════════════════════════════════════════════ -->
+        <!-- RESIZE HANDLE                                         -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="resizeHandle" style="width: 4px; cursor: col-resize; position: relative; flex-shrink: 0; z-index: 10;">
+            <div id="resizeBar" style="position: absolute; top: 0; bottom: 0; left: 1px; width: 1px; background-color: #1E1E21; transition: background-color 0.15s ease;"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
         <!-- CANVAS PANEL                                        -->
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex-1 flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="gap: 12px;">
             <!-- Tab bar -->
             <div id="tabBar" class="flex items-center w-full" style="padding: 12px 24px; gap: 8px;">
                 <div class="tab-pill active" data-tab="a">
-                    <span>Active tab</span>
+                    <span>Chart</span>
                     <div class="tab-close">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </div>
                 </div>
                 <div class="tab-pill inactive" data-tab="b">
-                    <span>Inactive tab</span>
+                    <span>Cursor.md</span>
                     <div class="tab-close">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </div>
@@ -372,7 +383,7 @@
             <div class="flex flex-col flex-1 w-full" style="gap: 24px; padding: 4px 32px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
                 <div class="flex items-start justify-between w-full shrink-0" style="height: 39px;">
-                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Canvas heading</span>
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
                     <div class="flex items-center" style="gap: 12px; color: #c9c9c9;">
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" fill="currentColor"/>
@@ -383,7 +394,7 @@
                 </div>
                 <!-- Content -->
                 <div id="canvasContent" class="flex-1 flex items-center justify-center w-full" style="background: #09090a; border-radius: 0; padding: 4px 8px; min-height: 0;">
-                    <span style="font-size: 13px;" class="text-text-muted">Canvas contents</span>
+                    <span style="font-size: 13px;" class="text-text-muted">Chart content</span>
                 </div>
             </div>
         </section>
@@ -469,9 +480,12 @@
             rail: document.getElementById('iconRail'),
             railCollapsed: document.getElementById('railCollapsed'),
             railExpanded: document.getElementById('railExpanded'),
+            railTop: document.getElementById('railTop'),
             railBottom: document.getElementById('railBottom'),
             collapseBtn: document.getElementById('collapseBtn'),
             conv: document.getElementById('conversation'),
+            resizeHandle: document.getElementById('resizeHandle'),
+            resizeBar: document.getElementById('resizeBar'),
             canvas: document.getElementById('canvas'),
             configContent: document.getElementById('configContent'),
             configToggle: document.getElementById('configToggle'),
@@ -490,8 +504,10 @@
             const rail = els.rail;
             const collapsed = els.railCollapsed;
             const expanded = els.railExpanded;
+            const top = els.railTop;
             const bottom = els.railBottom;
-            const labels = bottom.querySelectorAll('.rail-bottom-label');
+            const bottomLabels = bottom.querySelectorAll('.rail-bottom-label');
+            const topLabels = top.querySelectorAll('.rail-top-label');
 
             if (open) {
                 rail.style.width = widths.railExpanded + 'px';
@@ -501,10 +517,13 @@
                 collapsed.style.pointerEvents = 'none';
                 expanded.style.opacity = '1';
                 expanded.style.pointerEvents = 'auto';
+                top.style.pointerEvents = 'auto';
                 bottom.style.pointerEvents = 'auto';
-                labels.forEach(l => l.style.opacity = '1');
+                topLabels.forEach(l => l.style.opacity = '1');
+                bottomLabels.forEach(l => l.style.opacity = '1');
             } else {
-                labels.forEach(l => l.style.opacity = '0');
+                topLabels.forEach(l => l.style.opacity = '0');
+                bottomLabels.forEach(l => l.style.opacity = '0');
                 rail.style.width = widths.railCollapsed + 'px';
                 rail.classList.remove('expanded');
                 rail.classList.add('collapsed');
@@ -512,6 +531,7 @@
                 collapsed.style.pointerEvents = 'auto';
                 expanded.style.opacity = '0';
                 expanded.style.pointerEvents = 'none';
+                top.style.pointerEvents = 'none';
                 bottom.style.pointerEvents = 'none';
             }
         }
@@ -522,7 +542,7 @@
         });
 
         // When expanded, interactive children stop propagation so they don't trigger collapse
-        els.rail.querySelectorAll('#railExpanded .sidebar-item, #railExpanded [onmouseover], #railExpanded [title], .rail-bottom-row').forEach(el => {
+        els.rail.querySelectorAll('#railExpanded .sidebar-item, #railExpanded [onmouseover], #railExpanded [title], .rail-bottom-row, #railTop .rail-icon-sm').forEach(el => {
             el.addEventListener('click', (e) => {
                 if (state.railOpen) e.stopPropagation();
             });
@@ -536,8 +556,8 @@
 
         // ── Tab switching ───────────────────────────────
         const tabContent = {
-            a: { heading: 'Canvas heading', body: 'Canvas contents' },
-            b: { heading: 'Canvas B heading', body: 'Canvas B' },
+            a: { heading: 'Chart heading', body: 'Chart content' },
+            b: { heading: 'Console.md header', body: 'Console.md content' },
         };
 
         document.getElementById('tabBar').addEventListener('click', (e) => {
@@ -554,6 +574,62 @@
             const contentEl = document.getElementById('canvasContent');
             contentEl.querySelector('span').textContent = tabContent[tab].body;
         });
+
+        // ── Resize handle drag ──────────────────────────
+        (function initResize() {
+            const handle = els.resizeHandle;
+            const bar = els.resizeBar;
+            const conv = els.conv;
+            const minWidth = 280;
+            const maxWidth = 720;
+            let dragging = false;
+            let startX, startWidth;
+
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                dragging = true;
+                startX = e.clientX;
+                startWidth = conv.offsetWidth;
+                bar.style.left = '0';
+                bar.style.width = '4px';
+                bar.style.backgroundColor = '#FF1493';
+                conv.classList.remove('panel-transition');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const dx = e.clientX - startX;
+                const newWidth = Math.min(maxWidth, Math.max(minWidth, startWidth + dx));
+                conv.style.width = newWidth + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!dragging) return;
+                dragging = false;
+                setBarDefault();
+                conv.classList.add('panel-transition');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            });
+
+            function setBarDefault() {
+                bar.style.left = '1px';
+                bar.style.width = '1px';
+                bar.style.backgroundColor = '#1E1E21';
+            }
+            handle.addEventListener('mouseenter', () => {
+                if (!dragging) {
+                    bar.style.left = '0';
+                    bar.style.width = '4px';
+                    bar.style.backgroundColor = '#3a3a3a';
+                }
+            });
+            handle.addEventListener('mouseleave', () => {
+                if (!dragging) setBarDefault();
+            });
+        })();
 
         // ── Layout application ────────────────────────────
         function applyLayout() {
