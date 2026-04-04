@@ -154,7 +154,7 @@
             align-items: center;
             gap: 6px;
             height: 32px;
-            padding: 0 11px;
+            padding: 0 9px 0 14px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 500;
@@ -241,7 +241,7 @@
 
             <!-- ── Top header (persistent across states) ── -->
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
-                <div class="flex items-center" style="padding: 12px 13px 0 18px; gap: 8px; overflow: hidden;">
+                <div class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
                     <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
                     <div class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease;">
@@ -253,7 +253,7 @@
             </div>
 
             <!-- ── Collapsed view (icon rail) ── -->
-            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 56px; transition: opacity 250ms ease;">
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
@@ -268,7 +268,7 @@
             </div>
 
             <!-- ── Expanded view (sidebar) ── -->
-            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 56px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <!-- + New button -->
                     <div class="flex items-center justify-center border border-surface-4" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
@@ -326,9 +326,9 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL                                  -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="width: 480px; gap: 8px;">
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="width: 480px; gap: 18px;">
             <!-- Header -->
-            <div class="flex flex-col w-full" style="padding: 10px 16px; height: 48px;">
+            <div class="flex flex-col w-full" style="padding: 15px 16px 10px 16px; height: 48px;">
                 <div class="flex items-center" style="gap: 6px; padding: 4px 8px 4px 0; border-radius: 6px;">
                     <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #a0a0aa;">Conversation title</span>
                 </div>
@@ -338,7 +338,7 @@
             <div class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
                 <div style="display: flex; flex-direction: column; gap: 16px; max-width: 900px;">
                     <!-- User message -->
-                    <div class="flex items-center justify-between w-full" style="height: 32px; padding: 0 11px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                    <div class="flex items-center justify-between w-full" style="height: 32px; padding: 0 14px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                         <span class="flex-1 truncate" style="font-size: 13px; line-height: 1.6; color: #c9c9c9;">User initiated message</span>
                     </div>
 
@@ -386,7 +386,7 @@
                     </div>
                 </div>
                 <div class="tab-pill inactive" data-tab="b">
-                    <span>Cursor.md</span>
+                    <span>Console.md</span>
                     <div class="tab-close">
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
                     </div>
