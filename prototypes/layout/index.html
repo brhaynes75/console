@@ -208,6 +208,11 @@
 
         textarea:focus { outline: none; }
 
+        #searchInput::placeholder {
+            color: #6D6D77;
+            opacity: 0.5;
+        }
+
         #railTooltip {
             position: fixed;
             pointer-events: none;
@@ -241,13 +246,26 @@
 
             <!-- ── Top header (persistent across states) ── -->
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
-                <div class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden;">
+                <!-- Default state: logo + label + search icon -->
+                <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
                     <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
-                    <div class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease;">
+                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease; cursor: pointer;">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/>
                         </svg>
+                    </div>
+                </div>
+                <!-- Search state: search icon + input + close -->
+                <div id="railTopSearch" class="flex items-center" style="position: absolute; top: 0; left: 0; right: 0; padding: 17px 13px 0 18px; gap: 4px; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 150ms ease;">
+                    <div class="shrink-0 flex items-center justify-center" style="width: 24px; height: 24px; color: #a0a0aa;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <input id="searchInput" type="text" placeholder="Search" style="flex: 1; min-width: 0; background: transparent; border: none; outline: none; font-size: 13px; font-weight: 500; color: #D3D3D3; caret-color: #D3D3D3; font-family: inherit;">
+                    <div id="searchCloseBtn" class="rail-icon-sm shrink-0" style="width: 24px; height: 24px; cursor: pointer;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
             </div>
@@ -267,9 +285,9 @@
 
             <!-- ── Expanded view (sidebar) ── -->
             <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
-                <div class="flex flex-col" style="gap: 22px; min-height: 0;">
+                <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <!-- + New button -->
-                    <div class="flex items-center justify-center border border-surface-4" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                    <div id="newBtnExpanded" class="flex items-center justify-center border border-surface-4" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease, border-color 0.15s ease; overflow: hidden;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                         <span class="flex items-center text-text-primary" style="gap: 6px;">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
                             New
@@ -489,6 +507,7 @@
         const state = {
             sidebar: 'expanded',   // expanded | collapsed | hidden
             railOpen: false,       // whether the sidebar rail is expanded
+            searching: false,      // whether search mode is active
             canvas: 'visible',     // visible | hidden
             density: 'default'     // default | compact
         };
@@ -498,6 +517,13 @@
             railCollapsed: document.getElementById('railCollapsed'),
             railExpanded: document.getElementById('railExpanded'),
             railTop: document.getElementById('railTop'),
+            railTopDefault: document.getElementById('railTopDefault'),
+            railTopSearch: document.getElementById('railTopSearch'),
+            searchBtn: document.getElementById('searchBtn'),
+            searchInput: document.getElementById('searchInput'),
+            searchCloseBtn: document.getElementById('searchCloseBtn'),
+            newBtnExpanded: document.getElementById('newBtnExpanded'),
+            railExpandedInner: document.getElementById('railExpandedInner'),
             railBottom: document.getElementById('railBottom'),
             conv: document.getElementById('conversation'),
             resizeHandle: document.getElementById('resizeHandle'),
@@ -538,6 +564,7 @@
                 topLabels.forEach(l => l.style.opacity = '1');
                 bottomLabels.forEach(l => l.style.opacity = '1');
             } else {
+                if (state.searching) setSearchMode(false);
                 topLabels.forEach(l => l.style.opacity = '0');
                 bottomLabels.forEach(l => l.style.opacity = '0');
                 rail.style.width = widths.railCollapsed + 'px';
@@ -550,6 +577,71 @@
                 top.style.pointerEvents = 'none';
             }
         }
+
+        // ── Search mode ─────────────────────────────────
+        function setSearchMode(active) {
+            state.searching = active;
+            const def = els.railTopDefault;
+            const search = els.railTopSearch;
+            const newBtn = els.newBtnExpanded;
+            const inner = els.railExpandedInner;
+            const input = els.searchInput;
+            const items = els.railExpanded.querySelectorAll('.sidebar-item');
+
+            if (active) {
+                def.style.opacity = '0';
+                def.style.pointerEvents = 'none';
+                search.style.opacity = '1';
+                search.style.pointerEvents = 'auto';
+                newBtn.style.opacity = '0';
+                newBtn.style.height = '0';
+                newBtn.style.borderColor = 'transparent';
+                inner.style.gap = '0';
+                setTimeout(() => input.focus(), 160);
+            } else {
+                search.style.opacity = '0';
+                search.style.pointerEvents = 'none';
+                def.style.opacity = '1';
+                def.style.pointerEvents = 'auto';
+                input.value = '';
+                newBtn.style.opacity = '1';
+                newBtn.style.height = '32px';
+                newBtn.style.borderColor = '#2c2c30';
+                inner.style.gap = '22px';
+                items.forEach(item => {
+                    item.style.display = '';
+                    if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
+                });
+            }
+        }
+
+        // Search filtering with highlight
+        els.railExpanded.querySelectorAll('.sidebar-item').forEach(item => {
+            item._originalTitle = item.querySelector('div').textContent;
+        });
+
+        els.searchInput.addEventListener('input', () => {
+            const q = els.searchInput.value.toLowerCase();
+            els.railExpanded.querySelectorAll('.sidebar-item').forEach(item => {
+                const original = item._originalTitle;
+                const titleEl = item.querySelector('div');
+                if (!q) {
+                    titleEl.textContent = original;
+                    item.style.display = '';
+                    return;
+                }
+                const idx = original.toLowerCase().indexOf(q);
+                if (idx === -1) {
+                    item.style.display = 'none';
+                    return;
+                }
+                item.style.display = '';
+                const before = original.slice(0, idx);
+                const match = original.slice(idx, idx + q.length);
+                const after = original.slice(idx + q.length);
+                titleEl.innerHTML = before + '<span style="color:#D3D3D3">' + match + '</span>' + after;
+            });
+        });
 
         // Click rail → toggle expand/collapse
         els.rail.addEventListener('click', () => {
@@ -567,6 +659,21 @@
                 if (state.railOpen) e.stopPropagation();
             });
         });
+
+        // Search icon → enter search mode
+        els.searchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state.railOpen) setSearchMode(true);
+        });
+
+        // Close button → exit search mode
+        els.searchCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setSearchMode(false);
+        });
+
+        // Input click → prevent rail collapse
+        els.searchInput.addEventListener('click', (e) => e.stopPropagation());
 
         // ── Rail tooltips (collapsed state only) ─────────
         (function initTooltips() {
