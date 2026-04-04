@@ -183,7 +183,7 @@
             transition: background-color 600ms ease;
         }
         .sidebar-item:not(.active):hover {
-            background-color: #1E1E21;
+            background-color: #17171a;
         }
         .expanded .rail-bottom-row:hover {
             background-color: #1E1E21;
@@ -258,9 +258,7 @@
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                             <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
-                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0.25C8.48325 0.25 8.875 0.641751 8.875 1.125V7.125H14.875C15.3582 7.125 15.75 7.51675 15.75 8C15.75 8.48325 15.3582 8.875 14.875 8.875H8.875V14.875C8.875 15.3582 8.48325 15.75 8 15.75C7.51675 15.75 7.125 15.3582 7.125 14.875V8.875H1.125C0.641751 8.875 0.25 8.48325 0.25 8C0.25 7.51675 0.641751 7.125 1.125 7.125H7.125V1.125C7.125 0.641751 7.51675 0.25 8 0.25Z" fill="currentColor"/>
-                                </svg>
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
                             </span>
                         </div>
                     </div>
@@ -272,7 +270,10 @@
                 <div class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <!-- + New button -->
                     <div class="flex items-center justify-center border border-surface-4" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
-                        <span class="text-text-primary">+ New</span>
+                        <span class="flex items-center text-text-primary" style="gap: 6px;">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
+                            New
+                        </span>
                     </div>
 
                     <!-- Conversation list -->
@@ -382,21 +383,21 @@
                 <div class="tab-pill active" data-tab="a">
                     <span>Chart</span>
                     <div class="tab-close">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
                 <div class="tab-pill inactive" data-tab="b">
                     <span>Console.md</span>
                     <div class="tab-close">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
             </div>
 
             <!-- Canvas content area -->
-            <div class="flex flex-col flex-1 w-full" style="gap: 24px; padding: 4px 16px; border-radius: 6px; min-height: 0;">
+            <div class="flex flex-col flex-1 w-full" style="gap: 28px; padding: 4px 16px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
-                <div class="flex items-start justify-between w-full shrink-0" style="height: 39px;">
+                <div class="flex items-start justify-between w-full shrink-0" style="height: 20px;">
                     <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
                     <div class="flex items-center" style="gap: 12px; color: #c9c9c9;">
                         <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
