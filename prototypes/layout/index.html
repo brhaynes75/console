@@ -153,7 +153,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            padding: 3px 8px;
+            height: 32px;
+            padding: 0 11px;
             border-radius: 6px;
             font-size: 13px;
             font-weight: 500;
@@ -225,8 +226,7 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
-        #iconRail.collapsed:hover,
-        #iconRail.expanded:hover {
+        #iconRail.collapsed:hover {
             background-color: #171719;
         }
     </style>
@@ -241,7 +241,7 @@
 
             <!-- ── Top header (persistent across states) ── -->
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
-                <div class="flex items-center" style="padding: 12px 18px 0 18px; gap: 8px; overflow: hidden;">
+                <div class="flex items-center" style="padding: 12px 13px 0 18px; gap: 8px; overflow: hidden;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
                     <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
                     <div class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease;">
@@ -256,7 +256,7 @@
             <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 56px; transition: opacity 250ms ease;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
-                        <div id="newChatBtn" class="relative flex items-center justify-center" data-tooltip="New conversation" style="width: 28px; height: 28px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                        <div id="newChatBtn" class="relative flex items-center justify-center" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                             <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
                                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
                                     <path fill-rule="evenodd" clip-rule="evenodd" d="M8 0.25C8.48325 0.25 8.875 0.641751 8.875 1.125V7.125H14.875C15.3582 7.125 15.75 7.51675 15.75 8C15.75 8.48325 15.3582 8.875 14.875 8.875H8.875V14.875C8.875 15.3582 8.48325 15.75 8 15.75C7.51675 15.75 7.125 15.3582 7.125 14.875V8.875H1.125C0.641751 8.875 0.25 8.48325 0.25 8C0.25 7.51675 0.641751 7.125 1.125 7.125H7.125V1.125C7.125 0.641751 7.51675 0.25 8 0.25Z" fill="currentColor"/>
@@ -271,7 +271,7 @@
             <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 56px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <!-- + New button -->
-                    <div class="flex items-center justify-center border border-surface-4" style="height: 28px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                    <div class="flex items-center justify-center border border-surface-4" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
                         <span class="text-text-primary">+ New</span>
                     </div>
 
@@ -299,9 +299,9 @@
             </div>
 
             <!-- ── Bottom icons (persistent across states) ── -->
-            <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 10px 18px 10px; pointer-events: auto; z-index: 2;">
+            <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2;">
                 <div class="flex flex-col" style="gap: 2px;">
-                    <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 12px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
+                    <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #a0a0aa;">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/>
@@ -310,7 +310,7 @@
                         </span>
                         <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
                     </div>
-                    <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 12px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
+                    <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #a0a0aa;">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M9.71445 6.69302C9.43459 6.99838 9.45526 7.4728 9.76062 7.75267C10.066 8.03254 10.5404 8.01187 10.8203 7.7065L13.7526 4.50699C14.0154 4.22029 14.0154 3.7803 13.7527 3.49356L10.8203 0.293368C10.5405 -0.0120257 10.0661 -0.0327462 9.76068 0.247088C9.45529 0.526922 9.43457 1.00134 9.7144 1.30674L11.4953 3.25028L4.60029 3.24993C2.52914 3.24983 0.850098 4.92879 0.850098 6.99993V7.06671C0.850098 7.48092 1.18588 7.81671 1.6001 7.81671C2.01431 7.81671 2.3501 7.48092 2.3501 7.06671V6.99993C2.3501 5.75725 3.35753 4.74987 4.60021 4.74993L11.495 4.75028L9.71445 6.69302Z" fill="currentColor"/>
@@ -328,18 +328,18 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="width: 480px; gap: 8px;">
             <!-- Header -->
-            <div class="flex flex-col w-full" style="padding: 10px 24px; height: 48px;">
+            <div class="flex flex-col w-full" style="padding: 10px 16px; height: 48px;">
                 <div class="flex items-center" style="gap: 6px; padding: 4px 8px 4px 0; border-radius: 6px;">
                     <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #a0a0aa;">Conversation title</span>
                 </div>
             </div>
 
             <!-- Messages -->
-            <div class="flex-1 overflow-y-auto" style="padding: 0px 24px 20px 24px;">
+            <div class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
                 <div style="display: flex; flex-direction: column; gap: 16px; max-width: 900px;">
                     <!-- User message -->
-                    <div class="flex items-center justify-between w-full" style="padding: 6px 16px; border-radius: 8px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
-                        <span class="flex-1 truncate" style="font-size: 13px; line-height: 1.6; color: #a0a0aa;">User initiated message</span>
+                    <div class="flex items-center justify-between w-full" style="height: 32px; padding: 0 11px; border-radius: 6px; border: 1px solid #2c2c30; cursor: pointer; transition: border-color 0.15s ease;" onmouseover="this.style.borderColor='#3e3e44'" onmouseout="this.style.borderColor='#2c2c30'">
+                        <span class="flex-1 truncate" style="font-size: 13px; line-height: 1.6; color: #c9c9c9;">User initiated message</span>
                     </div>
 
                     <!-- Assistant message -->
@@ -378,7 +378,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex-1 flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="gap: 12px;">
             <!-- Tab bar -->
-            <div id="tabBar" class="flex items-center w-full" style="padding: 12px 24px; gap: 8px;">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 12px 16px; gap: 8px;">
                 <div class="tab-pill active" data-tab="a">
                     <span>Chart</span>
                     <div class="tab-close">
@@ -394,7 +394,7 @@
             </div>
 
             <!-- Canvas content area -->
-            <div class="flex flex-col flex-1 w-full" style="gap: 24px; padding: 4px 32px; border-radius: 6px; min-height: 0;">
+            <div class="flex flex-col flex-1 w-full" style="gap: 24px; padding: 4px 16px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
                 <div class="flex items-start justify-between w-full shrink-0" style="height: 39px;">
                     <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
