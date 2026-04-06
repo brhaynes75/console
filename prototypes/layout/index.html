@@ -164,29 +164,15 @@
         }
         .linear-border {
             position: relative;
-            border: none !important;
+            border: 1px solid #2c2c30 !important;
             background: rgba(255,255,255,0.03);
-            background-clip: padding-box;
             box-shadow:
                 0 1px 4px rgba(0,0,0,0.12),
                 inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: border-color 0.15s ease;
         }
-        .linear-border::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            padding: 1px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0.035), rgba(255,255,255,0.025));
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
-            pointer-events: none;
-            transition: background 0.15s ease;
-        }
-        .linear-border:hover::before {
-            background: linear-gradient(to bottom, rgba(255,255,255,0.06), rgba(255,255,255,0.04));
+        .linear-border:hover {
+            border-color: #3e3e44 !important;
         }
 
         .tab-pill.active {
@@ -322,8 +308,8 @@
 
                     <!-- Conversation list -->
                     <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0;">
-                    <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; background: #1E1E21; cursor: pointer;">
-                        <div style="font-size: 13px; font-weight: 500;" class="text-text-primary truncate">Active conversation</div>
+                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                        <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                     </div>
                     <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
@@ -639,7 +625,7 @@
                 newBtn.style.height = '32px';
                 inner.style.gap = '22px';
                 if (activeItem) {
-                    activeItem.style.background = '#1E1E21';
+                    activeItem.style.background = '';
                     activeItem.querySelector('div').classList.replace('text-text-secondary', 'text-text-primary');
                 }
                 items.forEach(item => {
