@@ -153,13 +153,13 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            height: 32px;
-            padding: 0 9px 0 14px;
-            border-radius: 6px;
+            height: 24px;
+            padding: 0 6px 0 10px;
+            border-radius: 5px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+            transition: color 0.15s ease, background-color 0.15s ease;
             white-space: nowrap;
         }
         .linear-border {
@@ -177,13 +177,15 @@
 
         .tab-pill.active {
             color: #D3D3D3;
-            background: transparent;
+            background-color: #1E1E21;
         }
         .tab-pill.inactive {
             color: #A0A0AA;
+            background-color: transparent;
         }
         .tab-pill.inactive:hover {
             color: #D3D3D3;
+            background-color: #1E1E21;
         }
 
         .sidebar-item:not(.active) {
@@ -357,12 +359,10 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL                                  -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 18px;">
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
             <!-- Header -->
-            <div class="flex flex-col w-full" style="padding: 15px 16px 10px 16px; height: 48px;">
-                <div class="flex items-center" style="gap: 6px; padding: 4px 8px 4px 0; border-radius: 6px;">
-                    <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #a0a0aa;">Conversation title</span>
-                </div>
+            <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
+                <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Conversation title</span>
             </div>
 
             <!-- Messages -->
@@ -409,14 +409,14 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
             <!-- Tab bar -->
-            <div id="tabBar" class="flex items-center w-full" style="padding: 12px 16px; gap: 8px;">
-                <div class="tab-pill active linear-border" data-tab="a">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
+                <div class="tab-pill active" data-tab="a">
                     <span>Chart</span>
                     <div class="tab-close">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
-                <div class="tab-pill inactive linear-border" data-tab="b">
+                <div class="tab-pill inactive" data-tab="b">
                     <span>Console.md</span>
                     <div class="tab-close">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
@@ -793,6 +793,7 @@
         };
 
         document.getElementById('tabBar').addEventListener('click', (e) => {
+            if (e.target.closest('.tab-close')) return;
             const pill = e.target.closest('.tab-pill');
             if (!pill || pill.classList.contains('active')) return;
             const tab = pill.dataset.tab;
