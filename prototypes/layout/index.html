@@ -188,16 +188,27 @@
             background-color: #1E1E21;
         }
 
-        .sidebar-item:not(.active) {
+        .sidebar-item {
+            margin-left: -4px;
+            margin-right: -4px;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
             background: transparent;
             transition: background-color 600ms ease;
         }
         .rail-bottom-row {
+            margin-left: -4px;
+            margin-right: -4px;
+            padding-left: calc(4px + 4px) !important;
+            padding-right: calc(8px + 4px) !important;
             background: transparent;
             transition: background-color 600ms ease;
         }
-        .sidebar-item:not(.active):hover {
-            background-color: #17171a;
+        .sidebar-item:hover {
+            background-color: #1E1E21;
+        }
+        #iconRail.expanded:hover {
+            background-color: #171719;
         }
         .expanded .rail-bottom-row:hover {
             background-color: #1E1E21;
@@ -214,6 +225,44 @@
             transition: opacity 0.15s ease;
         }
         .tab-close:hover { opacity: 1; }
+
+        @keyframes blockBlink {
+            0%, 50% { background: #c9c9c9; color: #0d0d0d; }
+            51%, 100% { background: transparent; color: #555555; }
+        }
+        #promptInput {
+            caret-color: transparent;
+        }
+        #promptInput:focus {
+            outline: none;
+        }
+        #blockCursor {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 8px;
+            height: 18px;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1;
+            animation: blockBlink 1s step-end infinite;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
+        .user-message span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-message.expanded {
+            height: auto !important;
+        }
+        .user-message.expanded span {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+        }
 
         .config-panel {
             backdrop-filter: blur(12px);
@@ -309,7 +358,7 @@
                     </div>
 
                     <!-- Conversation list -->
-                    <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0;">
+                    <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0; padding: 0 4px;">
                     <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
@@ -366,24 +415,41 @@
             </div>
 
             <!-- Messages -->
-            <div class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
-                <div style="display: flex; flex-direction: column; gap: 16px; max-width: 900px;">
-                    <!-- User message -->
-                    <div class="flex items-center justify-between w-full linear-border" style="height: 32px; padding: 0 14px; border-radius: 6px; cursor: pointer;">
-                        <span class="flex-1 truncate" style="font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9;">User initiated message</span>
+            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
+                <div id="messagesList" style="display: flex; flex-direction: column; gap: 16px; max-width: 900px;">
+
+                    <!-- Prompt input (terminal-style block cursor) -->
+                    <div id="promptRow" class="flex items-start w-full" style="min-height: 32px;">
+                        <span style="font-size: 13px; line-height: 1.6; color: #555555; margin-right: 8px; flex-shrink: 0; padding-top: 5px;">$</span>
+                        <div style="position: relative; flex: 1; display: flex; align-items: start; padding-top: 5px;">
+                            <textarea id="promptInput" rows="1" spellcheck="false"
+                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
+                            <div id="promptOverlay" style="position: absolute; left: 0; top: 5px; display: flex; align-items: center; pointer-events: none;">
+                                <div id="blockCursor"></div>
+                                <span id="promptGhost" style="font-size: 13px; font-weight: 400; color: #555555; white-space: nowrap;"></span>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Assistant message -->
-                    <div class="flex items-start w-full" style="gap: 8px;">
-                        <div class="flex flex-col items-center justify-center shrink-0" style="padding-top: 6px;">
-                            <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2c2c30;"></div>
-                        </div>
-                        <div class="flex-1 flex flex-col justify-center" style="min-width: 0;">
-                            <p style="font-size: 13px;" class="text-text-secondary">Console reply.</p>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            <!-- ═══ Saved component templates (hidden) ═══ -->
+            <template id="tplUserMessage">
+                <div class="user-message flex items-start justify-between w-full linear-border" style="min-height: 32px; padding: 5px 14px; border-radius: 6px; cursor: pointer; box-sizing: border-box;">
+                    <span class="flex-1" style="font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9;"></span>
+                </div>
+            </template>
+            <template id="tplAssistantMessage">
+                <div class="assistant-message flex items-start w-full" style="gap: 8px;">
+                    <div class="flex flex-col items-center justify-center shrink-0" style="padding-top: 6px;">
+                        <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2c2c30;"></div>
+                    </div>
+                    <div class="flex-1 flex flex-col justify-center" style="min-width: 0;">
+                        <p style="font-size: 13px;" class="text-text-secondary"></p>
+                    </div>
+                </div>
+            </template>
 
             <!-- Input (hidden until conversation fills panel) -->
             <div style="padding: 12px 16px 16px 16px; display: none;">
@@ -784,6 +850,64 @@
             handle.addEventListener('mouseleave', () => {
                 if (!dragging) setBarDefault();
             });
+        })();
+
+        // ── Prompt input (terminal-style) ──────────────
+        (function initPrompt() {
+            const input = document.getElementById('promptInput');
+            const ghost = document.getElementById('promptGhost');
+            const overlay = document.getElementById('promptOverlay');
+            const cursor = document.getElementById('blockCursor');
+            const list = document.getElementById('messagesList');
+            const promptRow = document.getElementById('promptRow');
+            const ghostText = 'Ask anything';
+
+            function updateOverlay() {
+                const hasText = input.value.length > 0;
+                if (hasText) {
+                    overlay.style.display = 'none';
+                } else {
+                    overlay.style.display = 'flex';
+                    cursor.textContent = ghostText.charAt(0);
+                    ghost.textContent = ghostText.slice(1);
+                }
+            }
+
+            updateOverlay();
+
+            input.addEventListener('input', () => {
+                updateOverlay();
+                input.style.height = 'auto';
+                input.style.height = input.scrollHeight + 'px';
+            });
+
+            input.addEventListener('focus', () => updateOverlay());
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const text = input.value.trim();
+                    if (!text) return;
+
+                    const tpl = document.getElementById('tplUserMessage');
+                    const msg = tpl.content.cloneNode(true).firstElementChild;
+                    msg.querySelector('span').textContent = text;
+                    msg._fullText = text;
+
+                    msg.addEventListener('click', () => {
+                        msg.classList.toggle('expanded');
+                    });
+
+                    list.insertBefore(msg, promptRow);
+
+                    input.value = '';
+                    input.style.height = 'auto';
+                    updateOverlay();
+                    input.focus();
+                }
+            });
+
+            setTimeout(() => input.focus(), 100);
         })();
 
         // ── Tab switching ───────────────────────────────
