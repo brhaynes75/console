@@ -169,10 +169,11 @@
             box-shadow:
                 0 1px 4px rgba(0,0,0,0.12),
                 inset 0 1px 0 rgba(255,255,255,0.04);
-            transition: border-color 0.15s ease;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
         }
         .linear-border:hover {
             border-color: #3e3e44 !important;
+            background: rgba(255,255,255,0.06);
         }
 
         .tab-pill.active {
@@ -205,13 +206,13 @@
             transition: background-color 600ms ease;
         }
         .sidebar-item:hover {
-            background-color: #1E1E21;
+            background-color: #222225;
         }
         #iconRail.expanded:hover {
             background-color: #171719;
         }
         .expanded .rail-bottom-row:hover {
-            background-color: #1E1E21;
+            background-color: #222225;
         }
         .tab-close {
             width: 14px;
@@ -801,10 +802,9 @@
                 e.preventDefault();
                 dragging = true;
                 startX = e.clientX;
-                const parent = conv.parentElement;
-                const totalWidth = parent.clientWidth - handle.offsetWidth;
-                startConvFlex = conv.offsetWidth / totalWidth;
-                startCanvasFlex = canvas.offsetWidth / totalWidth;
+                const panelWidth = conv.offsetWidth + canvas.offsetWidth;
+                startConvFlex = conv.offsetWidth / panelWidth;
+                startCanvasFlex = canvas.offsetWidth / panelWidth;
                 bar.style.left = '0';
                 bar.style.width = '4px';
                 bar.style.backgroundColor = '#FF1493';
@@ -816,9 +816,8 @@
 
             document.addEventListener('mousemove', (e) => {
                 if (!dragging) return;
-                const parent = conv.parentElement;
-                const totalWidth = parent.clientWidth - handle.offsetWidth;
-                const dx = (e.clientX - startX) / totalWidth;
+                const panelWidth = conv.offsetWidth + canvas.offsetWidth;
+                const dx = (e.clientX - startX) / panelWidth;
                 const newConv = Math.min(0.7, Math.max(0.2, startConvFlex + dx));
                 const newCanvas = 1 - newConv;
                 conv.style.flex = '1 1 ' + (newConv * 100) + '%';
