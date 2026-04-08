@@ -166,9 +166,7 @@
             position: relative;
             border: 1px solid #2c2c30 !important;
             background: rgba(255,255,255,0.03);
-            box-shadow:
-                0 1px 4px rgba(0,0,0,0.12),
-                inset 0 1px 0 rgba(255,255,255,0.04);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.12);
             transition: border-color 0.15s ease, background-color 0.15s ease;
         }
         .linear-border:hover {
@@ -366,7 +364,7 @@
             <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <!-- + New button -->
-                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden;">
+                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
                         <span class="flex items-center text-text-primary" style="gap: 6px;">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
                             New
@@ -381,7 +379,7 @@
                     </div>
                     <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
-                        <div style="font-size: 11px;" class="text-text-muted">Thinking</div>
+                        <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                     </div>
                     <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
@@ -517,10 +515,10 @@
                             <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
                             <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
                         </svg>
-                        <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 180px; padding: 4px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
-                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
-                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download .csv</div>
-                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
+                        <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 150px; padding: 3px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download .csv</div>
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
                         </div>
                     </div>
                 </div>
@@ -708,6 +706,7 @@
                 def.style.opacity = '1';
                 def.style.pointerEvents = 'auto';
                 input.value = '';
+                window.getSelection().removeAllRanges();
                 newBtn.style.opacity = '1';
                 newBtn.style.height = '32px';
                 inner.style.gap = '22px';
@@ -746,7 +745,7 @@
                 const before = original.slice(0, idx);
                 const match = original.slice(idx, idx + q.length);
                 const after = original.slice(idx + q.length);
-                titleEl.innerHTML = before + '<span style="color:#D3D3D3">' + match + '</span>' + after;
+                titleEl.innerHTML = '<span style="color:#6a6a70">' + before + '</span><span style="color:#D3D3D3">' + match + '</span><span style="color:#6a6a70">' + after + '</span>';
             });
         });
 
@@ -774,6 +773,9 @@
         });
 
         // Close button → exit search mode
+        els.searchCloseBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
         els.searchCloseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             setSearchMode(false);
