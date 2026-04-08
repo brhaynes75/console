@@ -208,9 +208,7 @@
         .sidebar-item:hover {
             background-color: #222225;
         }
-        #iconRail.expanded:hover {
-            background-color: #171719;
-        }
+        
         .expanded .rail-bottom-row:hover {
             background-color: #222225;
         }
@@ -297,6 +295,24 @@
 
         #iconRail.collapsed:hover {
             background-color: #171719;
+            border-right-color: #3e3e44;
+            box-shadow: 4px 0 0 0 rgba(62, 62, 68, 0.3);
+        }
+        #iconRail.expanded:hover {
+            background-color: #171719;
+            border-right-color: #3e3e44;
+        }
+
+        #canvasMenuBtn:hover {
+            background-color: #222225;
+            color: #d3d3d3;
+        }
+        #canvasMenuBtn.active {
+            background-color: #222225;
+            color: #d3d3d3;
+        }
+        .canvas-menu-item:hover {
+            background-color: #28282c !important;
         }
     </style>
 </head>
@@ -306,7 +322,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease;">
+        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease;">
 
             <!-- ── Top header (persistent across states) ── -->
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
@@ -496,12 +512,17 @@
                 <!-- Canvas heading -->
                 <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
                     <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
-                    <div class="flex items-center" style="gap: 12px; color: #c9c9c9;">
-                        <svg width="20" height="20" viewBox="0 0 16 16" fill="none">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8 9.5C8.82843 9.5 9.5 8.82843 9.5 8C9.5 7.17157 8.82843 6.5 8 6.5C7.17157 6.5 6.5 7.17157 6.5 8C6.5 8.82843 7.17157 9.5 8 9.5Z" fill="currentColor"/>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M13.5 9.5C14.3284 9.5 15 8.82843 15 8C15 7.17157 14.3284 6.5 13.5 6.5C12.6716 6.5 12 7.17157 12 8C12 8.82843 12.6716 9.5 13.5 9.5Z" fill="currentColor"/>
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M2.5 9.5C3.32843 9.5 4 8.82843 4 8C4 7.17157 3.32843 6.5 2.5 6.5C1.67157 6.5 1 7.17157 1 8C1 8.82843 1.67157 9.5 2.5 9.5Z" fill="currentColor"/>
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                            <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
                         </svg>
+                        <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 180px; padding: 4px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
+                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
+                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download .csv</div>
+                            <div class="canvas-menu-item" style="padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: 400; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
+                        </div>
                     </div>
                 </div>
                 <!-- Content -->
@@ -916,6 +937,8 @@
         };
 
         document.getElementById('tabBar').addEventListener('click', (e) => {
+            const bar = document.getElementById('tabBar');
+            if (bar._suppressClick) { bar._suppressClick = false; return; }
             if (e.target.closest('.tab-close')) return;
             const pill = e.target.closest('.tab-pill');
             if (!pill || pill.classList.contains('active')) return;
@@ -931,6 +954,155 @@
             contentEl.querySelector('span').textContent = tabContent[tab].body;
         });
 
+
+        // ── Draggable tab reorder ────────────────────────
+        (function initTabDrag() {
+            const tabBar = document.getElementById('tabBar');
+            let dragPill = null;
+            let ghostEl = null;
+            let startX = 0;
+            let pillStartX = 0;
+            let didDrag = false;
+            let swapped = false;
+            let origRects = {};
+
+            tabBar.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.tab-close')) return;
+                const pill = e.target.closest('.tab-pill');
+                if (!pill) return;
+
+                e.preventDefault();
+                dragPill = pill;
+                startX = e.clientX;
+                didDrag = false;
+                swapped = false;
+
+                const pills = Array.from(tabBar.querySelectorAll('.tab-pill'));
+                origRects = {};
+                pills.forEach(p => {
+                    origRects[p.dataset.tab] = p.getBoundingClientRect();
+                });
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!dragPill) return;
+                const dx = e.clientX - startX;
+
+                if (!ghostEl && Math.abs(dx) < 4) return;
+
+                if (!ghostEl) {
+                    didDrag = true;
+                    const rect = dragPill.getBoundingClientRect();
+                    pillStartX = rect.left;
+                    ghostEl = dragPill.cloneNode(true);
+                    ghostEl.style.position = 'fixed';
+                    ghostEl.style.left = rect.left + 'px';
+                    ghostEl.style.top = rect.top + 'px';
+                    ghostEl.style.width = rect.width + 'px';
+                    ghostEl.style.height = rect.height + 'px';
+                    ghostEl.style.zIndex = '9999';
+                    ghostEl.style.opacity = '1';
+                    ghostEl.style.backgroundColor = '#1E1E21';
+                    ghostEl.style.pointerEvents = 'none';
+                    ghostEl.style.transition = 'none';
+                    ghostEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                    document.body.appendChild(ghostEl);
+                    dragPill.style.opacity = '0';
+                    document.body.style.cursor = 'grabbing';
+                    document.body.style.userSelect = 'none';
+                }
+                ghostEl.style.left = (pillStartX + dx) + 'px';
+
+                const pills = Array.from(tabBar.querySelectorAll('.tab-pill'));
+                const otherPills = pills.filter(p => p !== dragPill);
+                otherPills.forEach(other => {
+                    const origRect = origRects[other.dataset.tab];
+                    const dragOrigRect = origRects[dragPill.dataset.tab];
+                    const dragIsLeft = dragOrigRect.left < origRect.left;
+
+                    const ghostLeft = parseFloat(ghostEl.style.left);
+                    const ghostRight = ghostLeft + ghostEl.offsetWidth;
+                    const otherEdge = dragIsLeft ? origRect.left : origRect.right;
+
+                    if (dragIsLeft && ghostRight > otherEdge && !swapped) {
+                        const shift = dragOrigRect.left - origRect.left;
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(' + shift + 'px)';
+                        swapped = true;
+                    } else if (!dragIsLeft && ghostLeft < otherEdge && !swapped) {
+                        const shift = dragOrigRect.left - origRect.left + dragOrigRect.width - origRect.width;
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(' + shift + 'px)';
+                        swapped = true;
+                    } else if (dragIsLeft && ghostRight <= otherEdge && swapped) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(0)';
+                        swapped = false;
+                    } else if (!dragIsLeft && ghostLeft >= otherEdge && swapped) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(0)';
+                        swapped = false;
+                    }
+                });
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (!dragPill) return;
+
+                if (didDrag && swapped) {
+                    const pills = Array.from(tabBar.querySelectorAll('.tab-pill'));
+                    const dragIdx = pills.indexOf(dragPill);
+                    const other = pills.find(p => p !== dragPill);
+
+                    if (other) {
+                        other.style.transition = 'none';
+                        other.style.transform = 'translateX(0)';
+                    }
+
+                    if (dragIdx === 0) {
+                        tabBar.appendChild(dragPill);
+                    } else {
+                        tabBar.insertBefore(dragPill, tabBar.querySelector('.tab-pill'));
+                    }
+                }
+
+                dragPill.style.opacity = '1';
+                if (ghostEl) {
+                    ghostEl.remove();
+                    ghostEl = null;
+                }
+                if (didDrag) {
+                    tabBar._suppressClick = true;
+                    setTimeout(() => { tabBar._suppressClick = false; }, 0);
+                }
+                dragPill = null;
+                swapped = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            });
+        })();
+
+        // ── Canvas menu popup ────────────────────────────
+        (function initCanvasMenu() {
+            const btn = document.getElementById('canvasMenuBtn');
+            const menu = document.getElementById('canvasMenu');
+
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = menu.style.display === 'block';
+                menu.style.display = isOpen ? 'none' : 'block';
+                btn.classList.toggle('active', !isOpen);
+            });
+
+            document.addEventListener('click', () => {
+                menu.style.display = 'none';
+                btn.classList.remove('active');
+            });
+
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        })();
 
         // ── Layout application ────────────────────────────
         function applyLayout() {
