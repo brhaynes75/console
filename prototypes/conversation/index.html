@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Console – Conversation Modules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'surface-0': '#101012',
+                        'surface-1': '#171719',
+                        'surface-2': '#1E1E21',
+                        'surface-3': '#252528',
+                        'surface-4': '#2c2c30',
+                        'border': '#1E1E21',
+                        'border-hover': '#3e3e44',
+                        'text-primary': '#D3D3D3',
+                        'text-secondary': '#A0A0AA',
+                        'text-muted': '#6D6D77',
+                        'accent': '#3b82f6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #D3D3D3;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+        #messagesArea { scrollbar-gutter: stable; }
+        #messagesArea::-webkit-scrollbar-thumb { background: transparent; transition: background 0.3s ease; }
+        #messagesArea.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        #messagesArea.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+        .panel-transition {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.2s ease,
+                        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .rail-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #A0A0AA;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .rail-icon:hover { background: #171719; color: #D3D3D3; }
+
+        .rail-icon-sm {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: #6D6D77;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .rail-icon-sm:hover { background: #171719; color: #A0A0AA; }
+
+        .tab-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 24px;
+            padding: 0 6px 0 10px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.15s ease, background-color 0.15s ease;
+            white-space: nowrap;
+        }
+        .linear-border {
+            position: relative;
+            border: 1px solid #2c2c30 !important;
+            background: rgba(255,255,255,0.03);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        .linear-border:hover {
+            border-color: #3e3e44 !important;
+            background: rgba(255,255,255,0.06);
+        }
+
+        .tab-pill.active {
+            color: #D3D3D3;
+            background-color: #1E1E21;
+        }
+        .tab-pill.inactive {
+            color: #A0A0AA;
+            background-color: transparent;
+        }
+        .tab-pill.inactive:hover {
+            color: #D3D3D3;
+            background-color: #1E1E21;
+        }
+
+        .sidebar-item {
+            margin-left: -4px;
+            margin-right: -4px;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+            background: transparent;
+            transition: background-color 600ms ease;
+        }
+        .rail-bottom-row {
+            margin-left: -4px;
+            margin-right: -4px;
+            padding-left: calc(4px + 4px) !important;
+            padding-right: calc(8px + 4px) !important;
+            background: transparent;
+            transition: background-color 600ms ease;
+        }
+        .sidebar-item:hover {
+            background-color: #222225;
+        }
+        .expanded .rail-bottom-row:hover {
+            background-color: #222225;
+        }
+        .tab-close {
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            color: inherit;
+            opacity: 0.5;
+            transition: opacity 0.15s ease;
+        }
+        .tab-close:hover { opacity: 1; }
+
+        @keyframes blockBlink {
+            0%, 50% { background: #c9c9c9; color: #0d0d0d; }
+            51%, 100% { background: transparent; color: #555555; }
+        }
+        #promptInput {
+            caret-color: transparent;
+        }
+        #promptInput:focus {
+            outline: none;
+        }
+        #blockCursor {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 8px;
+            height: 18px;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1;
+            animation: blockBlink 1s step-end infinite;
+            pointer-events: none;
+            flex-shrink: 0;
+        }
+
+        .user-message span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-message.expanded {
+            height: auto !important;
+        }
+        .user-message.expanded span {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+        }
+
+        textarea:focus { outline: none; }
+
+        #searchInput::placeholder {
+            color: #6D6D77;
+            opacity: 0.5;
+        }
+
+        #railTooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            background: #252528;
+            color: #D3D3D3;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(-50%) translateX(-4px);
+            transition: opacity 150ms ease, transform 150ms ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        #iconRail.collapsed:hover {
+            background-color: #171719;
+            border-right-color: #3e3e44;
+        }
+        #iconRail.expanded:hover {
+            background-color: #171719;
+            border-right-color: #3e3e44;
+        }
+
+        #canvasMenuBtn:hover {
+            background-color: #222225;
+            color: #d3d3d3;
+        }
+        #canvasMenuBtn.active {
+            background-color: #222225;
+            color: #d3d3d3;
+        }
+        .canvas-menu-item:hover {
+            background-color: #28282c !important;
+        }
+
+        /* ═══════════════════════════════════════════════ */
+        /* CONVERSATION MODULE STYLES                      */
+        /* ═══════════════════════════════════════════════ */
+
+
+        /* User message */
+        .user-message span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .user-message.expanded {
+            height: auto !important;
+        }
+        .user-message.expanded span {
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: unset !important;
+        }
+
+        /* Thinking animation */
+        @keyframes thinkPulse {
+            0%, 100% { opacity: 0.35; transform: scale(0.6); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        .think-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 2.5px);
+            gap: 3.5px;
+            flex-shrink: 0;
+        }
+        .think-dot {
+            width: 2.5px;
+            height: 2.5px;
+            border-radius: 50%;
+            background: #e84393;
+            animation: thinkPulse 1.6s ease-in-out infinite;
+        }
+        .think-dot:nth-child(1) { animation-delay: 0.0s; animation-duration: 1.8s; }
+        .think-dot:nth-child(2) { animation-delay: 0.5s; animation-duration: 1.5s; }
+        .think-dot:nth-child(3) { animation-delay: 0.2s; animation-duration: 2.0s; }
+        .think-dot:nth-child(4) { animation-delay: 0.7s; animation-duration: 1.4s; }
+        .think-dot:nth-child(5) { animation-delay: 0.1s; animation-duration: 1.9s; }
+        .think-dot:nth-child(6) { animation-delay: 0.9s; animation-duration: 1.6s; }
+        .think-dot:nth-child(7) { animation-delay: 0.4s; animation-duration: 2.1s; }
+        .think-dot:nth-child(8) { animation-delay: 1.1s; animation-duration: 1.3s; }
+        .think-dot:nth-child(9) { animation-delay: 0.6s; animation-duration: 1.7s; }
+
+        /* Console text response */
+        .console-response {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #A0A0AA;
+        }
+        .console-response p { margin-bottom: 10px; }
+        .console-response p:last-child { margin-bottom: 0; }
+        .console-response ul {
+            margin: 4px 0 10px 0;
+            padding-left: 16px;
+            list-style: none;
+        }
+        .console-response ul li {
+            position: relative;
+            padding-left: 4px;
+            margin-bottom: 4px;
+        }
+        .console-response ul li::before {
+            content: '•';
+            position: absolute;
+            left: -12px;
+            color: #6D6D77;
+        }
+        .console-response code {
+            font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
+            font-size: 12px;
+            background: rgba(255,255,255,0.06);
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: #c9c9c9;
+        }
+        .console-response strong {
+            font-weight: 600;
+            color: #D3D3D3;
+        }
+
+        /* Task module */
+        .task-module {
+            overflow: hidden;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 6px 0px;
+            margin: -6px 0px;
+        }
+        .task-module:hover,
+        .task-module.expanded {
+            border-color: #2c2c30;
+        }
+        .task-module.expanded:hover {
+            border-color: #3e3e44;
+        }
+        .task-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .task-module .task-dot { visibility: visible; }
+        .task-module:hover .task-dot,
+        .task-module.expanded .task-dot { visibility: hidden; }
+        .task-module .task-expand-icon {
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .task-module:hover .task-expand-icon {
+            opacity: 1;
+        }
+        .task-module.expanded .task-expand-icon {
+            display: none;
+        }
+        .task-subtitle-wrap {
+            position: relative;
+            height: 1.4em;
+        }
+        .task-subtitle-default,
+        .task-subtitle-hover {
+            transition: opacity 0.2s ease;
+        }
+        .task-subtitle-hover {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .task-module .task-subtitle-default { opacity: 1; }
+        .task-module .task-subtitle-hover { opacity: 0; }
+        .task-module:not(.expanded):hover .task-subtitle-default { opacity: 0; }
+        .task-module:not(.expanded):hover .task-subtitle-hover { opacity: 1; }
+        .task-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+        .task-header-top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .task-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D3D3D3;
+        }
+        .task-name {
+            font-size: 13px;
+            font-weight: 400;
+            color: #6D6D77;
+            -webkit-font-smoothing: antialiased;
+        }
+        .task-subtitle {
+            font-size: 13px;
+            font-weight: 400;
+            color: #6D6D77;
+            padding-left: 2px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .task-chevron {
+            transition: transform 150ms ease;
+            color: #6D6D77;
+            flex-shrink: 0;
+        }
+        .task-module.expanded .task-chevron {
+            transform: rotate(180deg);
+        }
+        .task-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 300ms ease;
+        }
+        .task-module.expanded .task-detail {
+            max-height: 2000px;
+        }
+        .task-detail-inner {
+            padding: 12px 18px 4px 18px;
+            margin-top: 10px;
+            border-top: 1px solid #2c2c30;
+        }
+        .task-body-text {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #6D6D77;
+            margin-top: 12px;
+        }
+
+        /* Code blocks */
+        .code-block {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #A0A0AA;
+            font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
+        }
+        .code-actions {
+            display: flex;
+            gap: 4px;
+        }
+        .code-actions button {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            border: 1px solid #2c2c30;
+            background: transparent;
+            color: #6D6D77;
+            cursor: pointer;
+            transition: border-color 0.15s ease, color 0.15s ease;
+        }
+        .code-actions button:hover {
+            border-color: #3e3e44;
+            color: #A0A0AA;
+        }
+        .code-body {
+            padding: 0 12px 12px 12px;
+            font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #A0A0AA;
+            overflow-x: auto;
+        }
+        .code-body .ln {
+            display: inline-block;
+            width: 24px;
+            text-align: right;
+            margin-right: 16px;
+            color: #4a4a50;
+            user-select: none;
+        }
+        .kw { color: #c678dd; }
+        .fn { color: #e5c07b; }
+        .str { color: #98c379; }
+        .num { color: #d19a66; }
+        .op { color: #5c6370; font-style: italic; }
+
+        .code-inline {
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            color: #A0A0AA;
+            margin-top: 10px;
+        }
+
+        /* Artifact reference pill */
+        .artifact-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .artifact-ref {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid #2c2c30;
+            background: transparent;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            color: #A0A0AA;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            white-space: nowrap;
+        }
+        .artifact-ref:hover {
+            border-color: #3e3e44;
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* Elicitation module */
+        #elicitOptions {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 4px;
+        }
+        .elicit-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+        .elicit-option:hover {
+            background: rgba(255,255,255,0.04);
+        }
+        .elicit-option.selected {
+            background: rgba(255,255,255,0.06);
+        }
+        .elicit-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D3D3D3;
+            line-height: 1.4;
+        }
+        .elicit-desc {
+            font-size: 11px;
+            font-weight: 400;
+            color: #6D6D77;
+            line-height: 1.4;
+            margin-top: 2px;
+        }
+        .elicit-num {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6D6D77;
+            flex-shrink: 0;
+            margin-right: 16px;
+            transition: color 0.15s ease;
+        }
+        .elicit-option:hover .elicit-num { color: #A0A0AA; }
+        .elicit-option.selected .elicit-num { color: #A0A0AA; }
+        .elicit-freeform {
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            transition: background-color 0.1s ease;
+        }
+        .elicit-freeform:hover { background: rgba(255,255,255,0.04); }
+        .elicit-hint {
+            font-size: 12px;
+            color: #4a4a50;
+            margin-top: 10px;
+            padding-left: 2px;
+        }
+    </style>
+</head>
+<body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
+    <div id="app" class="h-full flex">
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease;">
+
+            <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
+                <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
+                    <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
+                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
+                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease; cursor: pointer;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/></svg>
+                    </div>
+                </div>
+                <div id="railTopSearch" class="flex items-center" style="position: absolute; top: 0; left: 0; right: 0; padding: 17px 13px 0 18px; gap: 4px; overflow: hidden; opacity: 0; pointer-events: none; transition: opacity 150ms ease;">
+                    <div class="shrink-0 flex items-center justify-center" style="width: 24px; height: 24px; color: #a0a0aa;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/></svg>
+                    </div>
+                    <input id="searchInput" type="text" placeholder="Search" style="flex: 1; min-width: 0; background: transparent; border: none; outline: none; font-size: 13px; font-weight: 500; color: #D3D3D3; caret-color: #D3D3D3; font-family: inherit;">
+                    <div id="searchCloseBtn" class="rail-icon-sm shrink-0" style="width: 24px; height: 24px; cursor: pointer;">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease;">
+                <div class="flex flex-col items-center w-full">
+                    <div class="flex items-center justify-center w-full">
+                        <div id="newChatBtn" class="relative flex items-center justify-center linear-border" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
+                            <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
+                <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
+                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
+                        <span class="flex items-center text-text-primary" style="gap: 6px;">
+                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
+                            New
+                        </span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0; padding: 0 4px;">
+                        <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                            <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Failed payments Dec</div>
+                            <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                        </div>
+                        <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                            <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Revenue breakdown</div>
+                            <div style="font-size: 11px;" class="text-text-muted">Today · 1:12 PM</div>
+                        </div>
+                        <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                            <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Churn analysis Q4</div>
+                            <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2;">
+                <div class="flex flex-col" style="gap: 2px;">
+                    <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
+                        <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.71445 6.69302C9.43459 6.99838 9.45526 7.4728 9.76062 7.75267C10.066 8.03254 10.5404 8.01187 10.8203 7.7065L13.7526 4.50699C14.0154 4.22029 14.0154 3.7803 13.7527 3.49356L10.8203 0.293368C10.5405 -0.0120257 10.0661 -0.0327462 9.76068 0.247088C9.45529 0.526922 9.43457 1.00134 9.7144 1.30674L11.4953 3.25028L4.60029 3.24993C2.52914 3.24983 0.850098 4.92879 0.850098 6.99993V7.06671C0.850098 7.48092 1.18588 7.81671 1.6001 7.81671C2.01431 7.81671 2.3501 7.48092 2.3501 7.06671V6.99993C2.3501 5.75725 3.35753 4.74987 4.60021 4.74993L11.495 4.75028L9.71445 6.69302Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.28588 9.3068C6.56571 9.0014 6.54499 8.52698 6.2396 8.24715C5.9342 7.96731 5.45978 7.98803 5.17994 8.29343L2.24759 11.4936C1.98486 11.7803 1.98488 12.2203 2.24762 12.507L5.17998 15.7068C5.45983 16.0122 5.93425 16.0329 6.23963 15.753C6.54501 15.4732 6.5657 14.9988 6.28584 14.6934L4.50542 12.7506H11.4C13.4711 12.7506 15.15 11.0716 15.15 9.00058V8.93365C15.15 8.51944 14.8142 8.18365 14.4 8.18365C13.9858 8.18365 13.65 8.51944 13.65 8.93365V9.00058C13.65 10.2432 12.6427 11.2506 11.4 11.2506H4.50478L6.28588 9.3068Z" fill="currentColor"/></svg></span>
+                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Dashboard</span>
+                    </div>
+                    <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
+                        <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C6.17545 1 7.57452 2.17756 7.91797 3.75H13.375C13.7892 3.75 14.125 4.08579 14.125 4.5C14.125 4.91421 13.7892 5.25 13.375 5.25H7.91797C7.57452 6.82244 6.17545 8 4.5 8C2.567 8 1 6.433 1 4.5C1 2.567 2.567 1 4.5 1ZM4.5 2.5C3.39543 2.5 2.5 3.39543 2.5 4.5C2.5 5.60457 3.39543 6.5 4.5 6.5C5.60457 6.5 6.5 5.60457 6.5 4.5C6.5 3.39543 5.60457 2.5 4.5 2.5Z" fill="currentColor"/></svg></span>
+                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- CONVERSATION PANEL — Module showcase                -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
+            <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
+                <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments Dec</span>
+            </div>
+
+            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
+                <div id="messagesList" style="display: flex; flex-direction: column; gap: 20px; max-width: 900px;">
+
+                    <!-- ── USER PROMPT ── -->
+                    <div class="user-message flex items-start justify-between w-full linear-border" style="min-height: 32px; padding: 5px 14px; border-radius: 6px; cursor: pointer; box-sizing: border-box;">
+                        <span class="flex-1" style="font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9;">Pull all failed payments over $500 from December, break them down by decline code, issuing bank, and BIN range. I want to see which failure patterns are systemic versus one-off, and flag any merchants with retry rates above 15%. If you can cross-reference against the November baseline that would be helpful too.</span>
+                    </div>
+
+                    <!-- ── THINKING ── -->
+                    <div class="flex items-center w-full" style="gap: 10px; padding: 5px 0;">
+                        <div class="think-grid">
+                            <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
+                            <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
+                            <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
+                        </div>
+                        <span style="font-size: 13px; color: #6D6D77;">Gaveling...</span>
+                    </div>
+
+                    <!-- ── TASK MODULE ── -->
+                    <div class="task-module" id="taskDemo">
+                            <div class="task-header" id="taskHeaderToggle">
+                                <div class="task-dot shrink-0" style="padding-top: 7px;">
+                                    <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #4a4a50;"></div>
+                                </div>
+                                <div class="task-header-left">
+                                    <div class="task-header-top">
+                                        <span class="task-label">Task</span>
+                                        <span class="task-name">Find payments</span>
+                                    </div>
+                                    <div class="task-subtitle-wrap">
+                                        <div class="task-subtitle task-subtitle-default"><span style="color: #4a4a50; margin-right: 2px;">&#x2514;</span> Used 3 tools</div>
+                                        <div class="task-subtitle task-subtitle-hover"><span style="color: #4a4a50; margin-right: 2px;">&#x2514;</span> Click to expand</div>
+                                    </div>
+                                </div>
+                                <svg class="task-expand-icon shrink-0" style="margin: 2px 12px 0 0;" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                    <path d="M8 2L11 5M8 2L5 5M8 14L11 11M8 14L5 11" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="task-detail">
+                                <div class="task-detail-inner">
+                                    <div class="task-body-text">Searching for failed charges above $500 in the Stripe API. Filtering by <code style="font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: #c9c9c9;">status: failed</code> and converting amounts from cents.</div>
+                                    <div class="code-inline">stripe charges list --created[gte]=1704067200 --limit=100</div>
+                                    <div class="task-body-text">Building the SQL query to aggregate results by failure code, issuer, and BIN range.</div>
+                                    <div class="code-block" style="margin-top: 10px;">
+                                        <div class="code-header">
+                                            <span>failedpayments.SQL</span>
+                                            <div class="code-actions">
+                                                <button title="Copy"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M5 11H3.5A1.5 1.5 0 012 9.5V3.5A1.5 1.5 0 013.5 2h6A1.5 1.5 0 0111 3.5V5"/></svg></button>
+                                                <button title="Open in canvas"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M10 2h4v4M14 2L8 8M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3"/></svg></button>
+                                            </div>
+                                        </div>
+                                        <div class="code-body"><div><span class="ln">1</span><span class="op">-- Failed payments over $500 in December 2025</span></div><div><span class="ln">2</span><span class="kw">SELECT</span></div><div><span class="ln">3</span>  charges.id <span class="kw">AS</span> charge_id,</div><div><span class="ln">4</span>  charges.created <span class="kw">AS</span> charge_date,</div><div><span class="ln">5</span>  <span class="fn">decimalize_amount</span>(charges.currency,</div><div><span class="ln">6</span>    charges.amount, <span class="num">2</span>) <span class="kw">AS</span> amount,</div><div><span class="ln">7</span>  charges.failure_code</div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- ── CONSOLE TEXT RESPONSE ── -->
+                    <div class="flex items-start w-full" style="gap: 10px; padding: 5px 0;">
+                        <div class="shrink-0" style="padding-top: 7px;">
+                            <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #4a4a50;"></div>
+                        </div>
+                        <div class="console-response flex-1" style="min-width: 0;">
+                            <p>Here are the failed payments over $500 from December. I pulled data from the analytics warehouse and filtered by decline status.</p>
+                            <p>A few things stand out:</p>
+                            <ul>
+                                <li><strong>Total failed charges: 1,247</strong> across 340 unique customers</li>
+                                <li><strong>Total volume: $2.3M</strong> — up 18% from November</li>
+                                <li><strong>Most common decline code:</strong> <code>card_declined</code> at 68%</li>
+                                <li><strong>Top issuer: Chase</strong> accounting for 34% of all declines</li>
+                            </ul>
+                            <p>The majority came from the <code>424242</code> BIN range at an <strong>18.4%</strong> failure rate vs. the 1.2% baseline.</p>
+                            <div class="artifact-pills">
+                                <div class="artifact-ref">
+                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="shrink-0">
+                                        <rect x="1" y="9" width="3" height="6" rx="0.75" fill="currentColor"/>
+                                        <rect x="6.5" y="5" width="3" height="10" rx="0.75" fill="currentColor"/>
+                                        <rect x="12" y="1" width="3" height="14" rx="0.75" fill="currentColor"/>
+                                    </svg>
+                                    <span>Recent invoices</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ── ELICITATION MODULE ── -->
+                    <div>
+                        <div class="flex items-start w-full" style="gap: 10px; margin-bottom: 12px;">
+                            <div class="shrink-0" style="padding-top: 7px;">
+                                <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #D3D3D3;"></div>
+                            </div>
+                            <p style="font-size: 13px; font-weight: 500; color: #D3D3D3; padding-top: 1px;">How should I handle the failed payments?</p>
+                        </div>
+                        <div id="elicitOptions" style="display: flex; flex-direction: column; gap: 0;">
+                            <div class="elicit-option selected" data-key="1">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="elicit-title">Retry automatically</div>
+                                    <div class="elicit-desc">Attempt the charge again with exponential backoff</div>
+                                </div>
+                                <span class="elicit-num">1</span>
+                            </div>
+                            <div class="elicit-option" data-key="2">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="elicit-title">Pause subscription</div>
+                                    <div class="elicit-desc">Stop service until payment is resolved</div>
+                                </div>
+                                <span class="elicit-num">2</span>
+                            </div>
+                            <div class="elicit-option" data-key="3">
+                                <div style="flex: 1; min-width: 0;">
+                                    <div class="elicit-title">Notify customer</div>
+                                    <div class="elicit-desc">Send an email asking them to update payment method</div>
+                                </div>
+                                <span class="elicit-num">3</span>
+                            </div>
+                            <div class="elicit-freeform" data-key="4">
+                                <span style="font-size: 13px; color: #4a4a50;">Type something else or ask a question</span>
+                                <span class="elicit-num">4</span>
+                            </div>
+                        </div>
+                        <div class="elicit-hint">Enter to select · ↑/↓ to navigate · Esc to cancel</div>
+                    </div>
+
+                    <!-- ── PROMPT INPUT ── -->
+                    <div id="promptRow" class="flex items-start w-full" style="min-height: 32px;">
+                        <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #555555; margin-right: 8px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased;">$</span>
+                        <div style="position: relative; flex: 1; display: flex; align-items: start; padding-top: 5px;">
+                            <textarea id="promptInput" rows="1" spellcheck="false"
+                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
+                            <div id="promptOverlay" style="position: absolute; left: 0; top: 5px; display: flex; align-items: center; pointer-events: none;">
+                                <div id="blockCursor"></div>
+                                <span id="promptGhost" style="font-size: 13px; font-weight: 500; color: #555555; white-space: nowrap; -webkit-font-smoothing: antialiased;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- RESIZE HANDLE                                       -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <div id="resizeHandle" style="width: 4px; cursor: col-resize; position: relative; flex-shrink: 0; z-index: 10;">
+            <div id="resizeBar" style="position: absolute; top: 0; bottom: 0; left: 1px; width: 1px; background-color: #1E1E21; transition: background-color 0.15s ease;"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════ -->
+        <!-- CANVAS PANEL                                        -->
+        <!-- ═══════════════════════════════════════════════════ -->
+        <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
+                <div class="tab-pill active" data-tab="a">
+                    <span>Chart</span>
+                    <div class="tab-close">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
+                <div class="tab-pill inactive" data-tab="b">
+                    <span>Console.md</span>
+                    <div class="tab-close">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col flex-1 w-full" style="gap: 28px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
+                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                            <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
+                            <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
+                            <circle cx="13" cy="8" r="1.5" fill="currentColor"/>
+                        </svg>
+                        <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 150px; padding: 3px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download .csv</div>
+                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="canvasContent" class="flex-1 flex items-center justify-center w-full" style="background: #09090a; border-radius: 0; padding: 4px 8px; min-height: 0;">
+                    <span style="font-size: 13px;" class="text-text-muted">Chart content</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="railTooltip"></div>
+
+    <script>
+        const state = {
+            sidebar: 'expanded',
+            railOpen: false,
+            searching: false,
+            canvas: 'visible'
+        };
+
+        const els = {
+            rail: document.getElementById('iconRail'),
+            railCollapsed: document.getElementById('railCollapsed'),
+            railExpanded: document.getElementById('railExpanded'),
+            railTop: document.getElementById('railTop'),
+            railTopDefault: document.getElementById('railTopDefault'),
+            railTopSearch: document.getElementById('railTopSearch'),
+            searchBtn: document.getElementById('searchBtn'),
+            searchInput: document.getElementById('searchInput'),
+            searchCloseBtn: document.getElementById('searchCloseBtn'),
+            newBtnExpanded: document.getElementById('newBtnExpanded'),
+            railExpandedInner: document.getElementById('railExpandedInner'),
+            railBottom: document.getElementById('railBottom'),
+            conv: document.getElementById('conversation'),
+            resizeHandle: document.getElementById('resizeHandle'),
+            resizeBar: document.getElementById('resizeBar'),
+            canvas: document.getElementById('canvas'),
+        };
+
+        const widths = {
+            railCollapsed: 60,
+            railExpanded: 230,
+        };
+
+        // ── Rail expand/collapse ────────────────────────
+        function setRailOpen(open) {
+            state.railOpen = open;
+            document.getElementById('railTooltip').style.opacity = '0';
+            const rail = els.rail;
+            const collapsed = els.railCollapsed;
+            const expanded = els.railExpanded;
+            const top = els.railTop;
+            const bottom = els.railBottom;
+            const bottomLabels = bottom.querySelectorAll('.rail-bottom-label');
+            const topLabels = top.querySelectorAll('.rail-top-label');
+
+            if (open) {
+                rail.style.width = widths.railExpanded + 'px';
+                rail.classList.remove('collapsed');
+                rail.classList.add('expanded');
+                collapsed.style.opacity = '0';
+                collapsed.style.pointerEvents = 'none';
+                expanded.style.opacity = '1';
+                expanded.style.pointerEvents = 'auto';
+                top.style.pointerEvents = 'auto';
+                topLabels.forEach(l => l.style.opacity = '1');
+                bottomLabels.forEach(l => l.style.opacity = '1');
+            } else {
+                if (state.searching) setSearchMode(false);
+                topLabels.forEach(l => l.style.opacity = '0');
+                bottomLabels.forEach(l => l.style.opacity = '0');
+                rail.style.width = widths.railCollapsed + 'px';
+                rail.classList.remove('expanded');
+                rail.classList.add('collapsed');
+                collapsed.style.opacity = '1';
+                collapsed.style.pointerEvents = 'auto';
+                expanded.style.opacity = '0';
+                expanded.style.pointerEvents = 'none';
+                top.style.pointerEvents = 'none';
+            }
+        }
+
+        // ── Search mode ─────────────────────────────────
+        function setSearchMode(active) {
+            state.searching = active;
+            const def = els.railTopDefault;
+            const search = els.railTopSearch;
+            const newBtn = els.newBtnExpanded;
+            const inner = els.railExpandedInner;
+            const input = els.searchInput;
+            const items = els.railExpanded.querySelectorAll('.sidebar-item');
+            const activeItem = els.railExpanded.querySelector('.sidebar-item.active');
+
+            if (active) {
+                def.style.opacity = '0';
+                def.style.pointerEvents = 'none';
+                search.style.opacity = '1';
+                search.style.pointerEvents = 'auto';
+                newBtn.style.opacity = '0';
+                newBtn.style.height = '0';
+                inner.style.gap = '0';
+                if (activeItem) {
+                    activeItem.style.background = 'transparent';
+                    activeItem.querySelector('div').classList.replace('text-text-primary', 'text-text-secondary');
+                }
+                setTimeout(() => input.focus(), 160);
+            } else {
+                search.style.opacity = '0';
+                search.style.pointerEvents = 'none';
+                def.style.opacity = '1';
+                def.style.pointerEvents = 'auto';
+                input.value = '';
+                window.getSelection().removeAllRanges();
+                newBtn.style.opacity = '1';
+                newBtn.style.height = '32px';
+                inner.style.gap = '22px';
+                if (activeItem) {
+                    activeItem.style.background = '';
+                    activeItem.querySelector('div').classList.replace('text-text-secondary', 'text-text-primary');
+                }
+                items.forEach(item => {
+                    item.style.display = '';
+                    if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
+                });
+            }
+        }
+
+        els.railExpanded.querySelectorAll('.sidebar-item').forEach(item => {
+            item._originalTitle = item.querySelector('div').textContent;
+        });
+
+        els.searchInput.addEventListener('input', () => {
+            const q = els.searchInput.value.toLowerCase();
+            els.railExpanded.querySelectorAll('.sidebar-item').forEach(item => {
+                const original = item._originalTitle;
+                const titleEl = item.querySelector('div');
+                if (!q) { titleEl.textContent = original; item.style.display = ''; return; }
+                const idx = original.toLowerCase().indexOf(q);
+                if (idx === -1) { item.style.display = 'none'; return; }
+                item.style.display = '';
+                const before = original.slice(0, idx);
+                const match = original.slice(idx, idx + q.length);
+                const after = original.slice(idx + q.length);
+                titleEl.innerHTML = '<span style="color:#6a6a70">' + before + '</span><span style="color:#D3D3D3">' + match + '</span><span style="color:#6a6a70">' + after + '</span>';
+            });
+        });
+
+        els.rail.addEventListener('click', () => setRailOpen(!state.railOpen));
+
+        els.rail.querySelectorAll('#newChatBtn, #newBtnExpanded, .rail-bottom-row').forEach(el => {
+            el.addEventListener('click', (e) => e.stopPropagation());
+        });
+        els.rail.querySelectorAll('#railExpanded .sidebar-item, #railExpanded [onmouseover], #railExpanded [title], #railTop .rail-icon-sm').forEach(el => {
+            el.addEventListener('click', (e) => { if (state.railOpen) e.stopPropagation(); });
+        });
+
+        els.searchBtn.addEventListener('click', (e) => { e.stopPropagation(); if (state.railOpen) setSearchMode(true); });
+        els.searchCloseBtn.addEventListener('mousedown', (e) => e.preventDefault());
+        els.searchCloseBtn.addEventListener('click', (e) => { e.stopPropagation(); setSearchMode(false); });
+        els.searchInput.addEventListener('click', (e) => e.stopPropagation());
+
+        // ── Rail tooltips ────────────────────────────────
+        (function initTooltips() {
+            const tooltip = document.getElementById('railTooltip');
+            const targets = document.querySelectorAll('[data-tooltip]');
+            const railEl = els.rail;
+            targets.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    if (state.railOpen) return;
+                    const rect = el.getBoundingClientRect();
+                    const railRect = railEl.getBoundingClientRect();
+                    tooltip.textContent = el.dataset.tooltip;
+                    tooltip.style.left = (railRect.right - 4) + 'px';
+                    tooltip.style.top = (rect.top + rect.height / 2) + 'px';
+                    tooltip.style.transition = 'opacity 150ms ease, transform 150ms ease';
+                    tooltip.style.transform = 'translateY(-50%) translateX(0)';
+                    tooltip.style.opacity = '1';
+                });
+                el.addEventListener('mouseleave', () => {
+                    tooltip.style.transition = 'opacity 500ms ease, transform 500ms ease';
+                    tooltip.style.opacity = '0';
+                    tooltip.style.transform = 'translateY(-50%) translateX(-4px)';
+                });
+            });
+        })();
+
+        // ── Resize handle ────────────────────────────────
+        (function initResize() {
+            const handle = els.resizeHandle;
+            const bar = els.resizeBar;
+            const conv = els.conv;
+            const canvas = els.canvas;
+            let dragging = false;
+            let startX, startConvFlex, startCanvasFlex;
+
+            handle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                dragging = true;
+                startX = e.clientX;
+                const panelWidth = conv.offsetWidth + canvas.offsetWidth;
+                startConvFlex = conv.offsetWidth / panelWidth;
+                startCanvasFlex = canvas.offsetWidth / panelWidth;
+                bar.style.left = '0'; bar.style.width = '4px'; bar.style.backgroundColor = '#FF1493';
+                conv.classList.remove('panel-transition');
+                canvas.classList.remove('panel-transition');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragging) return;
+                const panelWidth = conv.offsetWidth + canvas.offsetWidth;
+                const dx = (e.clientX - startX) / panelWidth;
+                const newConv = Math.min(0.7, Math.max(0.2, startConvFlex + dx));
+                conv.style.flex = '1 1 ' + (newConv * 100) + '%';
+                canvas.style.flex = '1 1 ' + ((1 - newConv) * 100) + '%';
+            });
+            document.addEventListener('mouseup', () => {
+                if (!dragging) return;
+                dragging = false;
+                setBarDefault();
+                conv.classList.add('panel-transition');
+                canvas.classList.add('panel-transition');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            });
+            function setBarDefault() { bar.style.left = '1px'; bar.style.width = '1px'; bar.style.backgroundColor = '#1E1E21'; }
+            handle.addEventListener('mouseenter', () => { if (!dragging) { bar.style.left = '0'; bar.style.width = '4px'; bar.style.backgroundColor = '#3a3a3a'; } });
+            handle.addEventListener('mouseleave', () => { if (!dragging) setBarDefault(); });
+        })();
+
+        // ── Prompt input ─────────────────────────────────
+        (function initPrompt() {
+            const input = document.getElementById('promptInput');
+            const ghost = document.getElementById('promptGhost');
+            const overlay = document.getElementById('promptOverlay');
+            const cursor = document.getElementById('blockCursor');
+            const ghostText = 'Ask anything';
+
+            function updateOverlay() {
+                if (input.value.length > 0) {
+                    overlay.style.display = 'none';
+                } else {
+                    overlay.style.display = 'flex';
+                    cursor.textContent = ghostText.charAt(0);
+                    ghost.textContent = ghostText.slice(1);
+                }
+            }
+            updateOverlay();
+            input.addEventListener('input', () => { updateOverlay(); input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; });
+            input.addEventListener('focus', () => updateOverlay());
+            setTimeout(() => input.focus(), 100);
+        })();
+
+        // ── Tab switching ────────────────────────────────
+        const tabContent = {
+            a: { heading: 'Chart heading', body: 'Chart content' },
+            b: { heading: 'Console.md header', body: 'Console.md content' },
+        };
+        document.getElementById('tabBar').addEventListener('click', (e) => {
+            const bar = document.getElementById('tabBar');
+            if (bar._suppressClick) { bar._suppressClick = false; return; }
+            if (e.target.closest('.tab-close')) return;
+            const pill = e.target.closest('.tab-pill');
+            if (!pill || pill.classList.contains('active')) return;
+            document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
+                t.classList.toggle('active', t === pill);
+                t.classList.toggle('inactive', t !== pill);
+            });
+            document.getElementById('canvasHeading').textContent = tabContent[pill.dataset.tab].heading;
+            document.getElementById('canvasContent').querySelector('span').textContent = tabContent[pill.dataset.tab].body;
+        });
+
+        // ── Draggable tab reorder ────────────────────────
+        (function initTabDrag() {
+            const tabBar = document.getElementById('tabBar');
+            let dragPill = null, ghostEl = null, startX = 0, pillStartX = 0, didDrag = false, swapped = false, origRects = {};
+            tabBar.addEventListener('mousedown', (e) => {
+                if (e.target.closest('.tab-close')) return;
+                const pill = e.target.closest('.tab-pill');
+                if (!pill) return;
+                e.preventDefault(); dragPill = pill; startX = e.clientX; didDrag = false; swapped = false;
+                origRects = {};
+                Array.from(tabBar.querySelectorAll('.tab-pill')).forEach(p => { origRects[p.dataset.tab] = p.getBoundingClientRect(); });
+            });
+            document.addEventListener('mousemove', (e) => {
+                if (!dragPill) return;
+                const dx = e.clientX - startX;
+                if (!ghostEl && Math.abs(dx) < 4) return;
+                if (!ghostEl) {
+                    didDrag = true;
+                    const rect = dragPill.getBoundingClientRect();
+                    pillStartX = rect.left;
+                    ghostEl = dragPill.cloneNode(true);
+                    Object.assign(ghostEl.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px', zIndex: '9999', opacity: '1', backgroundColor: '#1E1E21', pointerEvents: 'none', transition: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' });
+                    document.body.appendChild(ghostEl);
+                    dragPill.style.opacity = '0';
+                    document.body.style.cursor = 'grabbing'; document.body.style.userSelect = 'none';
+                }
+                ghostEl.style.left = (pillStartX + dx) + 'px';
+                Array.from(tabBar.querySelectorAll('.tab-pill')).filter(p => p !== dragPill).forEach(other => {
+                    const origRect = origRects[other.dataset.tab];
+                    const dragOrigRect = origRects[dragPill.dataset.tab];
+                    const dragIsLeft = dragOrigRect.left < origRect.left;
+                    const ghostLeft = parseFloat(ghostEl.style.left);
+                    const ghostRight = ghostLeft + ghostEl.offsetWidth;
+                    const otherEdge = dragIsLeft ? origRect.left : origRect.right;
+                    if (dragIsLeft && ghostRight > otherEdge && !swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(' + (dragOrigRect.left - origRect.left) + 'px)'; swapped = true; }
+                    else if (!dragIsLeft && ghostLeft < otherEdge && !swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(' + (dragOrigRect.left - origRect.left + dragOrigRect.width - origRect.width) + 'px)'; swapped = true; }
+                    else if (dragIsLeft && ghostRight <= otherEdge && swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(0)'; swapped = false; }
+                    else if (!dragIsLeft && ghostLeft >= otherEdge && swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(0)'; swapped = false; }
+                });
+            });
+            document.addEventListener('mouseup', () => {
+                if (!dragPill) return;
+                if (didDrag && swapped) {
+                    const pills = Array.from(tabBar.querySelectorAll('.tab-pill'));
+                    const other = pills.find(p => p !== dragPill);
+                    if (other) { other.style.transition = 'none'; other.style.transform = 'translateX(0)'; }
+                    if (pills.indexOf(dragPill) === 0) tabBar.appendChild(dragPill);
+                    else tabBar.insertBefore(dragPill, tabBar.querySelector('.tab-pill'));
+                }
+                dragPill.style.opacity = '1';
+                if (ghostEl) { ghostEl.remove(); ghostEl = null; }
+                if (didDrag) { tabBar._suppressClick = true; setTimeout(() => { tabBar._suppressClick = false; }, 0); }
+                dragPill = null; swapped = false;
+                document.body.style.cursor = ''; document.body.style.userSelect = '';
+            });
+        })();
+
+        // ── Canvas menu ──────────────────────────────────
+        (function initCanvasMenu() {
+            const btn = document.getElementById('canvasMenuBtn');
+            const menu = document.getElementById('canvasMenu');
+            btn.addEventListener('click', (e) => { e.stopPropagation(); const isOpen = menu.style.display === 'block'; menu.style.display = isOpen ? 'none' : 'block'; btn.classList.toggle('active', !isOpen); });
+            document.addEventListener('click', () => { menu.style.display = 'none'; btn.classList.remove('active'); });
+            menu.addEventListener('click', (e) => e.stopPropagation());
+        })();
+
+        // ── Task module toggle ───────────────────────────
+        document.getElementById('taskHeaderToggle').addEventListener('click', () => {
+            document.getElementById('taskDemo').classList.toggle('expanded');
+        });
+
+        // ── Elicitation keyboard + click ─────────────────
+        (function initElicitation() {
+            const options = document.querySelectorAll('.elicit-option, .elicit-freeform');
+            function select(key) {
+                options.forEach(o => o.classList.remove('selected'));
+                const target = document.querySelector('[data-key="' + key + '"]');
+                if (target) target.classList.add('selected');
+            }
+            options.forEach(opt => { opt.addEventListener('click', () => select(opt.dataset.key)); });
+            document.addEventListener('keydown', (e) => {
+                if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
+                if (['1', '2', '3', '4'].includes(e.key)) select(e.key);
+            });
+        })();
+
+        // ── Layout application ───────────────────────────
+        function applyLayout() {
+            if (state.sidebar === 'hidden') {
+                els.rail.style.width = '0'; els.rail.style.borderRight = 'none';
+            } else if (state.sidebar === 'collapsed') {
+                setRailOpen(false);
+            } else {
+                els.rail.style.borderRight = '';
+            }
+            els.canvas.style.display = state.canvas === 'hidden' ? 'none' : 'flex';
+            els.resizeHandle.style.display = state.canvas === 'hidden' ? 'none' : '';
+        }
+
+
+        // ── Keyboard shortcuts ───────────────────────────
+        document.addEventListener('keydown', (e) => {
+            if (e.metaKey || e.ctrlKey) {
+                if (e.key === 'b') { e.preventDefault(); setRailOpen(!state.railOpen); }
+                if (e.key === '\\') { e.preventDefault(); state.canvas = state.canvas === 'visible' ? 'hidden' : 'visible'; applyLayout(); }
+            }
+        });
+
+        // ── User message click-to-expand ──
+        document.querySelectorAll('.user-message').forEach(msg => {
+            msg.addEventListener('click', () => msg.classList.toggle('expanded'));
+        });
+
+        // ── Conversation scrollbar: show on scroll, fade after idle ──
+        (() => {
+            const area = els.conv.querySelector('#messagesArea');
+            let timer;
+            area.addEventListener('scroll', () => {
+                area.classList.add('is-scrolling');
+                clearTimeout(timer);
+                timer = setTimeout(() => area.classList.remove('is-scrolling'), 1200);
+            });
+        })();
+
+        // ── Initialize ───────────────────────────────────
+        setRailOpen(true);
+        applyLayout();
+    </script>
+</body>
+</html>
