@@ -136,6 +136,12 @@
         .sidebar-item:hover {
             background-color: #222225;
         }
+        .sidebar-item.active {
+            background-color: #222225;
+        }
+        .sidebar-item.active div:first-child {
+            color: #D3D3D3;
+        }
         .expanded .rail-bottom-row:hover {
             background-color: #222225;
         }
@@ -169,7 +175,7 @@
             width: 8px;
             height: 18px;
             font-size: 13px;
-            font-weight: 400;
+            font-weight: 500;
             line-height: 1;
             animation: blockBlink 1s step-end infinite;
             pointer-events: none;
@@ -191,6 +197,30 @@
         }
 
         textarea:focus { outline: none; }
+
+        /* Conversation header scroll shadow */
+        #convHeader {
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        #convHeader.scrolled {
+            border-bottom-color: #1E1E21;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Anchored prompt bar (shown when conversation fills viewport) */
+        #promptBarAnchored {
+            display: none;
+            flex-shrink: 0;
+            height: 64px;
+            align-items: center;
+            padding: 0 16px;
+            border-top: 1px solid #1E1E21;
+            background: #101012;
+        }
+        #promptBarAnchored #promptRow {
+            padding-top: 0;
+        }
 
         #searchInput::placeholder {
             color: #6D6D77;
@@ -243,6 +273,7 @@
 
         /* User message */
         .user-message span {
+            display: block;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -264,8 +295,10 @@
         .think-grid {
             display: grid;
             grid-template-columns: repeat(3, 2.5px);
-            gap: 3.5px;
+            gap: 2.75px;
             flex-shrink: 0;
+            width: 13px;
+            justify-content: center;
         }
         .think-dot {
             width: 2.5px;
@@ -320,41 +353,82 @@
             font-weight: 600;
             color: #D3D3D3;
         }
+        .console-response a.ext-link {
+            color: #D3D3D3;
+            text-decoration: none;
+        }
+        .console-response a.ext-link:hover {
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 4px;
+            text-decoration-color: #6D6D77;
+        }
+        .console-response table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+        .console-response th {
+            text-align: left;
+            font-weight: 500;
+            font-size: 11px;
+            color: #6D6D77;
+            padding: 6px 12px 6px 0;
+            border-bottom: 1px solid #1E1E21;
+        }
+        .console-response td {
+            padding: 5px 12px 5px 0;
+            color: #A0A0AA;
+            border-bottom: 1px solid #1E1E21;
+        }
+        .console-response tr:last-child td {
+            border-bottom: none;
+        }
 
         /* Task module */
         .task-module {
+            position: relative;
             overflow: hidden;
             border: 1px solid transparent;
             border-radius: 10px;
             padding: 6px 0px;
             margin: -6px 0px;
+            transition: border-color 0.2s ease;
         }
         .task-module:hover,
         .task-module.expanded {
-            border-color: #2c2c30;
+            border-color: #1E1E21;
         }
         .task-module.expanded:hover {
             border-color: #3e3e44;
         }
         .task-header {
+            position: relative;
             display: flex;
             align-items: flex-start;
             gap: 10px;
             cursor: pointer;
             user-select: none;
         }
-        .task-module .task-dot { visibility: visible; }
-        .task-module:hover .task-dot,
-        .task-module.expanded .task-dot { visibility: hidden; }
-        .task-module .task-expand-icon {
-            opacity: 0;
-            transition: opacity 0.15s ease;
-        }
-        .task-module:hover .task-expand-icon {
+        .task-module .task-dot {
             opacity: 1;
+            transition: opacity 0.2s ease;
         }
+        .task-module:hover .task-dot,
+        .task-module.expanded .task-dot { opacity: 0; }
+        .task-expand-icon {
+            position: absolute;
+            right: 24px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .task-module:hover .task-expand-icon,
         .task-module.expanded .task-expand-icon {
-            display: none;
+            opacity: 1;
         }
         .task-subtitle-wrap {
             position: relative;
@@ -390,15 +464,24 @@
             font-weight: 600;
             color: #D3D3D3;
         }
+        @keyframes taskShimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
         .task-name {
             font-size: 13px;
-            font-weight: 400;
-            color: #6D6D77;
+            font-weight: 500;
             -webkit-font-smoothing: antialiased;
+            background: linear-gradient(90deg, #6D6D77 0%, #6D6D77 40%, #A0A0AA 50%, #6D6D77 60%, #6D6D77 100%);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: taskShimmer 8s linear infinite;
         }
         .task-subtitle {
             font-size: 13px;
-            font-weight: 400;
+            font-weight: 500;
             color: #6D6D77;
             padding-left: 2px;
             -webkit-font-smoothing: antialiased;
@@ -420,14 +503,15 @@
             max-height: 2000px;
         }
         .task-detail-inner {
-            padding: 12px 18px 4px 18px;
+            padding: 12px 18px 12px 18px;
             margin-top: 10px;
-            border-top: 1px solid #2c2c30;
+            border-top: 1px solid #1E1E21;
         }
         .task-body-text {
             font-size: 13px;
+            font-weight: 500;
             line-height: 1.6;
-            color: #6D6D77;
+            color: #A0A0AA;
             margin-top: 12px;
         }
 
@@ -458,8 +542,8 @@
             align-items: center;
             justify-content: center;
             border-radius: 5px;
-            border: 1px solid #2c2c30;
-            background: transparent;
+            border: 1px solid transparent;
+            background: rgba(255,255,255,0.05);
             color: #6D6D77;
             cursor: pointer;
             transition: border-color 0.15s ease, color 0.15s ease;
@@ -506,26 +590,27 @@
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
-            margin-top: 8px;
+            margin-top: 12px;
         }
         .artifact-ref {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 3px 10px;
-            border-radius: 6px;
-            border: 1px solid #2c2c30;
-            background: transparent;
+            height: 20px;
+            padding: 0 8px;
+            border-radius: 5px;
+            border: 1px solid transparent;
+            background: #1E1E21;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: #A0A0AA;
-            transition: border-color 0.15s ease, background-color 0.15s ease;
+            transition: border-color 0.15s ease, color 0.15s ease;
             white-space: nowrap;
         }
         .artifact-ref:hover {
             border-color: #3e3e44;
-            background: rgba(255,255,255,0.03);
+            color: #D3D3D3;
         }
 
         /* Elicitation module */
@@ -559,7 +644,7 @@
         }
         .elicit-desc {
             font-size: 11px;
-            font-weight: 400;
+            font-weight: 500;
             color: #6D6D77;
             line-height: 1.4;
             margin-top: 2px;
@@ -599,13 +684,13 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease;">
+        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer expanded" style="width: 230px; transition: none; background-color: 250ms ease; border-color: 0.15s ease; box-shadow: 0.15s ease;">
 
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
                 <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
-                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
-                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease; cursor: pointer;">
+                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">OpenAI Production</span>
+                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 1; transition: opacity 150ms ease; cursor: pointer;">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/></svg>
                     </div>
                 </div>
@@ -620,7 +705,7 @@
                 </div>
             </div>
 
-            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease;">
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease; opacity: 0; pointer-events: none;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center linear-border" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
@@ -632,16 +717,16 @@
                 </div>
             </div>
 
-            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 1; pointer-events: auto; transition: opacity 250ms ease;">
                 <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
-                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
+                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
                         <span class="flex items-center text-text-primary" style="gap: 6px;">
                             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
                             New
                         </span>
                     </div>
                     <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0; padding: 0 4px;">
-                        <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                        <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                             <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Failed payments Dec</div>
                             <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                         </div>
@@ -661,11 +746,11 @@
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.71445 6.69302C9.43459 6.99838 9.45526 7.4728 9.76062 7.75267C10.066 8.03254 10.5404 8.01187 10.8203 7.7065L13.7526 4.50699C14.0154 4.22029 14.0154 3.7803 13.7527 3.49356L10.8203 0.293368C10.5405 -0.0120257 10.0661 -0.0327462 9.76068 0.247088C9.45529 0.526922 9.43457 1.00134 9.7144 1.30674L11.4953 3.25028L4.60029 3.24993C2.52914 3.24983 0.850098 4.92879 0.850098 6.99993V7.06671C0.850098 7.48092 1.18588 7.81671 1.6001 7.81671C2.01431 7.81671 2.3501 7.48092 2.3501 7.06671V6.99993C2.3501 5.75725 3.35753 4.74987 4.60021 4.74993L11.495 4.75028L9.71445 6.69302Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.28588 9.3068C6.56571 9.0014 6.54499 8.52698 6.2396 8.24715C5.9342 7.96731 5.45978 7.98803 5.17994 8.29343L2.24759 11.4936C1.98486 11.7803 1.98488 12.2203 2.24762 12.507L5.17998 15.7068C5.45983 16.0122 5.93425 16.0329 6.23963 15.753C6.54501 15.4732 6.5657 14.9988 6.28584 14.6934L4.50542 12.7506H11.4C13.4711 12.7506 15.15 11.0716 15.15 9.00058V8.93365C15.15 8.51944 14.8142 8.18365 14.4 8.18365C13.9858 8.18365 13.65 8.51944 13.65 8.93365V9.00058C13.65 10.2432 12.6427 11.2506 11.4 11.2506H4.50478L6.28588 9.3068Z" fill="currentColor"/></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Dashboard</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Dashboard</span>
                     </div>
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C6.17545 1 7.57452 2.17756 7.91797 3.75H13.375C13.7892 3.75 14.125 4.08579 14.125 4.5C14.125 4.91421 13.7892 5.25 13.375 5.25H7.91797C7.57452 6.82244 6.17545 8 4.5 8C2.567 8 1 6.433 1 4.5C1 2.567 2.567 1 4.5 1ZM4.5 2.5C3.39543 2.5 2.5 3.39543 2.5 4.5C2.5 5.60457 3.39543 6.5 4.5 6.5C5.60457 6.5 6.5 5.60457 6.5 4.5C6.5 3.39543 5.60457 2.5 4.5 2.5Z" fill="currentColor"/></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Settings</span>
                     </div>
                 </div>
             </div>
@@ -674,34 +759,34 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL — Module showcase                -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
-            <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
-                <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments Dec</span>
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0;">
+            <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="height: 56px; padding: 0 16px;">
+                <span style="font-size: 13px; font-weight: 600; line-height: 24px; color: #a0a0aa;">Failed payments Dec</span>
             </div>
 
-            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 0px 16px 20px 16px;">
+            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 10px 16px 20px 16px;">
                 <div id="messagesList" style="display: flex; flex-direction: column; gap: 20px; max-width: 900px;">
 
                     <!-- ── USER PROMPT ── -->
-                    <div class="user-message flex items-start justify-between w-full linear-border" style="min-height: 32px; padding: 5px 14px; border-radius: 6px; cursor: pointer; box-sizing: border-box;">
-                        <span class="flex-1" style="font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9;">Pull all failed payments over $500 from December, break them down by decline code, issuing bank, and BIN range. I want to see which failure patterns are systemic versus one-off, and flag any merchants with retry rates above 15%. If you can cross-reference against the November baseline that would be helpful too.</span>
+                    <div class="user-message linear-border" style="min-height: 32px; padding: 5px 14px 5px 18px; border-radius: 6px; cursor: pointer; box-sizing: border-box;">
+                        <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #c9c9c9;">Pull all failed payments over $500 from December, break them down by decline code, issuing bank, and BIN range. I want to see which failure patterns are systemic versus one-off, and flag any merchants with retry rates above 15%. If you can cross-reference against the November baseline that would be helpful too.</span>
                     </div>
 
                     <!-- ── THINKING ── -->
-                    <div class="flex items-center w-full" style="gap: 10px; padding: 5px 0;">
+                    <div class="flex items-center w-full" style="gap: 6px; padding: 5px 0;">
                         <div class="think-grid">
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                         </div>
-                        <span style="font-size: 13px; color: #6D6D77;">Gaveling...</span>
+                        <span style="font-size: 13px; font-weight: 500; color: #6D6D77;">Gaveling...</span>
                     </div>
 
                     <!-- ── TASK MODULE ── -->
                     <div class="task-module" id="taskDemo">
                             <div class="task-header" id="taskHeaderToggle">
                                 <div class="task-dot shrink-0" style="padding-top: 7px;">
-                                    <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #4a4a50;"></div>
+                                    <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2e2e32;"></div>
                                 </div>
                                 <div class="task-header-left">
                                     <div class="task-header-top">
@@ -713,7 +798,7 @@
                                         <div class="task-subtitle task-subtitle-hover"><span style="color: #4a4a50; margin-right: 2px;">&#x2514;</span> Click to expand</div>
                                     </div>
                                 </div>
-                                <svg class="task-expand-icon shrink-0" style="margin: 2px 12px 0 0;" width="12" height="12" viewBox="0 0 16 16" fill="none">
+                                <svg class="task-expand-icon" width="12" height="12" viewBox="0 0 16 16" fill="none">
                                     <path d="M8 2L11 5M8 2L5 5M8 14L11 11M8 14L5 11" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
@@ -739,21 +824,21 @@
                     <!-- ── CONSOLE TEXT RESPONSE ── -->
                     <div class="flex items-start w-full" style="gap: 10px; padding: 5px 0;">
                         <div class="shrink-0" style="padding-top: 7px;">
-                            <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #4a4a50;"></div>
+                            <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2e2e32;"></div>
                         </div>
                         <div class="console-response flex-1" style="min-width: 0;">
                             <p>Here are the failed payments over $500 from December. I pulled data from the analytics warehouse and filtered by decline status.</p>
                             <p>A few things stand out:</p>
                             <ul>
-                                <li><strong>Total failed charges: 1,247</strong> across 340 unique customers</li>
-                                <li><strong>Total volume: $2.3M</strong> — up 18% from November</li>
-                                <li><strong>Most common decline code:</strong> <code>card_declined</code> at 68%</li>
-                                <li><strong>Top issuer: Chase</strong> accounting for 34% of all declines</li>
+                                <li><span style="color: #D3D3D3; font-weight: 600;">Total failed charges:</span> 1,247 across 340 unique customers</li>
+                                <li><span style="color: #D3D3D3; font-weight: 600;">Total volume:</span> $2.3M — up 18% from November</li>
+                                <li><span style="color: #D3D3D3; font-weight: 600;">Most common decline code:</span> <code>card_declined</code> at 68%</li>
+                                <li><span style="color: #D3D3D3; font-weight: 600;">Top issuer:</span> Chase accounting for 34% of all declines</li>
                             </ul>
                             <p>The majority came from the <code>424242</code> BIN range at an <strong>18.4%</strong> failure rate vs. the 1.2% baseline.</p>
                             <div class="artifact-pills">
                                 <div class="artifact-ref">
-                                    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" class="shrink-0">
+                                    <svg width="8" height="8" viewBox="0 0 16 16" fill="none" class="shrink-0">
                                         <rect x="1" y="9" width="3" height="6" rx="0.75" fill="currentColor"/>
                                         <rect x="6.5" y="5" width="3" height="10" rx="0.75" fill="currentColor"/>
                                         <rect x="12" y="1" width="3" height="14" rx="0.75" fill="currentColor"/>
@@ -764,13 +849,39 @@
                         </div>
                     </div>
 
+                    <!-- ── TABLE RESPONSE ── -->
+                    <div class="flex items-start w-full" style="gap: 10px; padding: 5px 0;">
+                        <div class="shrink-0" style="padding-top: 7px;">
+                            <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2e2e32;"></div>
+                        </div>
+                        <div class="console-response flex-1" style="min-width: 0;">
+                            <p>Here are the customers with the highest failed payment volume:</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Email</th>
+                                        <th>Failed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Acme Corp</a></td><td><a class="ext-link" href="mailto:billing@acmecorp.io" target="_blank">billing@acmecorp.io</a></td><td>$42,800</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Northwind Ltd</a></td><td><a class="ext-link" href="mailto:ap@northwind.co" target="_blank">ap@northwind.co</a></td><td>$31,200</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Contoso Inc</a></td><td><a class="ext-link" href="mailto:finance@contoso.com" target="_blank">finance@contoso.com</a></td><td>$28,450</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Fabrikam</a></td><td><a class="ext-link" href="mailto:pay@fabrikam.dev" target="_blank">pay@fabrikam.dev</a></td><td>$19,600</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Tailspin Toys</a></td><td><a class="ext-link" href="mailto:ar@tailspintoys.com" target="_blank">ar@tailspintoys.com</a></td><td>$14,300</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- ── ELICITATION MODULE ── -->
                     <div>
                         <div class="flex items-start w-full" style="gap: 10px; margin-bottom: 12px;">
                             <div class="shrink-0" style="padding-top: 7px;">
                                 <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #D3D3D3;"></div>
                             </div>
-                            <p style="font-size: 13px; font-weight: 500; color: #D3D3D3; padding-top: 1px;">How should I handle the failed payments?</p>
+                            <p style="font-size: 13px; font-weight: 500; color: #A0A0AA; padding-top: 1px;">How should I handle the failed payments?</p>
                         </div>
                         <div id="elicitOptions" style="display: flex; flex-direction: column; gap: 0;">
                             <div class="elicit-option selected" data-key="1">
@@ -804,10 +915,10 @@
 
                     <!-- ── PROMPT INPUT ── -->
                     <div id="promptRow" class="flex items-start w-full" style="min-height: 32px;">
-                        <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #555555; margin-right: 8px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased;">$</span>
+                        <span style="font-size: 13px; font-weight: 600; line-height: 1.6; color: #D3D3D3; margin-right: 10px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased; width: 8px; text-align: center;">$</span>
                         <div style="position: relative; flex: 1; display: flex; align-items: start; padding-top: 5px;">
                             <textarea id="promptInput" rows="1" spellcheck="false"
-                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
+                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 500; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
                             <div id="promptOverlay" style="position: absolute; left: 0; top: 5px; display: flex; align-items: center; pointer-events: none;">
                                 <div id="blockCursor"></div>
                                 <span id="promptGhost" style="font-size: 13px; font-weight: 500; color: #555555; white-space: nowrap; -webkit-font-smoothing: antialiased;"></span>
@@ -817,6 +928,9 @@
 
                 </div>
             </div>
+
+            <!-- Anchored prompt bar (appears when conversation fills viewport) -->
+            <div id="promptBarAnchored"></div>
         </section>
 
         <!-- ═══════════════════════════════════════════════════ -->
@@ -1246,17 +1360,62 @@
         // ── Conversation scrollbar: show on scroll, fade after idle ──
         (() => {
             const area = els.conv.querySelector('#messagesArea');
+            const header = document.getElementById('convHeader');
             let timer;
             area.addEventListener('scroll', () => {
                 area.classList.add('is-scrolling');
                 clearTimeout(timer);
                 timer = setTimeout(() => area.classList.remove('is-scrolling'), 1200);
+                header.classList.toggle('scrolled', area.scrollTop > 10);
             });
         })();
 
+        // ── Prompt anchoring: inline → bottom bar when content fills viewport ──
+        (function initPromptAnchor() {
+            const messagesArea = document.getElementById('messagesArea');
+            const messagesList = document.getElementById('messagesList');
+            const promptRow = document.getElementById('promptRow');
+            const anchoredBar = document.getElementById('promptBarAnchored');
+            let isAnchored = false;
+
+            function getMessagesHeight() {
+                let h = 0;
+                const children = Array.from(messagesList.children).filter(c => c !== promptRow);
+                children.forEach(child => { h += child.offsetHeight; });
+                if (children.length > 1) {
+                    const gap = parseFloat(getComputedStyle(messagesList).gap) || 20;
+                    h += gap * (children.length - 1);
+                }
+                return h;
+            }
+
+            function check() {
+                const contentH = getMessagesHeight();
+                const viewH = messagesArea.clientHeight;
+
+                if (contentH >= viewH && !isAnchored) {
+                    anchoredBar.appendChild(promptRow);
+                    anchoredBar.style.display = 'flex';
+                    isAnchored = true;
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                } else if (contentH < viewH && isAnchored) {
+                    messagesList.appendChild(promptRow);
+                    anchoredBar.style.display = 'none';
+                    isAnchored = false;
+                }
+            }
+
+            check();
+            window.addEventListener('resize', check);
+            new ResizeObserver(check).observe(messagesArea);
+        })();
+
         // ── Initialize ───────────────────────────────────
-        setRailOpen(true);
+        state.railOpen = true;
         applyLayout();
+        requestAnimationFrame(() => {
+            els.rail.style.transition = 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease';
+        });
     </script>
 </body>
 </html>
