@@ -96,13 +96,13 @@
         .linear-border {
             position: relative;
             border: 1px solid #2c2c30 !important;
-            background: rgba(255,255,255,0.03);
+            background: #171719;
             box-shadow: 0 1px 4px rgba(0,0,0,0.12);
             transition: border-color 0.15s ease, background-color 0.15s ease;
         }
         .linear-border:hover {
             border-color: #3e3e44 !important;
-            background: rgba(255,255,255,0.06);
+            background: #1E1E21;
         }
 
         .tab-pill.active {
@@ -357,7 +357,7 @@
         .console-response code {
             font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
             font-size: 12px;
-            background: rgba(255,255,255,0.06);
+            background: #1E1E21;
             padding: 1px 5px;
             border-radius: 3px;
             color: #c9c9c9;
@@ -546,7 +546,7 @@
         /* Code blocks */
         .code-block {
             position: relative;
-            background: rgba(255,255,255,0.03);
+            background: #171719;
             border-radius: 8px;
             overflow: hidden;
         }
@@ -592,7 +592,7 @@
             transition: background 0.15s ease, color 0.15s ease;
         }
         .code-actions button:hover {
-            background: rgba(255,255,255,0.05);
+            background: #1E1E21;
             color: #A0A0AA;
         }
         .code-body {
@@ -631,7 +631,7 @@
 
         .code-inline {
             padding: 8px 12px;
-            background: rgba(255,255,255,0.03);
+            background: #171719;
             border-radius: 8px;
             font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
             font-size: 12px;
@@ -670,10 +670,11 @@
 
         /* Elicitation module */
         #elicitOptions {
-            background: rgba(255,255,255,0.03);
+            background: #171719;
             border-radius: 10px;
             overflow: hidden;
-            padding: 4px;
+            padding: 6px;
+            border: 1px solid #2c2c30;
         }
         .elicit-option {
             display: flex;
@@ -686,20 +687,20 @@
             transition: background-color 0.1s ease;
         }
         .elicit-option:hover {
-            background: rgba(255,255,255,0.04);
+            background: #1E1E21;
         }
         .elicit-option.selected {
-            background: rgba(255,255,255,0.06);
+            background: #1E1E21;
         }
         .elicit-title {
             font-size: 13px;
-            font-weight: 600;
+            font-weight: 500;
             color: #D3D3D3;
             line-height: 1.4;
         }
         .elicit-desc {
-            font-size: 12px;
-            font-weight: 500;
+            font-size: 11px;
+            font-weight: 400;
             color: #6D6D77;
             line-height: 1.4;
             margin-top: 2px;
@@ -707,13 +708,13 @@
         .elicit-num {
             font-size: 13px;
             font-weight: 600;
-            color: #6D6D77;
+            color: #D3D3D3;
             flex-shrink: 0;
             margin-right: 16px;
             transition: color 0.15s ease;
         }
-        .elicit-option:hover .elicit-num { color: #A0A0AA; }
-        .elicit-option.selected .elicit-num { color: #A0A0AA; }
+        .elicit-option:hover .elicit-num { color: #D3D3D3; }
+        .elicit-option.selected .elicit-num { color: #D3D3D3; }
         .elicit-freeform {
             padding: 8px 14px;
             border-radius: 8px;
@@ -722,14 +723,22 @@
             align-items: center;
             justify-content: space-between;
             gap: 16px;
+            min-height: 50px;
+            box-sizing: border-box;
             transition: background-color 0.1s ease;
         }
-        .elicit-freeform:hover { background: rgba(255,255,255,0.04); }
+        .elicit-freeform:hover { background: #1E1E21; }
+        .elicit-freeform.selected { background: #1E1E21; }
+        @keyframes elicitBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
         .elicit-hint {
-            font-size: 12px;
-            color: #4a4a50;
+            font-size: 11px;
+            font-weight: 400;
+            color: #A0A0AA;
             margin-top: 10px;
-            padding-left: 2px;
+            padding-left: 20px;
         }
     </style>
 </head>
@@ -834,7 +843,7 @@
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                         </div>
-                        <span style="font-size: 13px; font-weight: 500; color: #6D6D77;">Gaveling...</span>
+                        <span style="font-size: 13px; font-weight: 500; color: #6D6D77;">Crystallizing...</span>
                     </div>
 
                     <!-- ── TASK MODULE ── -->
@@ -859,7 +868,7 @@
                             </div>
                             <div class="task-detail">
                                 <div class="task-detail-inner">
-                                    <div class="task-body-text">Searching for failed charges above $500 in the Stripe API. Filtering by <code style="font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: #c9c9c9;">status: failed</code> and converting amounts from cents.</div>
+                                    <div class="task-body-text">Searching for failed charges above $500 in the Stripe API. Filtering by <code style="font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: #1E1E21; padding: 1px 5px; border-radius: 3px; color: #c9c9c9;">status: failed</code> and converting amounts from cents.</div>
                                     <div class="code-inline">stripe charges list --created[gte]=1704067200 --limit=100</div>
                                     <div class="task-body-text">Referencing the data pipeline skill to verify the correct warehouse tables and ensure charge amounts are normalized before aggregation.</div>
                                     <div class="code-block code-block-single" style="margin-top: 10px;">
@@ -910,6 +919,14 @@
                                     </svg>
                                     <span>Recent invoices</span>
                                 </div>
+                                <div class="artifact-ref">
+                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" class="shrink-0">
+                                        <path d="M2.5 6.09375C2.5 5.83487 2.70987 5.625 2.96875 5.625H4.21875C4.47763 5.625 4.6875 5.83487 4.6875 6.09375C4.6875 6.35263 4.47763 6.5625 4.21875 6.5625H2.96875C2.70987 6.5625 2.5 6.35263 2.5 6.09375Z" fill="currentColor"/>
+                                        <path d="M2.96875 3.125C2.70987 3.125 2.5 3.33487 2.5 3.59375C2.5 3.85263 2.70987 4.0625 2.96875 4.0625H6.71875C6.97763 4.0625 7.1875 3.85263 7.1875 3.59375C7.1875 3.33487 6.97763 3.125 6.71875 3.125H2.96875Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.625 7.8125V2.1875C0.625 1.32456 1.32456 0.625 2.1875 0.625H7.8125C8.67545 0.625 9.375 1.32456 9.375 2.1875V6.35723C9.375 6.68875 9.24331 7.0067 9.00889 7.24112L7.24112 9.00888C7.0067 9.2433 6.68875 9.375 6.35723 9.375L2.1875 9.375C1.32455 9.375 0.625 8.67544 0.625 7.8125ZM1.5625 7.8125L1.5625 2.1875C1.5625 1.84232 1.84232 1.5625 2.1875 1.5625L7.8125 1.5625C8.15768 1.5625 8.4375 1.84232 8.4375 2.1875L8.4375 5.3125L6.40625 5.3125C5.80219 5.3125 5.3125 5.80219 5.3125 6.40625L5.3125 8.4375L2.1875 8.4375C1.84232 8.4375 1.5625 8.15768 1.5625 7.8125ZM6.25 8.4375H6.35723C6.44011 8.4375 6.5196 8.40458 6.5782 8.34597L8.34597 6.5782C8.40458 6.5196 8.4375 6.44011 8.4375 6.35723V6.25H6.40625C6.31996 6.25 6.25 6.31995 6.25 6.40625V8.4375Z" fill="currentColor"/>
+                                    </svg>
+                                    <span>failed_payments.sql</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -948,7 +965,7 @@
                             </div>
                             <p style="font-size: 13px; font-weight: 500; color: #A0A0AA; padding-top: 1px;">How should I handle the failed payments?</p>
                         </div>
-                        <div id="elicitOptions" style="display: flex; flex-direction: column; gap: 0;">
+                        <div id="elicitOptions" style="display: flex; flex-direction: column; gap: 4px;">
                             <div class="elicit-option selected" data-key="1">
                                 <div style="flex: 1; min-width: 0;">
                                     <div class="elicit-title">Retry automatically</div>
@@ -971,7 +988,12 @@
                                 <span class="elicit-num">3</span>
                             </div>
                             <div class="elicit-freeform" data-key="4">
-                                <span style="font-size: 13px; color: #4a4a50;">Type something else or ask a question</span>
+                                <div id="elicitTypeArea" style="flex: 1; min-width: 0; display: flex; align-items: center; position: relative; overflow: hidden; margin-right: 24px;">
+                                    <span id="elicitTyped" style="font-size: 13px; font-weight: 500; color: #D3D3D3; white-space: pre; flex-shrink: 0;"></span>
+                                    <span id="elicitCursor" style="display: none; position: absolute; top: 50%; transform: translateY(-50%); left: 0; width: 2px; height: 16px; background: #D3D3D3; animation: elicitBlink 1s step-end infinite;"></span>
+                                    <span id="elicitGhost" style="font-size: 13px; color: #4a4a50; white-space: nowrap;">Add a custom response</span>
+                                    <input id="elicitInput" type="text" spellcheck="false" style="position: absolute; left: -9999px; opacity: 0;">
+                                </div>
                                 <span class="elicit-num">4</span>
                             </div>
                         </div>
@@ -1380,26 +1402,109 @@
             if (e.target.closest('button, a, .code-actions')) return;
             const task = document.getElementById('taskDemo');
             const area = document.getElementById('messagesArea');
-            const visualTop = task.getBoundingClientRect().top - area.getBoundingClientRect().top;
+            const topBefore = task.getBoundingClientRect().top;
             task.classList.toggle('expanded');
             requestAnimationFrame(() => {
-                const newOffsetTop = task.offsetTop - area.offsetTop;
-                area.scrollTop = newOffsetTop - visualTop;
+                const topAfter = task.getBoundingClientRect().top;
+                area.scrollTop += topAfter - topBefore;
             });
         });
 
         // ── Elicitation keyboard + click ─────────────────
         (function initElicitation() {
             const options = document.querySelectorAll('.elicit-option, .elicit-freeform');
+            const elicitInput = document.getElementById('elicitInput');
+            const elicitGhost = document.getElementById('elicitGhost');
+            const elicitCursor = document.getElementById('elicitCursor');
+            const elicitTyped = document.getElementById('elicitTyped');
+            let freeformActive = false;
+
             function select(key) {
                 options.forEach(o => o.classList.remove('selected'));
                 const target = document.querySelector('[data-key="' + key + '"]');
                 if (target) target.classList.add('selected');
+                if (key === '4') {
+                    freeformActive = true;
+                    elicitCursor.style.display = 'inline-block';
+                    elicitInput.focus();
+                    updateDisplay();
+                } else {
+                    freeformActive = false;
+                    elicitCursor.style.display = 'none';
+                    elicitInput.blur();
+                }
             }
-            options.forEach(opt => { opt.addEventListener('click', () => select(opt.dataset.key)); });
+
+            const elicitTypeArea = document.getElementById('elicitTypeArea');
+
+            function updateDisplay() {
+                const val = elicitInput.value;
+                elicitTyped.textContent = val;
+                elicitGhost.style.display = val.length > 0 ? 'none' : '';
+                const textW = elicitTyped.offsetWidth;
+                const areaW = elicitTypeArea.offsetWidth;
+                if (textW > areaW) {
+                    elicitTyped.style.transform = 'translateX(' + (areaW - textW) + 'px)';
+                    elicitCursor.style.left = (areaW - 2) + 'px';
+                } else {
+                    elicitTyped.style.transform = 'translateX(0)';
+                    elicitCursor.style.left = textW + 'px';
+                }
+            }
+
+            function updateSelection() {
+                const start = elicitInput.selectionStart;
+                const end = elicitInput.selectionEnd;
+                const val = elicitInput.value;
+                if (start !== end && val.length > 0) {
+                    const before = val.slice(0, start);
+                    const selected = val.slice(start, end);
+                    const after = val.slice(end);
+                    elicitTyped.innerHTML = '';
+                    if (before) elicitTyped.appendChild(document.createTextNode(before));
+                    const sel = document.createElement('span');
+                    sel.style.cssText = 'background: rgba(59,130,246,0.4); border-radius: 2px;';
+                    sel.textContent = selected;
+                    elicitTyped.appendChild(sel);
+                    if (after) elicitTyped.appendChild(document.createTextNode(after));
+                } else {
+                    elicitTyped.textContent = val;
+                }
+            }
+
+            elicitInput.addEventListener('input', () => { updateDisplay(); updateSelection(); });
+            elicitInput.addEventListener('select', updateSelection);
+            elicitInput.addEventListener('keyup', updateSelection);
+            elicitInput.addEventListener('mouseup', updateSelection);
+            elicitInput.addEventListener('blur', () => {
+                if (freeformActive && elicitInput.value === '') {
+                    elicitCursor.style.display = 'none';
+                }
+                updateDisplay();
+            });
+            elicitInput.addEventListener('focus', () => {
+                if (freeformActive) {
+                    elicitCursor.style.display = 'inline-block';
+                }
+            });
+
+            let currentKey = '1';
+
+            options.forEach(opt => { opt.addEventListener('click', () => { currentKey = opt.dataset.key; select(currentKey); }); });
+
+            function moveSelection(dir) {
+                let num = parseInt(currentKey) + dir;
+                if (num < 1) num = 1;
+                if (num > 4) num = 4;
+                currentKey = String(num);
+                select(currentKey);
+            }
+
             document.addEventListener('keydown', (e) => {
-                if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') return;
-                if (['1', '2', '3', '4'].includes(e.key)) select(e.key);
+                if (e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); return; }
+                if (e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); return; }
+                if (document.activeElement === elicitInput) return;
+                if (['1', '2', '3', '4'].includes(e.key)) { e.preventDefault(); currentKey = e.key; select(currentKey); }
             });
         })();
 
@@ -1511,6 +1616,7 @@
         requestAnimationFrame(() => {
             els.rail.style.transition = 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease';
         });
+
     </script>
 </body>
 </html>
