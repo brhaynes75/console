@@ -561,6 +561,9 @@
             border-radius: 0 0 8px 8px;
             pointer-events: none;
         }
+        .code-block-single::after {
+            display: none;
+        }
         .code-header {
             display: flex;
             align-items: center;
@@ -627,12 +630,12 @@
         .op { color: #5c6370; font-style: italic; }
 
         .code-inline {
-            padding: 10px 12px;
+            padding: 8px 12px;
             background: rgba(255,255,255,0.03);
             border-radius: 8px;
             font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
             font-size: 12px;
-            line-height: 1.5;
+            line-height: 24px;
             color: #A0A0AA;
             margin-top: 10px;
         }
@@ -846,7 +849,7 @@
                                         <span class="task-name">Find payments</span>
                                     </div>
                                     <div class="task-subtitle-wrap">
-                                        <div class="task-subtitle task-subtitle-default"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Used 3 tools</div>
+                                        <div class="task-subtitle task-subtitle-default"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Used 4 tools</div>
                                         <div class="task-subtitle task-subtitle-hover"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Click to expand</div>
                                     </div>
                                 </div>
@@ -858,6 +861,15 @@
                                 <div class="task-detail-inner">
                                     <div class="task-body-text">Searching for failed charges above $500 in the Stripe API. Filtering by <code style="font-family: 'SF Mono', Menlo, monospace; font-size: 12px; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 3px; color: #c9c9c9;">status: failed</code> and converting amounts from cents.</div>
                                     <div class="code-inline">stripe charges list --created[gte]=1704067200 --limit=100</div>
+                                    <div class="task-body-text">Referencing the data pipeline skill to verify the correct warehouse tables and ensure charge amounts are normalized before aggregation.</div>
+                                    <div class="code-block code-block-single" style="margin-top: 10px;">
+                                        <div class="code-header">
+                                            <span>skill.md</span>
+                                            <div class="code-actions">
+                                                <button title="Expand"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 0.5625C4.08579 0.5625 3.75 0.898286 3.75 1.3125C3.75 1.72671 4.08579 2.0625 4.5 2.0625H8.87684L1.34467 9.59467C1.05178 9.88756 1.05178 10.3624 1.34467 10.6553C1.63756 10.9482 2.11244 10.9482 2.40533 10.6553L9.9375 3.12316V7.5C9.9375 7.91421 10.2733 8.25 10.6875 8.25C11.1017 8.25 11.4375 7.91421 11.4375 7.5V1.3125C11.4375 0.898286 11.1017 0.5625 10.6875 0.5625H4.5Z" fill="currentColor"/></svg></button>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="task-body-text">Building the SQL query to aggregate results by failure code, issuer, and BIN range.</div>
                                     <div class="code-block" style="margin-top: 10px;">
                                         <div class="code-header">
