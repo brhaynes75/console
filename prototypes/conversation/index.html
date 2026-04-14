@@ -391,10 +391,10 @@
         .task-module {
             position: relative;
             overflow: hidden;
-            border: 1px solid transparent;
+            border: 2px solid transparent;
             border-radius: 10px;
-            padding: 6px 0px;
-            margin: -6px 0px;
+            padding: 8px 0px 0px;
+            margin: -8px 0px 0px;
             transition: border-color 0.2s ease;
         }
         .task-module:hover,
@@ -409,6 +409,7 @@
             display: flex;
             align-items: flex-start;
             gap: 10px;
+            padding-bottom: 8px;
             cursor: pointer;
             user-select: none;
         }
@@ -420,9 +421,9 @@
         .task-module.expanded .task-dot { opacity: 0; }
         .task-expand-icon {
             position: absolute;
-            right: 24px;
+            right: 16px;
             top: 50%;
-            transform: translateY(-50%);
+            transform: translateY(calc(-50% - 4px));
             opacity: 0;
             transition: opacity 0.2s ease;
         }
@@ -450,7 +451,7 @@
         .task-header-left {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 4px;
             flex: 1;
             min-width: 0;
         }
@@ -485,6 +486,8 @@
             color: #6D6D77;
             padding-left: 2px;
             -webkit-font-smoothing: antialiased;
+            display: inline-flex;
+            align-items: center;
         }
         .task-chevron {
             transition: transform 150ms ease;
@@ -503,23 +506,47 @@
             max-height: 2000px;
         }
         .task-detail-inner {
-            padding: 12px 18px 12px 18px;
-            margin-top: 10px;
+            padding: 12px 0 18px 0;
+            margin: 0px 18px 0 18px;
             border-top: 1px solid #1E1E21;
         }
         .task-body-text {
             font-size: 13px;
             font-weight: 500;
             line-height: 1.6;
-            color: #A0A0AA;
+            color: #6D6D77;
             margin-top: 12px;
+        }
+        .task-body-text:first-child {
+            margin-top: 0;
+        }
+        .task-detail-inner .code-inline {
+            padding-left: 16px;
+        }
+        .task-detail-inner .code-header {
+            padding-left: 16px;
+        }
+        .task-detail-inner .code-body {
+            padding-left: 1px;
         }
 
         /* Code blocks */
         .code-block {
+            position: relative;
             background: rgba(255,255,255,0.03);
             border-radius: 8px;
             overflow: hidden;
+        }
+        .code-block::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, #171719);
+            border-radius: 0 0 8px 8px;
+            pointer-events: none;
         }
         .code-header {
             display: flex;
@@ -543,22 +570,34 @@
             justify-content: center;
             border-radius: 5px;
             border: 1px solid transparent;
-            background: rgba(255,255,255,0.05);
+            background: transparent;
             color: #6D6D77;
             cursor: pointer;
-            transition: border-color 0.15s ease, color 0.15s ease;
+            transition: background 0.15s ease, color 0.15s ease;
         }
         .code-actions button:hover {
-            border-color: #3e3e44;
+            background: rgba(255,255,255,0.05);
             color: #A0A0AA;
         }
         .code-body {
+            position: relative;
             padding: 0 12px 12px 12px;
             font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
             font-size: 12px;
             line-height: 1.7;
             color: #A0A0AA;
-            overflow-x: auto;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .code-body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 100%;
+            background: linear-gradient(to right, transparent, #171719);
+            pointer-events: none;
         }
         .code-body .ln {
             display: inline-block;
@@ -575,7 +614,7 @@
         .op { color: #5c6370; font-style: italic; }
 
         .code-inline {
-            padding: 10px 14px;
+            padding: 10px 12px;
             background: rgba(255,255,255,0.03);
             border-radius: 8px;
             font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
@@ -745,7 +784,7 @@
             <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2;">
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
-                        <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M9.71445 6.69302C9.43459 6.99838 9.45526 7.4728 9.76062 7.75267C10.066 8.03254 10.5404 8.01187 10.8203 7.7065L13.7526 4.50699C14.0154 4.22029 14.0154 3.7803 13.7527 3.49356L10.8203 0.293368C10.5405 -0.0120257 10.0661 -0.0327462 9.76068 0.247088C9.45529 0.526922 9.43457 1.00134 9.7144 1.30674L11.4953 3.25028L4.60029 3.24993C2.52914 3.24983 0.850098 4.92879 0.850098 6.99993V7.06671C0.850098 7.48092 1.18588 7.81671 1.6001 7.81671C2.01431 7.81671 2.3501 7.48092 2.3501 7.06671V6.99993C2.3501 5.75725 3.35753 4.74987 4.60021 4.74993L11.495 4.75028L9.71445 6.69302Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.28588 9.3068C6.56571 9.0014 6.54499 8.52698 6.2396 8.24715C5.9342 7.96731 5.45978 7.98803 5.17994 8.29343L2.24759 11.4936C1.98486 11.7803 1.98488 12.2203 2.24762 12.507L5.17998 15.7068C5.45983 16.0122 5.93425 16.0329 6.23963 15.753C6.54501 15.4732 6.5657 14.9988 6.28584 14.6934L4.50542 12.7506H11.4C13.4711 12.7506 15.15 11.0716 15.15 9.00058V8.93365C15.15 8.51944 14.8142 8.18365 14.4 8.18365C13.9858 8.18365 13.65 8.51944 13.65 8.93365V9.00058C13.65 10.2432 12.6427 11.2506 11.4 11.2506H4.50478L6.28588 9.3068Z" fill="currentColor"/></svg></span>
+                        <span class="shrink-0" style="color: #a0a0aa;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_switcher)"><path d="M4.01562 5.58594C4.01562 6.76868 4.01562 8.36941 4.01562 9.39124C4.01562 9.94353 4.46334 10.3906 5.01562 10.3906H14.2656C14.8179 10.3906 15.2656 9.94291 15.2656 9.39062V1.78125C15.2656 1.22897 14.8179 0.78125 14.2656 0.78125H5.01563C4.46334 0.78125 4.01562 1.22897 4.01562 1.78125V3.18359" stroke="currentColor" stroke-width="1.5"/><path d="M10.0156 5.58594L1.76563 5.58594C1.21334 5.58594 0.765626 6.03365 0.765626 6.58594L0.765625 14.1953C0.765625 14.7476 1.21334 15.1953 1.76562 15.1953L11.0156 15.1953C11.5679 15.1953 12.0156 14.7476 12.0156 14.1953L12.0156 12.793" stroke="currentColor" stroke-width="1.5"/><path d="M9.00003 7.31155L10.7256 5.58594L9.00003 3.86032" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_switcher"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span>
                         <span class="rail-bottom-label" style="font-size: 13px; line-height: 1.6; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Dashboard</span>
                     </div>
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
@@ -794,8 +833,8 @@
                                         <span class="task-name">Find payments</span>
                                     </div>
                                     <div class="task-subtitle-wrap">
-                                        <div class="task-subtitle task-subtitle-default"><span style="color: #4a4a50; margin-right: 2px;">&#x2514;</span> Used 3 tools</div>
-                                        <div class="task-subtitle task-subtitle-hover"><span style="color: #4a4a50; margin-right: 2px;">&#x2514;</span> Click to expand</div>
+                                        <div class="task-subtitle task-subtitle-default"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Used 3 tools</div>
+                                        <div class="task-subtitle task-subtitle-hover"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Click to expand</div>
                                     </div>
                                 </div>
                                 <svg class="task-expand-icon" width="12" height="12" viewBox="0 0 16 16" fill="none">
@@ -838,10 +877,11 @@
                             <p>The majority came from the <code>424242</code> BIN range at an <strong>18.4%</strong> failure rate vs. the 1.2% baseline.</p>
                             <div class="artifact-pills">
                                 <div class="artifact-ref">
-                                    <svg width="8" height="8" viewBox="0 0 16 16" fill="none" class="shrink-0">
-                                        <rect x="1" y="9" width="3" height="6" rx="0.75" fill="currentColor"/>
-                                        <rect x="6.5" y="5" width="3" height="10" rx="0.75" fill="currentColor"/>
-                                        <rect x="12" y="1" width="3" height="14" rx="0.75" fill="currentColor"/>
+                                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="shrink-0">
+                                        <path d="M10.5004 1.40625C10.5004 1.04381 10.2066 0.75 9.84418 0.75C9.48174 0.75 9.18793 1.04381 9.18793 1.40625V7.96875C9.18793 8.33119 9.48174 8.625 9.84418 8.625C10.2066 8.625 10.5004 8.33119 10.5004 7.96875V1.40625Z" fill="currentColor"/>
+                                        <path d="M1.95098 1.40625C1.95098 1.07488 1.68235 0.806248 1.35098 0.806248C1.01961 0.806248 0.750977 1.07488 0.750977 1.40625V9.9C0.750977 10.6456 1.35539 11.25 2.10098 11.25H10.9703C11.3017 11.25 11.5703 10.9814 11.5703 10.65C11.5703 10.3186 11.3017 10.05 10.9703 10.05H2.10098C2.01813 10.05 1.95098 9.98284 1.95098 9.9V1.40625Z" fill="currentColor"/>
+                                        <path d="M6.84418 2.625C7.20661 2.625 7.50043 2.91881 7.50043 3.28125V7.96875C7.50043 8.33119 7.20661 8.625 6.84418 8.625C6.48174 8.625 6.18793 8.33119 6.18793 7.96875V3.28125C6.18793 2.91881 6.48174 2.625 6.84418 2.625Z" fill="currentColor"/>
+                                        <path d="M4.50043 5.15625C4.50043 4.79381 4.20661 4.5 3.84418 4.5C3.48174 4.5 3.18793 4.79381 3.18793 5.15625V7.96875C3.18793 8.33119 3.48174 8.625 3.84418 8.625C4.20661 8.625 4.50043 8.33119 4.50043 7.96875V5.15625Z" fill="currentColor"/>
                                     </svg>
                                     <span>Recent invoices</span>
                                 </div>
@@ -1311,8 +1351,16 @@
         })();
 
         // ── Task module toggle ───────────────────────────
-        document.getElementById('taskHeaderToggle').addEventListener('click', () => {
-            document.getElementById('taskDemo').classList.toggle('expanded');
+        document.getElementById('taskDemo').addEventListener('click', (e) => {
+            if (e.target.closest('button, a, .code-actions')) return;
+            const task = document.getElementById('taskDemo');
+            const area = document.getElementById('messagesArea');
+            const visualTop = task.getBoundingClientRect().top - area.getBoundingClientRect().top;
+            task.classList.toggle('expanded');
+            requestAnimationFrame(() => {
+                const newOffsetTop = task.offsetTop - area.offsetTop;
+                area.scrollTop = newOffsetTop - visualTop;
+            });
         });
 
         // ── Elicitation keyboard + click ─────────────────
@@ -1408,6 +1456,7 @@
             check();
             window.addEventListener('resize', check);
             new ResizeObserver(check).observe(messagesArea);
+            new ResizeObserver(check).observe(messagesList);
         })();
 
         // ── Initialize ───────────────────────────────────
