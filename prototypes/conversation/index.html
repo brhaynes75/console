@@ -482,16 +482,18 @@
             0% { background-position: 200% center; }
             100% { background-position: -200% center; }
         }
-        .task-name {
-            font-size: 13px;
-            font-weight: 500;
-            -webkit-font-smoothing: antialiased;
+        .text-shimmer {
             background: linear-gradient(90deg, #6D6D77 0%, #6D6D77 40%, #A0A0AA 50%, #6D6D77 60%, #6D6D77 100%);
             background-size: 400% 100%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: taskShimmer 8s linear infinite;
+        }
+        .task-name {
+            font-size: 13px;
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
         }
         .task-subtitle {
             font-size: 13px;
@@ -843,7 +845,7 @@
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                             <div class="think-dot"></div><div class="think-dot"></div><div class="think-dot"></div>
                         </div>
-                        <span style="font-size: 13px; font-weight: 500; color: #6D6D77;">Crystallizing...</span>
+                        <span class="text-shimmer" style="font-size: 13px; font-weight: 500;">Crystallizing...</span>
                     </div>
 
                     <!-- ── TASK MODULE ── -->
@@ -855,7 +857,7 @@
                                 <div class="task-header-left">
                                     <div class="task-header-top">
                                         <span class="task-label">Task</span>
-                                        <span class="task-name">Find payments</span>
+                                        <span class="task-name text-shimmer">Find payments</span>
                                     </div>
                                     <div class="task-subtitle-wrap">
                                         <div class="task-subtitle task-subtitle-default"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>Used 4 tools</div>
@@ -1160,10 +1162,6 @@
                 newBtn.style.opacity = '0';
                 newBtn.style.height = '0';
                 inner.style.gap = '0';
-                if (activeItem) {
-                    activeItem.style.background = 'transparent';
-                    activeItem.querySelector('div').classList.replace('text-text-primary', 'text-text-secondary');
-                }
                 setTimeout(() => input.focus(), 160);
             } else {
                 search.style.opacity = '0';
@@ -1175,10 +1173,6 @@
                 newBtn.style.opacity = '1';
                 newBtn.style.height = '32px';
                 inner.style.gap = '22px';
-                if (activeItem) {
-                    activeItem.style.background = '';
-                    activeItem.querySelector('div').classList.replace('text-text-secondary', 'text-text-primary');
-                }
                 items.forEach(item => {
                     item.style.display = '';
                     if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
@@ -1308,6 +1302,14 @@
             }
             updateOverlay();
             input.addEventListener('input', () => { updateOverlay(); input.style.height = 'auto'; input.style.height = input.scrollHeight + 'px'; });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    input.value = '';
+                    input.style.height = 'auto';
+                    updateOverlay();
+                }
+            });
             input.addEventListener('focus', () => updateOverlay());
             setTimeout(() => input.focus(), 100);
         })();
