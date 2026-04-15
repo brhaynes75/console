@@ -267,6 +267,14 @@
             border-right-color: #3e3e44;
         }
 
+        #canvasContent { scrollbar-gutter: stable; }
+        #canvasContent::-webkit-scrollbar-thumb { background: transparent; }
+        #canvasContent.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        #canvasContent.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+
+        #canvasPrimaryBtn:hover {
+            filter: brightness(1.1);
+        }
         #canvasMenuBtn:hover {
             background-color: #222225;
             color: #d3d3d3;
@@ -317,7 +325,7 @@
             width: 2.5px;
             height: 2.5px;
             border-radius: 50%;
-            background: #e84393;
+            background: #706AE7;
             animation: thinkPulse 1.6s ease-in-out infinite;
         }
         .think-dot:nth-child(1) { animation-delay: 0.0s; animation-duration: 1.8s; }
@@ -742,6 +750,198 @@
             margin-top: 10px;
             padding-left: 20px;
         }
+
+        /* Canvas data table */
+        .canvas-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .canvas-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #101012;
+        }
+        .canvas-table th {
+            text-align: left;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6D6D77;
+            padding: 8px 16px 8px 0;
+            border-bottom: 1px solid #1E1E21;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.15s ease;
+        }
+        .canvas-table th:hover {
+            color: #A0A0AA;
+        }
+        .canvas-table th .sort-arrow {
+            display: inline-block;
+            margin-left: 4px;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+        .canvas-table th.sorted .sort-arrow {
+            opacity: 1;
+        }
+        .canvas-table th.sorted {
+            color: #A0A0AA;
+        }
+        .canvas-table tbody tr {
+            transition: background-color 0.15s ease;
+            cursor: pointer;
+        }
+        .canvas-table tbody tr:hover {
+            background-color: rgba(9, 9, 10, 0.3);
+        }
+        .canvas-table td {
+            padding: 7px 16px 7px 0;
+            color: #A0A0AA;
+            border-bottom: 1px solid #1E1E21;
+            white-space: nowrap;
+        }
+        .canvas-table tr:last-child td {
+            border-bottom: none;
+        }
+        .canvas-table .col-amount {
+            font-variant-numeric: tabular-nums;
+        }
+        .canvas-table td:first-child {
+            padding-left: 28px;
+            position: relative;
+        }
+        .canvas-table th:first-child {
+            padding-left: 28px;
+            position: relative;
+        }
+        .canvas-table .header-check {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #2c2c30;
+            border-radius: 3px;
+            background: transparent;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .canvas-table .header-check:hover {
+            border-color: #6D6D77;
+        }
+        .canvas-table .header-check.checked {
+            background: #706AE7;
+            border-color: #706AE7;
+        }
+        .canvas-table .header-check.partial {
+            border-color: #706AE7;
+        }
+        .canvas-table .row-check {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #2c2c30;
+            border-radius: 3px;
+            background: transparent;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .canvas-table tbody tr:hover .row-check {
+            border-color: #3a3a3a;
+        }
+        .canvas-table .row-check:hover {
+            border-color: #6D6D77 !important;
+        }
+        .canvas-table .row-check.checked {
+            opacity: 1;
+            background: #706AE7;
+            border-color: #706AE7;
+        }
+        .canvas-table .col-link {
+            color: #D3D3D3;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .canvas-table .col-link:hover {
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-decoration-thickness: 1px;
+            text-underline-offset: 4px;
+            text-decoration-color: #6D6D77;
+        }
+        .canvas-table tbody tr.selected {
+            background-color: rgba(9, 9, 10, 0.3);
+        }
+        .canvas-table .row-menu {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            color: #6D6D77;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+        }
+        .canvas-table tbody tr:hover .row-menu {
+            opacity: 1;
+        }
+        .canvas-table .row-menu:hover {
+            background: #1E1E21;
+            color: #A0A0AA;
+        }
+        .canvas-table td:last-child {
+            position: relative;
+            padding-right: 36px;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 500;
+            height: 20px;
+            padding: 0 8px;
+            border-radius: 5px;
+        }
+        .status-badge.failed {
+            background: #2B141A;
+            color: #F34E69;
+        }
+        .status-badge.succeeded {
+            background: #10241D;
+            color: #12B76A;
+        }
+        /* Table lazy-load footer */
+        .table-loader {
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #2c2c30;
+            border-top-color: #6D6D77;
+            border-radius: 50%;
+            animation: tableLoaderSpin 0.8s linear infinite;
+        }
+        @keyframes tableLoaderSpin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
@@ -827,7 +1027,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0;">
             <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="height: 56px; padding: 0 16px;">
-                <span style="font-size: 13px; font-weight: 600; line-height: 24px; color: #a0a0aa;">Failed payments Dec</span>
+                <span style="font-size: 13px; font-weight: 600; line-height: 24px; color: #a0a0aa;">Failed payments in the last month</span>
             </div>
 
             <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 10px 16px 20px 16px;">
@@ -959,49 +1159,6 @@
                         </div>
                     </div>
 
-                    <!-- ── ELICITATION MODULE ── -->
-                    <div>
-                        <div class="flex items-start w-full" style="gap: 10px; margin-bottom: 12px;">
-                            <div class="shrink-0" style="padding-top: 7px;">
-                                <div style="width: 8px; height: 8px; border-radius: 1.5px; background: #D3D3D3;"></div>
-                            </div>
-                            <p style="font-size: 13px; font-weight: 500; color: #A0A0AA; padding-top: 1px;">How should I handle the failed payments?</p>
-                        </div>
-                        <div id="elicitOptions" style="display: flex; flex-direction: column; gap: 4px;">
-                            <div class="elicit-option selected" data-key="1">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="elicit-title">Retry automatically</div>
-                                    <div class="elicit-desc">Attempt the charge again with exponential backoff</div>
-                                </div>
-                                <span class="elicit-num">1</span>
-                            </div>
-                            <div class="elicit-option" data-key="2">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="elicit-title">Pause subscription</div>
-                                    <div class="elicit-desc">Stop service until payment is resolved</div>
-                                </div>
-                                <span class="elicit-num">2</span>
-                            </div>
-                            <div class="elicit-option" data-key="3">
-                                <div style="flex: 1; min-width: 0;">
-                                    <div class="elicit-title">Notify customer</div>
-                                    <div class="elicit-desc">Send an email asking them to update payment method</div>
-                                </div>
-                                <span class="elicit-num">3</span>
-                            </div>
-                            <div class="elicit-freeform" data-key="4">
-                                <div id="elicitTypeArea" style="flex: 1; min-width: 0; display: flex; align-items: center; position: relative; overflow: hidden; margin-right: 24px;">
-                                    <span id="elicitTyped" style="font-size: 13px; font-weight: 500; color: #D3D3D3; white-space: pre; flex-shrink: 0;"></span>
-                                    <span id="elicitCursor" style="display: none; position: absolute; top: 50%; transform: translateY(-50%); left: 0; width: 2px; height: 16px; background: #D3D3D3; animation: elicitBlink 1s step-end infinite;"></span>
-                                    <span id="elicitGhost" style="font-size: 13px; color: #4a4a50; white-space: nowrap;">Add a custom response</span>
-                                    <input id="elicitInput" type="text" spellcheck="false" style="position: absolute; left: -9999px; opacity: 0;">
-                                </div>
-                                <span class="elicit-num">4</span>
-                            </div>
-                        </div>
-                        <div class="elicit-hint">Enter to select · ↑/↓ to navigate · Esc to cancel</div>
-                    </div>
-
                     <!-- ── PROMPT INPUT ── -->
                     <div id="promptRow" class="flex items-start w-full" style="min-height: 32px;">
                         <span style="font-size: 13px; font-weight: 600; line-height: 1.6; color: #D3D3D3; margin-right: 10px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased; width: 8px; text-align: center;">$</span>
@@ -1035,22 +1192,18 @@
         <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
             <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
                 <div class="tab-pill active" data-tab="a">
-                    <span>Chart</span>
-                    <div class="tab-close">
-                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
-                    </div>
-                </div>
-                <div class="tab-pill inactive" data-tab="b">
-                    <span>Console.md</span>
+                    <span>Failed payments</span>
                     <div class="tab-close">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
             </div>
 
-            <div class="flex flex-col flex-1 w-full" style="gap: 28px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
-                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
-                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
+            <div class="flex flex-col flex-1 w-full" style="padding: 0 16px; min-height: 0;">
+                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px; margin-bottom: 16px;">
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Failed payments &gt;$500 in December 2025</span>
+                    <div class="flex items-center" style="gap: 6px;">
+                        <button id="canvasPrimaryBtn" style="height: 24px; padding: 0 10px; border-radius: 5px; border: none; background: linear-gradient(to bottom, #7a74ed, #6560d9); color: #fff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: filter 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1); -webkit-font-smoothing: antialiased;">Primary</button>
                     <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
@@ -1063,9 +1216,49 @@
                             <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
                         </div>
                     </div>
+                    </div>
                 </div>
-                <div id="canvasContent" class="flex-1 flex items-center justify-center w-full" style="background: #09090a; border-radius: 0; padding: 4px 8px; min-height: 0;">
-                    <span style="font-size: 13px;" class="text-text-muted">Chart content</span>
+                <div id="canvasContent" class="flex-1 w-full" style="min-height: 0; overflow-y: auto;">
+                    <table class="canvas-table" id="canvasTable">
+                        <thead>
+                            <tr>
+                                <th data-col="customer">Customer<span class="sort-arrow"></span></th>
+                                <th data-col="amount">Amount<span class="sort-arrow"></span></th>
+                                <th data-col="status" class="sorted" data-dir="asc">Status<span class="sort-arrow"> ↓</span></th>
+                                <th data-col="date">Date<span class="sort-arrow"></span></th>
+                                <th data-col="reason">Decline reason<span class="sort-arrow"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="col-link">Chloe Brown</span></td><td class="col-amount">$4,800.00</td><td><span class="status-badge failed">Failed</span></td><td>Dec 19, 10:15 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Emma Davis</span></td><td class="col-amount">$4,500.00</td><td><span class="status-badge failed">Failed</span></td><td>Dec 18, 9:30 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Frank Wilson</span></td><td class="col-amount">$4,500.00</td><td><span class="status-badge failed">Failed</span></td><td>Dec 6, 9:45 AM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Henry Martinez</span></td><td class="col-amount">$4,100.75</td><td><span class="status-badge failed">Failed</span></td><td>Dec 14, 5:30 PM</td><td>Do not honor</td></tr>
+                            <tr><td><span class="col-link">Noah Walker</span></td><td class="col-amount">$2,800.00</td><td><span class="status-badge failed">Failed</span></td><td>Dec 4, 5:30 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Olivia Hall</span></td><td class="col-amount">$2,300.00</td><td><span class="status-badge failed">Failed</span></td><td>Dec 20, 6:15 PM</td><td>Payment declined</td></tr>
+                            <tr><td><span class="col-link">Alice Johnson</span></td><td class="col-amount">$5,600.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 12, 3:50 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Bob Smith</span></td><td class="col-amount">$5,000.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 2, 1:15 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">David Lee</span></td><td class="col-amount">$4,800.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 23, 2:25 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Grace Taylor</span></td><td class="col-amount">$4,200.50</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 23, 2:25 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Isabella Harris</span></td><td class="col-amount">$3,750.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 9, 12:00 PM</td><td>Payment provider declined</td></tr>
+                            <tr><td><span class="col-link">Jack Williams</span></td><td class="col-amount">$3,600.75</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 30, 1:25 PM</td><td>Do not honor</td></tr>
+                            <tr><td><span class="col-link">Katherine Clark</span></td><td class="col-amount">$3,200.50</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 11, 2:15 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Liam Thompson</span></td><td class="col-amount">$3,100.75</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 12, 3:50 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Mia Robinson</span></td><td class="col-amount">$2,900.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 13, 2:40 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Paul Young</span></td><td class="col-amount">$2,200.50</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 6, 7:05 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Quinn Lee</span></td><td class="col-amount">$2,000.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 17, 8:50 PM</td><td>Payment provider declined</td></tr>
+                            <tr><td><span class="col-link">Rachel King</span></td><td class="col-amount">$1,800.25</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 28, 9:30 PM</td><td>Do not honor</td></tr>
+                            <tr><td><span class="col-link">Sam Scott</span></td><td class="col-amount">$1,500.50</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 9, 10:15 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Tina Adams</span></td><td class="col-amount">$987.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 2, 11:00 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Uma Allen</span></td><td class="col-amount">$755.12</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 15, 12:45 PM</td><td>Generic decline</td></tr>
+                            <tr><td><span class="col-link">Victor Nelson</span></td><td class="col-amount">$644.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 4, 1:35 PM</td><td>Payment provider declined</td></tr>
+                            <tr><td><span class="col-link">Xavier Jones</span></td><td class="col-amount">$644.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 4, 1:35 PM</td><td>Payment provider declined</td></tr>
+                        </tbody>
+                    </table>
+                    <div id="tableFooter" style="padding: 24px 0 40px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <div class="table-loader"></div>
+                        <span style="font-size: 12px; font-weight: 500; color: #6D6D77;">Loading more rows…</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1255,7 +1448,7 @@
                 const panelWidth = conv.offsetWidth + canvas.offsetWidth;
                 startConvFlex = conv.offsetWidth / panelWidth;
                 startCanvasFlex = canvas.offsetWidth / panelWidth;
-                bar.style.left = '0'; bar.style.width = '4px'; bar.style.backgroundColor = '#FF1493';
+                bar.style.left = '0'; bar.style.width = '4px'; bar.style.backgroundColor = '#706AE7';
                 conv.classList.remove('panel-transition');
                 canvas.classList.remove('panel-transition');
                 document.body.style.cursor = 'col-resize';
@@ -1315,10 +1508,6 @@
         })();
 
         // ── Tab switching ────────────────────────────────
-        const tabContent = {
-            a: { heading: 'Chart heading', body: 'Chart content' },
-            b: { heading: 'Console.md header', body: 'Console.md content' },
-        };
         document.getElementById('tabBar').addEventListener('click', (e) => {
             const bar = document.getElementById('tabBar');
             if (bar._suppressClick) { bar._suppressClick = false; return; }
@@ -1329,8 +1518,6 @@
                 t.classList.toggle('active', t === pill);
                 t.classList.toggle('inactive', t !== pill);
             });
-            document.getElementById('canvasHeading').textContent = tabContent[pill.dataset.tab].heading;
-            document.getElementById('canvasContent').querySelector('span').textContent = tabContent[pill.dataset.tab].body;
         });
 
         // ── Draggable tab reorder ────────────────────────
@@ -1412,104 +1599,6 @@
             });
         });
 
-        // ── Elicitation keyboard + click ─────────────────
-        (function initElicitation() {
-            const options = document.querySelectorAll('.elicit-option, .elicit-freeform');
-            const elicitInput = document.getElementById('elicitInput');
-            const elicitGhost = document.getElementById('elicitGhost');
-            const elicitCursor = document.getElementById('elicitCursor');
-            const elicitTyped = document.getElementById('elicitTyped');
-            let freeformActive = false;
-
-            function select(key) {
-                options.forEach(o => o.classList.remove('selected'));
-                const target = document.querySelector('[data-key="' + key + '"]');
-                if (target) target.classList.add('selected');
-                if (key === '4') {
-                    freeformActive = true;
-                    elicitCursor.style.display = 'inline-block';
-                    elicitInput.focus();
-                    updateDisplay();
-                } else {
-                    freeformActive = false;
-                    elicitCursor.style.display = 'none';
-                    elicitInput.blur();
-                }
-            }
-
-            const elicitTypeArea = document.getElementById('elicitTypeArea');
-
-            function updateDisplay() {
-                const val = elicitInput.value;
-                elicitTyped.textContent = val;
-                elicitGhost.style.display = val.length > 0 ? 'none' : '';
-                const textW = elicitTyped.offsetWidth;
-                const areaW = elicitTypeArea.offsetWidth;
-                if (textW > areaW) {
-                    elicitTyped.style.transform = 'translateX(' + (areaW - textW) + 'px)';
-                    elicitCursor.style.left = (areaW - 2) + 'px';
-                } else {
-                    elicitTyped.style.transform = 'translateX(0)';
-                    elicitCursor.style.left = textW + 'px';
-                }
-            }
-
-            function updateSelection() {
-                const start = elicitInput.selectionStart;
-                const end = elicitInput.selectionEnd;
-                const val = elicitInput.value;
-                if (start !== end && val.length > 0) {
-                    const before = val.slice(0, start);
-                    const selected = val.slice(start, end);
-                    const after = val.slice(end);
-                    elicitTyped.innerHTML = '';
-                    if (before) elicitTyped.appendChild(document.createTextNode(before));
-                    const sel = document.createElement('span');
-                    sel.style.cssText = 'background: rgba(112,106,231,0.4); border-radius: 2px;';
-                    sel.textContent = selected;
-                    elicitTyped.appendChild(sel);
-                    if (after) elicitTyped.appendChild(document.createTextNode(after));
-                } else {
-                    elicitTyped.textContent = val;
-                }
-            }
-
-            elicitInput.addEventListener('input', () => { updateDisplay(); updateSelection(); });
-            elicitInput.addEventListener('select', updateSelection);
-            elicitInput.addEventListener('keyup', updateSelection);
-            elicitInput.addEventListener('mouseup', updateSelection);
-            elicitInput.addEventListener('blur', () => {
-                if (freeformActive && elicitInput.value === '') {
-                    elicitCursor.style.display = 'none';
-                }
-                updateDisplay();
-            });
-            elicitInput.addEventListener('focus', () => {
-                if (freeformActive) {
-                    elicitCursor.style.display = 'inline-block';
-                }
-            });
-
-            let currentKey = '1';
-
-            options.forEach(opt => { opt.addEventListener('click', () => { currentKey = opt.dataset.key; select(currentKey); }); });
-
-            function moveSelection(dir) {
-                let num = parseInt(currentKey) + dir;
-                if (num < 1) num = 1;
-                if (num > 4) num = 4;
-                currentKey = String(num);
-                select(currentKey);
-            }
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowUp') { e.preventDefault(); moveSelection(-1); return; }
-                if (e.key === 'ArrowDown') { e.preventDefault(); moveSelection(1); return; }
-                if (document.activeElement === elicitInput) return;
-                if (['1', '2', '3', '4'].includes(e.key)) { e.preventDefault(); currentKey = e.key; select(currentKey); }
-            });
-        })();
-
         // ── Layout application ───────────────────────────
         function applyLayout() {
             if (state.sidebar === 'hidden') {
@@ -1568,6 +1657,173 @@
                 clearTimeout(timer);
                 timer = setTimeout(() => area.classList.remove('is-scrolling'), 1200);
                 header.classList.toggle('scrolled', area.scrollTop > 10);
+            });
+        })();
+
+        // ── Canvas table scrollbar: show on scroll, fade after idle ──
+        (() => {
+            const content = document.getElementById('canvasContent');
+            let timer;
+            content.addEventListener('scroll', () => {
+                content.classList.add('is-scrolling');
+                clearTimeout(timer);
+                timer = setTimeout(() => content.classList.remove('is-scrolling'), 1200);
+            });
+        })();
+
+        // ── Canvas table row checkboxes ──────────────────
+        (() => {
+            const tbody = document.querySelector('#canvasTable tbody');
+            tbody.querySelectorAll('tr').forEach(row => {
+                const firstTd = row.querySelector('td');
+                const check = document.createElement('div');
+                check.className = 'row-check';
+                check.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="display:none;"><path d="M2 5.5L4 7.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                firstTd.insertBefore(check, firstTd.firstChild);
+
+                function toggleCheck() {
+                    const isChecked = check.classList.toggle('checked');
+                    check.querySelector('svg').style.display = isChecked ? '' : 'none';
+                    row.classList.toggle('selected', isChecked);
+                    if (window._updateHeaderCheck) window._updateHeaderCheck();
+                }
+
+                row.addEventListener('click', (e) => {
+                    if (e.target.closest('.col-link, .row-check')) return;
+                    toggleCheck();
+                });
+                check.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleCheck();
+                });
+            });
+        })();
+
+        // ── Canvas table header checkbox (select all) ────
+        (() => {
+            const table = document.getElementById('canvasTable');
+            const th = table.querySelector('th:first-child');
+            const headerCheck = document.createElement('div');
+            headerCheck.className = 'header-check';
+            headerCheck.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="display:none;"><path d="M2 5.5L4 7.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            const dashSvg = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="display:none;" class="partial-icon"><path d="M2.5 5H7.5" stroke="#706AE7" stroke-width="1.5" stroke-linecap="round"/></svg>';
+            headerCheck.insertAdjacentHTML('beforeend', dashSvg);
+
+            th.appendChild(headerCheck);
+
+            function updateHeaderState() {
+                const checks = table.querySelectorAll('.row-check');
+                const checkedCount = table.querySelectorAll('.row-check.checked').length;
+                const checkSvg = headerCheck.querySelector('svg:first-child');
+                const partialSvg = headerCheck.querySelector('.partial-icon');
+
+                if (checkedCount === 0) {
+                    headerCheck.classList.remove('checked', 'partial');
+                    checkSvg.style.display = 'none';
+                    partialSvg.style.display = 'none';
+                } else if (checkedCount === checks.length) {
+                    headerCheck.classList.add('checked');
+                    headerCheck.classList.remove('partial');
+                    checkSvg.style.display = '';
+                    partialSvg.style.display = 'none';
+                } else {
+                    headerCheck.classList.remove('checked');
+                    headerCheck.classList.add('partial');
+                    checkSvg.style.display = 'none';
+                    partialSvg.style.display = '';
+                }
+            }
+
+            headerCheck.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const checks = table.querySelectorAll('.row-check');
+                const allChecked = table.querySelectorAll('.row-check.checked').length === checks.length;
+                checks.forEach(c => {
+                    const row = c.closest('tr');
+                    if (allChecked) {
+                        c.classList.remove('checked');
+                        c.querySelector('svg').style.display = 'none';
+                        row.classList.remove('selected');
+                    } else {
+                        c.classList.add('checked');
+                        c.querySelector('svg').style.display = '';
+                        row.classList.add('selected');
+                    }
+                });
+                updateHeaderState();
+            });
+
+            window._updateHeaderCheck = updateHeaderState;
+        })();
+
+        // ── Canvas table row overflow menus ──────────────
+        (() => {
+            const tbody = document.querySelector('#canvasTable tbody');
+            tbody.querySelectorAll('tr').forEach(row => {
+                const lastTd = row.querySelector('td:last-child');
+                const menu = document.createElement('div');
+                menu.className = 'row-menu';
+                menu.innerHTML = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg>';
+                menu.addEventListener('click', (e) => e.stopPropagation());
+                lastTd.appendChild(menu);
+            });
+        })();
+
+        // ── Canvas table sorting ────────────────────────
+        (() => {
+            const table = document.getElementById('canvasTable');
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+
+            function parseAmount(text) {
+                return parseFloat(text.replace(/[$,]/g, ''));
+            }
+
+            function parseDate(text) {
+                return new Date('2025 ' + text);
+            }
+
+            function getSortVal(row, col) {
+                const cells = row.querySelectorAll('td');
+                switch (col) {
+                    case 'customer': return cells[0].textContent.toLowerCase();
+                    case 'amount': return parseAmount(cells[1].textContent);
+                    case 'status': return cells[2].textContent.trim().toLowerCase();
+                    case 'date': return parseDate(cells[3].textContent);
+                    case 'reason': return cells[4].textContent.toLowerCase();
+                }
+            }
+
+            thead.addEventListener('click', (e) => {
+                const th = e.target.closest('th');
+                if (!th) return;
+                const col = th.dataset.col;
+                const wasActive = th.classList.contains('sorted');
+                const prevDir = th.dataset.dir || 'asc';
+                const dir = wasActive ? (prevDir === 'asc' ? 'desc' : 'asc') : 'asc';
+
+                thead.querySelectorAll('th').forEach(h => {
+                    h.classList.remove('sorted');
+                    h.querySelector('.sort-arrow').textContent = '';
+                    delete h.dataset.dir;
+                });
+
+                th.classList.add('sorted');
+                th.dataset.dir = dir;
+                th.querySelector('.sort-arrow').textContent = dir === 'asc' ? ' ↓' : ' ↑';
+
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    const av = getSortVal(a, col);
+                    const bv = getSortVal(b, col);
+                    let cmp = 0;
+                    if (typeof av === 'number') cmp = av - bv;
+                    else if (av instanceof Date) cmp = av - bv;
+                    else cmp = av < bv ? -1 : av > bv ? 1 : 0;
+                    return dir === 'desc' ? -cmp : cmp;
+                });
+                rows.forEach(r => tbody.appendChild(r));
             });
         })();
 
