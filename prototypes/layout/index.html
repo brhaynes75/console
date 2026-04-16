@@ -166,7 +166,7 @@
         .linear-border {
             position: relative;
             border: 1px solid #2c2c30 !important;
-            background: rgba(255,255,255,0.03);
+            background: #1E1E21;
             box-shadow: 0 1px 4px rgba(0,0,0,0.12);
             transition: border-color 0.15s ease, background-color 0.15s ease;
         }
@@ -275,7 +275,7 @@
             color: #D3D3D3;
         }
         .sidebar-item.active {
-            background-color: #222225;
+            background-color: #1E1E21;
         }
         .sidebar-item.active div:first-child {
             color: #D3D3D3;
@@ -1177,10 +1177,12 @@
             });
         })();
 
-        // ── Chat item menus + pin/unpin ─────────────────
+        // ── Chat item menus + pin/unpin + drag ──────────
         (function initChatMenus() {
             const popup = document.getElementById('chatItemPopup');
             const pinRow = popup.querySelector('[data-action="pin"]');
+            const pinnedItems = document.getElementById('pinnedItems');
+            const recentItems = document.getElementById('recentItems');
             let activeBtn = null;
             let activeItem = null;
 
@@ -1192,14 +1194,15 @@
             }
 
             function updateSections() {
-                const pinned = document.getElementById('pinnedItems');
                 const pinnedSection = document.getElementById('pinnedSection');
                 const recentsHeader = document.getElementById('recentsHeader');
-                const hasPinned = pinned.children.length > 0;
+                const hasPinned = pinnedItems.querySelectorAll('.sidebar-item').length > 0;
+                const hasRecents = recentItems.querySelectorAll('.sidebar-item').length > 0;
                 pinnedSection.style.display = hasPinned ? '' : 'none';
-                recentsHeader.style.display = hasPinned ? '' : 'none';
+                recentsHeader.style.display = (hasPinned && hasRecents) ? '' : 'none';
             }
 
+            // ── Context menu ──
             document.addEventListener('click', (e) => {
                 if (!popup.contains(e.target)) closePopup();
             });
@@ -1229,18 +1232,277 @@
             pinRow.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (!activeItem) return;
-                const pinned = document.getElementById('pinnedItems');
-                const recents = document.getElementById('recentItems');
-                const isPinned = activeItem.parentElement === pinned;
-
-                if (isPinned) {
-                    recents.prepend(activeItem);
-                } else {
-                    pinned.appendChild(activeItem);
-                }
+                const item = activeItem;
+                const isPinned = item.parentElement === pinnedItems;
+                const origStyle = item.getAttribute('style') || '';
                 closePopup();
-                updateSections();
+
+                const h = item.offsetHeight;
+                const isLastUnpin = isPinned && pinnedItems.children.length === 1;
+
+                if (isLastUnpin) {
+                    // Last unpin — item stays visible, FLIP into recents while sections collapse
+                    const pinnedSection = document.getElementById('pinnedSection');
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const pinnedHeader = pinnedSection.querySelector('.chat-section-header');
+
+                    const dur = 180;
+                    const ease = 'cubic-bezier(0.2, 0.8, 0.25, 1.04)';
+
+                    const firstRect = item.getBoundingClientRect();
+                    const phH = pinnedHeader.offsetHeight;
+                    const psMB = parseFloat(getComputedStyle(pinnedSection).marginBottom) || 0;
+                    const rhH = recentsHeader.offsetHeight;
+                    const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
+
+                    // Move item to recents before animating
+                    recentItems.prepend(item);
+
+                    // Wrap headers for collapse
+                    const phWrap = document.createElement('div');
+                    phWrap.style.cssText = `height: ${phH}px; overflow: hidden;`;
+                    pinnedHeader.parentNode.insertBefore(phWrap, pinnedHeader);
+                    phWrap.appendChild(pinnedHeader);
+
+                    recentsHeader.style.marginTop = '0';
+                    const rhWrap = document.createElement('div');
+                    rhWrap.style.cssText = `height: ${rhH}px; overflow: hidden; margin-top: ${rhMT}px;`;
+                    recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
+                    rhWrap.appendChild(recentsHeader);
+
+                    pinnedSection.style.marginBottom = psMB + 'px';
+
+                    // FLIP: compensate for position change
+                    const lastRect = item.getBoundingClientRect();
+                    const deltaY = firstRect.top - lastRect.top;
+                    item.style.transform = `translateY(${deltaY}px)`;
+                    phWrap.offsetHeight;
+
+                    // Fade out headers, collapse wrappers, slide item
+                    pinnedHeader.style.transition = `opacity 0.15s ease`;
+                    recentsHeader.style.transition = `opacity 0.15s ease`;
+                    pinnedHeader.style.opacity = '0';
+                    recentsHeader.style.opacity = '0';
+
+                    phWrap.style.transition = `height ${dur}ms ${ease}`;
+                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
+                    item.style.transition = `transform ${dur}ms ${ease}`;
+
+                    phWrap.style.height = '0px';
+                    rhWrap.style.height = '0px';
+                    rhWrap.style.marginTop = '0px';
+                    pinnedSection.style.marginBottom = '0px';
+                    item.style.transform = 'translateY(0)';
+
+                    item.addEventListener('transitionend', function cleanup(ev) {
+                        if (ev.propertyName !== 'transform') return;
+                        item.removeEventListener('transitionend', cleanup);
+                        requestAnimationFrame(() => {
+                            item.setAttribute('style', origStyle);
+                            phWrap.replaceWith(pinnedHeader);
+                            rhWrap.replaceWith(recentsHeader);
+                            pinnedSection.removeAttribute('style');
+                            pinnedSection.style.display = 'none';
+                            pinnedHeader.removeAttribute('style');
+                            recentsHeader.removeAttribute('style');
+                            recentsHeader.style.display = 'none';
+                        });
+                    });
+                } else if (!isPinned && pinnedItems.children.length === 0) {
+                    // First pin — space opens first, then headers fade in
+                    const pinnedSection = document.getElementById('pinnedSection');
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const pinnedHeader = pinnedSection.querySelector('.chat-section-header');
+
+                    const dur = 180;
+                    const ease = 'cubic-bezier(0.2, 0.8, 0.25, 1.04)';
+                    const fadeDelay = 60;
+
+                    pinnedItems.appendChild(item);
+                    pinnedSection.style.display = '';
+                    recentsHeader.style.display = '';
+                    const phH = pinnedHeader.offsetHeight;
+                    const psMB = parseFloat(getComputedStyle(pinnedSection).marginBottom) || 0;
+                    const rhH = recentsHeader.offsetHeight;
+                    const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
+
+                    pinnedHeader.style.opacity = '0';
+                    const phWrap = document.createElement('div');
+                    phWrap.style.cssText = 'height: 0; overflow: hidden;';
+                    pinnedHeader.parentNode.insertBefore(phWrap, pinnedHeader);
+                    phWrap.appendChild(pinnedHeader);
+
+                    recentsHeader.style.opacity = '0';
+                    recentsHeader.style.marginTop = '0';
+                    const rhWrap = document.createElement('div');
+                    rhWrap.style.cssText = 'height: 0; overflow: hidden;';
+                    recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
+                    rhWrap.appendChild(recentsHeader);
+
+                    pinnedSection.style.marginBottom = '0px';
+                    rhWrap.style.marginTop = '0px';
+                    phWrap.offsetHeight;
+
+                    phWrap.style.transition = `height ${dur}ms ${ease}`;
+                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
+                    phWrap.style.height = phH + 'px';
+                    rhWrap.style.height = rhH + 'px';
+                    pinnedSection.style.marginBottom = psMB + 'px';
+                    rhWrap.style.marginTop = rhMT + 'px';
+
+                    pinnedHeader.style.transition = `opacity ${dur - fadeDelay}ms ease ${fadeDelay}ms`;
+                    recentsHeader.style.transition = `opacity ${dur - fadeDelay}ms ease ${fadeDelay}ms`;
+                    pinnedHeader.style.opacity = '1';
+                    recentsHeader.style.opacity = '1';
+
+                    phWrap.addEventListener('transitionend', function cleanup(ev) {
+                        if (ev.propertyName !== 'height') return;
+                        phWrap.removeEventListener('transitionend', cleanup);
+                        requestAnimationFrame(() => {
+                            phWrap.replaceWith(pinnedHeader);
+                            rhWrap.replaceWith(recentsHeader);
+                            pinnedHeader.removeAttribute('style');
+                            pinnedSection.removeAttribute('style');
+                            recentsHeader.removeAttribute('style');
+                        });
+                    });
+                } else if (!isPinned && recentItems.querySelectorAll('.sidebar-item').length === 1) {
+                    // Last pin — item stays visible, FLIP into pinned while recents collapses
+                    const dur = 180;
+                    const ease = 'cubic-bezier(0.2, 0.8, 0.25, 1.04)';
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const pinnedSection = document.getElementById('pinnedSection');
+
+                    const firstRect = item.getBoundingClientRect();
+
+                    const rhH = recentsHeader.offsetHeight;
+                    const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
+                    const psMB = parseFloat(getComputedStyle(pinnedSection).marginBottom) || 0;
+
+                    item.setAttribute('style', origStyle);
+                    pinnedItems.appendChild(item);
+
+                    recentsHeader.style.marginTop = '0';
+                    const rhWrap = document.createElement('div');
+                    rhWrap.style.cssText = `height: ${rhH}px; overflow: hidden; margin-top: ${rhMT}px;`;
+                    recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
+                    rhWrap.appendChild(recentsHeader);
+
+                    const lastRect = item.getBoundingClientRect();
+                    const deltaY = firstRect.top - lastRect.top;
+
+                    item.style.transform = `translateY(${deltaY}px)`;
+                    rhWrap.offsetHeight;
+
+                    item.style.transition = `transform ${dur}ms ${ease}`;
+                    item.style.transform = 'translateY(0)';
+
+                    recentsHeader.style.transition = `opacity ${dur}ms ease`;
+                    recentsHeader.style.opacity = '0';
+                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                    rhWrap.style.height = '0px';
+                    rhWrap.style.marginTop = '0px';
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
+                    pinnedSection.style.marginBottom = '0px';
+
+                    item.addEventListener('transitionend', function cleanup(ev) {
+                        if (ev.propertyName !== 'transform') return;
+                        item.removeEventListener('transitionend', cleanup);
+                        requestAnimationFrame(() => {
+                            item.setAttribute('style', origStyle);
+                            rhWrap.replaceWith(recentsHeader);
+                            recentsHeader.removeAttribute('style');
+                            recentsHeader.style.display = 'none';
+                            pinnedSection.removeAttribute('style');
+                            updateSections();
+                        });
+                    });
+                } else {
+                    const dur = 180;
+                    const ease = 'cubic-bezier(0.2, 0.8, 0.25, 1.04)';
+
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const recentsCount = recentItems.querySelectorAll('.sidebar-item').length;
+                    const pinnedCount = pinnedItems.querySelectorAll('.sidebar-item').length;
+                    const recentsWillAppear = isPinned && recentsCount === 0 && pinnedCount > 1;
+
+                    item.style.transition = 'opacity 0.15s ease';
+                    item.style.opacity = '0';
+
+                    setTimeout(() => {
+                        const placeholder = document.createElement('div');
+                        placeholder.style.cssText = `height: ${h}px; overflow: hidden;`;
+                        item.parentElement.insertBefore(placeholder, item);
+                        item.remove();
+
+                        const wrapper = document.createElement('div');
+                        wrapper.style.cssText = `height: 0; overflow: hidden;`;
+                        item.setAttribute('style', origStyle);
+                        item.style.opacity = '0';
+                        wrapper.appendChild(item);
+
+                        if (isPinned) {
+                            recentItems.prepend(wrapper);
+                        } else {
+                            pinnedItems.appendChild(wrapper);
+                        }
+
+                        let rhWrap = null;
+                        let rhTargetH = 0;
+                        let rhTargetMT = 0;
+
+                        if (recentsWillAppear) {
+                            recentsHeader.style.display = '';
+                            rhTargetH = recentsHeader.offsetHeight;
+                            rhTargetMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
+                            recentsHeader.style.opacity = '0';
+                            recentsHeader.style.marginTop = '0';
+                            rhWrap = document.createElement('div');
+                            rhWrap.style.cssText = 'height: 0; overflow: hidden;';
+                            recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
+                            rhWrap.appendChild(recentsHeader);
+                        } else {
+                            updateSections();
+                        }
+
+                        placeholder.offsetHeight;
+                        const t = `height ${dur}ms ${ease}`;
+                        placeholder.style.transition = t;
+                        wrapper.style.transition = t;
+                        placeholder.style.height = '0px';
+                        wrapper.style.height = h + 'px';
+
+                        if (rhWrap && recentsWillAppear) {
+                            rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                            rhWrap.style.height = rhTargetH + 'px';
+                            rhWrap.style.marginTop = rhTargetMT + 'px';
+                            recentsHeader.style.transition = `opacity ${dur}ms ease`;
+                            recentsHeader.style.opacity = '1';
+                        }
+
+                        item.style.transition = `opacity ${dur}ms ease`;
+                        item.style.opacity = '1';
+
+                        wrapper.addEventListener('transitionend', function cleanup(ev) {
+                            if (ev.propertyName !== 'height') return;
+                            wrapper.removeEventListener('transitionend', cleanup);
+                            requestAnimationFrame(() => {
+                                item.setAttribute('style', origStyle);
+                                wrapper.replaceWith(item);
+                                placeholder.remove();
+                                if (rhWrap) {
+                                    rhWrap.replaceWith(recentsHeader);
+                                    recentsHeader.removeAttribute('style');
+                                }
+                                updateSections();
+                            });
+                        });
+                    }, 160);
+                }
             });
+
         })();
 
         // ── Canvas menu popup ────────────────────────────
