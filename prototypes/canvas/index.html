@@ -78,7 +78,7 @@
             cursor: pointer;
             transition: background 0.15s ease, color 0.15s ease;
         }
-        .rail-icon-sm:hover { background: #171719; color: #A0A0AA; }
+        .rail-icon-sm:hover { color: #A0A0AA; }
 
         .tab-pill {
             display: flex;
@@ -260,11 +260,19 @@
 
         #iconRail.collapsed:hover {
             background-color: #171719;
-            border-right-color: #3e3e44;
         }
-        #iconRail.expanded:hover {
-            background-color: #171719;
-            border-right-color: #3e3e44;
+        #iconRail.collapsed:hover #railSeparator {
+            background: #3e3e44 !important;
+        }
+        #iconRail.collapsed:hover #railHandle {
+            background: #A0A0AA !important;
+        }
+        #iconRail.expanded #railEdge:hover #railSeparator {
+            background: #3e3e44 !important;
+        }
+        #iconRail.expanded #railEdge:hover #railHandle {
+            background: #A0A0AA !important;
+            transform: translateY(-50%) translateX(-4px) !important;
         }
 
         #canvasContent { scrollbar-gutter: stable; }
@@ -954,7 +962,13 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative border-r border-border h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer expanded" style="width: 230px; transition: none; background-color: 250ms ease; border-color: 0.15s ease; box-shadow: 0.15s ease;">
+        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 expanded" style="width: 230px; transition: none; background-color: 250ms ease;">
+
+            <!-- ── Rail edge: separator line + collapse/expand handle ── -->
+            <div id="railEdge" style="position: absolute; right: 0; top: 0; bottom: 0; width: 20px; z-index: 10; cursor: pointer;">
+                <div id="railSeparator" style="position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: #1E1E21; transition: background 0.15s ease;"></div>
+                <div id="railHandle" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 2px; height: 14px; border-radius: 1px; background: #3a3a3a; transition: background 0.15s ease, transform 0.2s cubic-bezier(0, 0, 0.2, 1);"></div>
+            </div>
 
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
                 <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
@@ -1397,13 +1411,19 @@
             });
         });
 
-        els.rail.addEventListener('click', () => setRailOpen(!state.railOpen));
+        // Click rail edge → toggle expand/collapse
+        document.getElementById('railEdge').addEventListener('click', () => {
+            setRailOpen(!state.railOpen);
+        });
 
+        // Click collapsed rail body → expand
+        document.getElementById('railCollapsed').addEventListener('click', () => {
+            if (!state.railOpen) setRailOpen(true);
+        });
+
+        // Interactive children stop propagation
         els.rail.querySelectorAll('#newChatBtn, #newBtnExpanded, .rail-bottom-row').forEach(el => {
             el.addEventListener('click', (e) => e.stopPropagation());
-        });
-        els.rail.querySelectorAll('#railExpanded .sidebar-item, #railExpanded [onmouseover], #railExpanded [title], #railTop .rail-icon-sm').forEach(el => {
-            el.addEventListener('click', (e) => { if (state.railOpen) e.stopPropagation(); });
         });
 
         els.searchBtn.addEventListener('click', (e) => { e.stopPropagation(); if (state.railOpen) setSearchMode(true); });
@@ -1873,7 +1893,7 @@
         })();
 
         // ── Initialize ───────────────────────────────────
-        state.railOpen = true;
+        state.railOpen = false;
         applyLayout();
         requestAnimationFrame(() => {
             els.rail.style.transition = 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease';

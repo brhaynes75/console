@@ -148,7 +148,7 @@
             cursor: pointer;
             transition: background 0.15s ease, color 0.15s ease;
         }
-        .rail-icon-sm:hover { background: #171719; color: #A0A0AA; }
+        .rail-icon-sm:hover { color: #A0A0AA; }
 
         .tab-pill {
             display: flex;
@@ -206,6 +206,12 @@
         }
         .sidebar-item:hover {
             background-color: #222225;
+        }
+        .sidebar-item.active {
+            background-color: #222225;
+        }
+        .sidebar-item.active div:first-child {
+            color: #D3D3D3;
         }
         
         .expanded .rail-bottom-row:hover {
@@ -295,19 +301,18 @@
         #iconRail.collapsed:hover {
             background-color: #171719;
         }
-        #railEdge:hover #railSeparator {
-            transform: translateX(-4px) !important;
+        #iconRail.collapsed:hover #railSeparator {
             background: #3e3e44 !important;
         }
-        #railEdge:hover #railHandle {
+        #iconRail.collapsed:hover #railHandle {
+            background: #A0A0AA !important;
+        }
+        #iconRail.expanded #railEdge:hover #railSeparator {
+            background: #3e3e44 !important;
+        }
+        #iconRail.expanded #railEdge:hover #railHandle {
+            background: #A0A0AA !important;
             transform: translateY(-50%) translateX(-4px) !important;
-            background: #A0A0AA !important;
-        }
-        #iconRail:hover #railSeparator {
-            background: #3e3e44 !important;
-        }
-        #iconRail:hover #railHandle {
-            background: #A0A0AA !important;
         }
 
         #canvasMenuBtn:hover {
@@ -329,12 +334,12 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 cursor-pointer" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease;">
+        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0" style="width: 60px; transition: width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease;">
 
             <!-- ── Rail edge: separator line + collapse/expand handle ── -->
             <div id="railEdge" style="position: absolute; right: 0; top: 0; bottom: 0; width: 20px; z-index: 10; cursor: pointer;">
-                <div id="railSeparator" style="position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: #1E1E21; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease;"></div>
-                <div id="railHandle" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 2px; height: 14px; border-radius: 1px; background: #3a3a3a; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s ease;"></div>
+                <div id="railSeparator" style="position: absolute; right: 0; top: 0; bottom: 0; width: 1px; background: #1E1E21; transition: background 0.15s ease;"></div>
+                <div id="railHandle" style="position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 2px; height: 14px; border-radius: 1px; background: #3a3a3a; transition: background 0.15s ease, transform 0.2s cubic-bezier(0, 0, 0.2, 1);"></div>
             </div>
 
             <!-- ── Top header (persistent across states) ── -->
@@ -389,7 +394,7 @@
 
                     <!-- Conversation list -->
                     <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0; padding: 0 4px;">
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                    <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                         <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
                         <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                     </div>
@@ -414,12 +419,7 @@
             <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2;">
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
-                        <span class="shrink-0" style="color: #D3D3D3;">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.71445 6.69302C9.43459 6.99838 9.45526 7.4728 9.76062 7.75267C10.066 8.03254 10.5404 8.01187 10.8203 7.7065L13.7526 4.50699C14.0154 4.22029 14.0154 3.7803 13.7527 3.49356L10.8203 0.293368C10.5405 -0.0120257 10.0661 -0.0327462 9.76068 0.247088C9.45529 0.526922 9.43457 1.00134 9.7144 1.30674L11.4953 3.25028L4.60029 3.24993C2.52914 3.24983 0.850098 4.92879 0.850098 6.99993V7.06671C0.850098 7.48092 1.18588 7.81671 1.6001 7.81671C2.01431 7.81671 2.3501 7.48092 2.3501 7.06671V6.99993C2.3501 5.75725 3.35753 4.74987 4.60021 4.74993L11.495 4.75028L9.71445 6.69302Z" fill="currentColor"/>
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.28588 9.3068C6.56571 9.0014 6.54499 8.52698 6.2396 8.24715C5.9342 7.96731 5.45978 7.98803 5.17994 8.29343L2.24759 11.4936C1.98486 11.7803 1.98488 12.2203 2.24762 12.507L5.17998 15.7068C5.45983 16.0122 5.93425 16.0329 6.23963 15.753C6.54501 15.4732 6.5657 14.9988 6.28584 14.6934L4.50542 12.7506H11.4C13.4711 12.7506 15.15 11.0716 15.15 9.00058V8.93365C15.15 8.51944 14.8142 8.18365 14.4 8.18365C13.9858 8.18365 13.65 8.51944 13.65 8.93365V9.00058C13.65 10.2432 12.6427 11.2506 11.4 11.2506H4.50478L6.28588 9.3068Z" fill="currentColor"/>
-                            </svg>
-                        </span>
+                        <span class="shrink-0" style="color: #D3D3D3;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_switcher)"><path d="M4.01562 5.58594C4.01562 6.76868 4.01562 8.36941 4.01562 9.39124C4.01562 9.94353 4.46334 10.3906 5.01562 10.3906H14.2656C14.8179 10.3906 15.2656 9.94291 15.2656 9.39062V1.78125C15.2656 1.22897 14.8179 0.78125 14.2656 0.78125H5.01563C4.46334 0.78125 4.01562 1.22897 4.01562 1.78125V3.18359" stroke="currentColor" stroke-width="1.5"/><path d="M10.0156 5.58594L1.76563 5.58594C1.21334 5.58594 0.765626 6.03365 0.765626 6.58594L0.765625 14.1953C0.765625 14.7476 1.21334 15.1953 1.76562 15.1953L11.0156 15.1953C11.5679 15.1953 12.0156 14.7476 12.0156 14.1953L12.0156 12.793" stroke="currentColor" stroke-width="1.5"/><path d="M9.00003 7.31155L10.7256 5.58594L9.00003 3.86032" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_switcher"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span>
                         <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Dashboard</span>
                     </div>
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
@@ -450,10 +450,10 @@
 
                     <!-- Prompt input (terminal-style block cursor) -->
                     <div id="promptRow" class="flex items-start w-full" style="min-height: 32px;">
-                        <span style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #555555; margin-right: 8px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased;">$</span>
+                        <span style="font-size: 13px; font-weight: 600; line-height: 1.6; color: #D3D3D3; margin-right: 10px; flex-shrink: 0; padding-top: 5px; -webkit-font-smoothing: antialiased; width: 8px; text-align: center;">$</span>
                         <div style="position: relative; flex: 1; display: flex; align-items: start; padding-top: 5px;">
                             <textarea id="promptInput" rows="1" spellcheck="false"
-                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
+                                style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 500; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
                             <div id="promptOverlay" style="position: absolute; left: 0; top: 5px; display: flex; align-items: center; pointer-events: none;">
                                 <div id="blockCursor"></div>
                                 <span id="promptGhost" style="font-size: 13px; font-weight: 500; color: #555555; white-space: nowrap; -webkit-font-smoothing: antialiased;"></span>
@@ -765,21 +765,19 @@
             });
         });
 
-        // Click rail → toggle expand/collapse
-        els.rail.addEventListener('click', () => {
+        // Click rail edge → toggle expand/collapse
+        document.getElementById('railEdge').addEventListener('click', () => {
             setRailOpen(!state.railOpen);
         });
 
-        // Interactive children always stop propagation (collapsed or expanded)
-        els.rail.querySelectorAll('#newChatBtn, #newBtnExpanded, .rail-bottom-row').forEach(el => {
-            el.addEventListener('click', (e) => e.stopPropagation());
+        // Click collapsed rail body → expand
+        document.getElementById('railCollapsed').addEventListener('click', () => {
+            if (!state.railOpen) setRailOpen(true);
         });
 
-        // Expanded-only interactive children stop propagation when open
-        els.rail.querySelectorAll('#railExpanded .sidebar-item, #railExpanded [onmouseover], #railExpanded [title], #railTop .rail-icon-sm').forEach(el => {
-            el.addEventListener('click', (e) => {
-                if (state.railOpen) e.stopPropagation();
-            });
+        // Interactive children stop propagation
+        els.rail.querySelectorAll('#newChatBtn, #newBtnExpanded, .rail-bottom-row').forEach(el => {
+            el.addEventListener('click', (e) => e.stopPropagation());
         });
 
         // Search icon → enter search mode
@@ -824,6 +822,7 @@
                     tooltip.style.transform = 'translateY(-50%) translateX(-4px)';
                 });
             });
+
         })();
 
 
@@ -1205,7 +1204,7 @@
         });
 
         // ── Initialize ────────────────────────
-        setRailOpen(true);
+        setRailOpen(false);
         applyLayout();
     </script>
 </body>
