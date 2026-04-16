@@ -189,12 +189,79 @@
         }
 
         .sidebar-item {
+            position: relative;
             margin-left: -4px;
             margin-right: -4px;
             padding-left: 12px !important;
             padding-right: 12px !important;
             background: transparent;
             transition: background-color 600ms ease;
+        }
+        .sidebar-item .item-menu-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            color: #6D6D77;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+        }
+        .sidebar-item:hover .item-menu-btn,
+        .sidebar-item .item-menu-btn.active {
+            opacity: 1;
+        }
+        .sidebar-item .item-menu-btn:hover {
+            color: #D3D3D3;
+        }
+        .sidebar-item .truncate {
+            padding-right: 24px;
+        }
+        .item-popup {
+            display: none;
+            position: fixed;
+            min-width: 140px;
+            padding: 3px;
+            border-radius: 8px;
+            background: #1c1c1f;
+            border: 1px solid #2c2c30;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+            z-index: 9999;
+        }
+        .item-popup-row {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #d3d3d3;
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+        .item-popup-row:hover {
+            background-color: #28282c;
+        }
+        .item-popup-sep {
+            height: 1px;
+            background: #2c2c30;
+            margin: 3px 6px;
+        }
+        .chat-section-header {
+            font-size: 11px;
+            font-weight: 500;
+            color: #6D6D77;
+            padding: 8px 8px 4px;
+        }
+        #pinnedSection {
+            margin-bottom: 12px;
+        }
+        #recentsHeader {
+            margin-top: 4px;
         }
         .rail-bottom-row {
             margin-left: -4px;
@@ -204,8 +271,8 @@
             background: transparent;
             transition: background-color 600ms ease;
         }
-        .sidebar-item:hover {
-            background-color: #222225;
+        .sidebar-item:hover div:first-child {
+            color: #D3D3D3;
         }
         .sidebar-item.active {
             background-color: #222225;
@@ -393,24 +460,38 @@
                     </div>
 
                     <!-- Conversation list -->
-                    <div class="flex-1 overflow-y-auto flex flex-col" style="gap: 2px; min-height: 0; padding: 0 4px;">
-                    <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                        <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
-                        <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                    <!-- Conversation list -->
+                    <div id="chatList" class="flex-1 overflow-y-auto flex flex-col" style="gap: 0; min-height: 0; padding: 0 4px;">
+                        <div id="pinnedSection" style="display: none;">
+                            <div class="chat-section-header">Pinned</div>
+                            <div id="pinnedItems" class="flex flex-col" style="gap: 2px;"></div>
+                        </div>
+                        <div id="recentsSection">
+                            <div id="recentsHeader" class="chat-section-header" style="display: none;">Recents</div>
+                            <div id="recentItems" class="flex flex-col" style="gap: 2px;">
+                                <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                </div>
+                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                </div>
+                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                </div>
+                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
+                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                        <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
-                        <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
-                    </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                        <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
-                        <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
-                    </div>
-                    <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                        <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
-                        <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
-                    </div>
-                </div>
                 </div>
 
             </div>
@@ -615,6 +696,12 @@
     </style>
 
     <div id="railTooltip"></div>
+    <div id="chatItemPopup" class="item-popup">
+        <div class="item-popup-row" data-action="pin">Pin</div>
+        <div class="item-popup-row" data-action="rename">Rename</div>
+        <div class="item-popup-sep"></div>
+        <div class="item-popup-row" data-action="archive">Archive</div>
+    </div>
 
     <script>
         const state = {
@@ -711,10 +798,6 @@
                 newBtn.style.opacity = '0';
                 newBtn.style.height = '0';
                 inner.style.gap = '0';
-                if (activeItem) {
-                    activeItem.style.background = 'transparent';
-                    activeItem.querySelector('div').classList.replace('text-text-primary', 'text-text-secondary');
-                }
                 setTimeout(() => input.focus(), 160);
             } else {
                 search.style.opacity = '0';
@@ -726,10 +809,6 @@
                 newBtn.style.opacity = '1';
                 newBtn.style.height = '32px';
                 inner.style.gap = '22px';
-                if (activeItem) {
-                    activeItem.style.background = '';
-                    activeItem.querySelector('div').classList.replace('text-text-secondary', 'text-text-primary');
-                }
                 items.forEach(item => {
                     item.style.display = '';
                     if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
@@ -1095,6 +1174,72 @@
                 swapped = false;
                 document.body.style.cursor = '';
                 document.body.style.userSelect = '';
+            });
+        })();
+
+        // ── Chat item menus + pin/unpin ─────────────────
+        (function initChatMenus() {
+            const popup = document.getElementById('chatItemPopup');
+            const pinRow = popup.querySelector('[data-action="pin"]');
+            let activeBtn = null;
+            let activeItem = null;
+
+            function closePopup() {
+                popup.style.display = 'none';
+                if (activeBtn) activeBtn.classList.remove('active');
+                activeBtn = null;
+                activeItem = null;
+            }
+
+            function updateSections() {
+                const pinned = document.getElementById('pinnedItems');
+                const pinnedSection = document.getElementById('pinnedSection');
+                const recentsHeader = document.getElementById('recentsHeader');
+                const hasPinned = pinned.children.length > 0;
+                pinnedSection.style.display = hasPinned ? '' : 'none';
+                recentsHeader.style.display = hasPinned ? '' : 'none';
+            }
+
+            document.addEventListener('click', (e) => {
+                if (!popup.contains(e.target)) closePopup();
+            });
+
+            popup.addEventListener('click', (e) => e.stopPropagation());
+
+            document.getElementById('chatList').addEventListener('click', (e) => {
+                const btn = e.target.closest('.item-menu-btn');
+                if (!btn) return;
+                e.stopPropagation();
+                const item = btn.closest('.sidebar-item');
+
+                if (activeBtn === btn) { closePopup(); return; }
+                closePopup();
+
+                const isPinned = item.parentElement.id === 'pinnedItems';
+                pinRow.textContent = isPinned ? 'Unpin' : 'Pin';
+
+                popup.style.display = 'block';
+                popup.style.left = e.clientX + 'px';
+                popup.style.top = e.clientY + 'px';
+                btn.classList.add('active');
+                activeBtn = btn;
+                activeItem = item;
+            });
+
+            pinRow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!activeItem) return;
+                const pinned = document.getElementById('pinnedItems');
+                const recents = document.getElementById('recentItems');
+                const isPinned = activeItem.parentElement === pinned;
+
+                if (isPinned) {
+                    recents.prepend(activeItem);
+                } else {
+                    pinned.appendChild(activeItem);
+                }
+                closePopup();
+                updateSections();
             });
         })();
 
