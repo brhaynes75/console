@@ -834,7 +834,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 expanded" style="width: 230px; transition: none; background-color: 250ms ease;">
+        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 collapsed" style="width: 60px; transition: none; background-color: 250ms ease;">
 
             <!-- ── Rail edge: separator line + collapse/expand handle ── -->
             <div id="railEdge" style="position: absolute; right: 0; top: 0; bottom: 0; width: 20px; z-index: 10; cursor: pointer;">
@@ -845,8 +845,8 @@
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
                 <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
-                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">OpenAI Production</span>
-                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 1; transition: opacity 150ms ease; cursor: pointer;">
+                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
+                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease; cursor: pointer;">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/></svg>
                     </div>
                 </div>
@@ -861,7 +861,7 @@
                 </div>
             </div>
 
-            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease; opacity: 0; pointer-events: none;">
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease; opacity: 1; pointer-events: auto;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center linear-border" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
@@ -873,7 +873,7 @@
                 </div>
             </div>
 
-            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 1; pointer-events: auto; transition: opacity 250ms ease;">
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
                         <span class="flex items-center text-text-primary" style="gap: 6px;">
@@ -914,11 +914,11 @@
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #D3D3D3;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_switcher)"><path d="M4.01562 5.58594C4.01562 6.76868 4.01562 8.36941 4.01562 9.39124C4.01562 9.94353 4.46334 10.3906 5.01562 10.3906H14.2656C14.8179 10.3906 15.2656 9.94291 15.2656 9.39062V1.78125C15.2656 1.22897 14.8179 0.78125 14.2656 0.78125H5.01563C4.46334 0.78125 4.01562 1.22897 4.01562 1.78125V3.18359" stroke="currentColor" stroke-width="1.5"/><path d="M10.0156 5.58594L1.76563 5.58594C1.21334 5.58594 0.765626 6.03365 0.765626 6.58594L0.765625 14.1953C0.765625 14.7476 1.21334 15.1953 1.76562 15.1953L11.0156 15.1953C11.5679 15.1953 12.0156 14.7476 12.0156 14.1953L12.0156 12.793" stroke="currentColor" stroke-width="1.5"/><path d="M9.00003 7.31155L10.7256 5.58594L9.00003 3.86032" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_switcher"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Dashboard</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Dashboard</span>
                     </div>
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #D3D3D3;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C6.17545 1 7.57452 2.17756 7.91797 3.75H13.375C13.7892 3.75 14.125 4.08579 14.125 4.5C14.125 4.91421 13.7892 5.25 13.375 5.25H7.91797C7.57452 6.82244 6.17545 8 4.5 8C2.567 8 1 6.433 1 4.5C1 2.567 2.567 1 4.5 1ZM4.5 2.5C3.39543 2.5 2.5 3.39543 2.5 4.5C2.5 5.60457 3.39543 6.5 4.5 6.5C5.60457 6.5 6.5 5.60457 6.5 4.5C6.5 3.39543 5.60457 2.5 4.5 2.5Z" fill="currentColor"/></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Settings</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
                     </div>
                 </div>
             </div>
@@ -1015,11 +1015,13 @@
                             <p>The majority came from the <code>424242</code> BIN range at an <strong>18.4%</strong> failure rate vs. the 1.2% baseline.</p>
                             <div class="artifact-pills">
                                 <div class="artifact-ref">
-                                    <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="shrink-0">
-                                        <path d="M10.5004 1.40625C10.5004 1.04381 10.2066 0.75 9.84418 0.75C9.48174 0.75 9.18793 1.04381 9.18793 1.40625V7.96875C9.18793 8.33119 9.48174 8.625 9.84418 8.625C10.2066 8.625 10.5004 8.33119 10.5004 7.96875V1.40625Z" fill="currentColor"/>
-                                        <path d="M1.95098 1.40625C1.95098 1.07488 1.68235 0.806248 1.35098 0.806248C1.01961 0.806248 0.750977 1.07488 0.750977 1.40625V9.9C0.750977 10.6456 1.35539 11.25 2.10098 11.25H10.9703C11.3017 11.25 11.5703 10.9814 11.5703 10.65C11.5703 10.3186 11.3017 10.05 10.9703 10.05H2.10098C2.01813 10.05 1.95098 9.98284 1.95098 9.9V1.40625Z" fill="currentColor"/>
-                                        <path d="M6.84418 2.625C7.20661 2.625 7.50043 2.91881 7.50043 3.28125V7.96875C7.50043 8.33119 7.20661 8.625 6.84418 8.625C6.48174 8.625 6.18793 8.33119 6.18793 7.96875V3.28125C6.18793 2.91881 6.48174 2.625 6.84418 2.625Z" fill="currentColor"/>
-                                        <path d="M4.50043 5.15625C4.50043 4.79381 4.20661 4.5 3.84418 4.5C3.48174 4.5 3.18793 4.79381 3.18793 5.15625V7.96875C3.18793 8.33119 3.48174 8.625 3.84418 8.625C4.20661 8.625 4.50043 8.33119 4.50043 7.96875V5.15625Z" fill="currentColor"/>
+                                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="shrink-0">
+                                        <path d="M0.9375 1.875C1.45312 1.875 1.875 1.45312 1.875 0.9375C1.875 0.421875 1.45312 0 0.9375 0C0.421875 0 0 0.421875 0 0.9375C0 1.4625 0.421875 1.875 0.9375 1.875Z" fill="currentColor"/>
+                                        <path d="M0.9375 5.625C1.45312 5.625 1.875 5.20312 1.875 4.6875C1.875 4.17188 1.45312 3.75 0.9375 3.75C0.421875 3.75 0 4.17188 0 4.6875C0 5.2125 0.421875 5.625 0.9375 5.625Z" fill="currentColor"/>
+                                        <path d="M0.9375 9.375C1.45312 9.375 1.875 8.95312 1.875 8.4375C1.875 7.92188 1.45312 7.5 0.9375 7.5C0.421875 7.5 0 7.92188 0 8.4375C0 8.9625 0.421875 9.375 0.9375 9.375Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 0.84375C2.625 0.481313 2.91881 0.1875 3.28125 0.1875H10.5938C10.9562 0.1875 11.25 0.481313 11.25 0.84375C11.25 1.20619 10.9562 1.5 10.5938 1.5H3.28125C2.91881 1.5 2.625 1.20619 2.625 0.84375Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 4.68823C2.625 4.3258 2.91881 4.03198 3.28125 4.03198H10.5938C10.9562 4.03198 11.25 4.3258 11.25 4.68823C11.25 5.05067 10.9562 5.34448 10.5938 5.34448H3.28125C2.91881 5.34448 2.625 5.05067 2.625 4.68823Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 8.53125C2.625 8.16881 2.91881 7.875 3.28125 7.875H10.5938C10.9562 7.875 11.25 8.16881 11.25 8.53125C11.25 8.89369 10.9562 9.1875 10.5938 9.1875H3.28125C2.91881 9.1875 2.625 8.89369 2.625 8.53125Z" fill="currentColor"/>
                                     </svg>
                                     <span>Recent invoices</span>
                                 </div>
@@ -1051,11 +1053,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Acme Corp</a></td><td><a class="ext-link" href="mailto:billing@acmecorp.io" target="_blank">billing@acmecorp.io</a></td><td>$42,800</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Northwind Ltd</a></td><td><a class="ext-link" href="mailto:ap@northwind.co" target="_blank">ap@northwind.co</a></td><td>$31,200</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Contoso Inc</a></td><td><a class="ext-link" href="mailto:finance@contoso.com" target="_blank">finance@contoso.com</a></td><td>$28,450</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Fabrikam</a></td><td><a class="ext-link" href="mailto:pay@fabrikam.dev" target="_blank">pay@fabrikam.dev</a></td><td>$19,600</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Tailspin Toys</a></td><td><a class="ext-link" href="mailto:ar@tailspintoys.com" target="_blank">ar@tailspintoys.com</a></td><td>$14,300</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Acme Corp</a></td><td>billing@acmecorp.io</td><td>$42,800</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Northwind Ltd</a></td><td>ap@northwind.co</td><td>$31,200</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Contoso Inc</a></td><td>finance@contoso.com</td><td>$28,450</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Fabrikam</a></td><td>pay@fabrikam.dev</td><td>$19,600</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Tailspin Toys</a></td><td>ar@tailspintoys.com</td><td>$14,300</td></tr>
                                 </tbody>
                             </table>
                         </div>

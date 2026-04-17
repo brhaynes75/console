@@ -345,10 +345,10 @@
             transform: translateY(-50%) translateX(-4px) !important;
         }
 
-        #canvasContent { scrollbar-gutter: stable; }
-        #canvasContent::-webkit-scrollbar-thumb { background: transparent; }
-        #canvasContent.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
-        #canvasContent.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+        #tabContentTable { scrollbar-gutter: stable; }
+        #tabContentTable::-webkit-scrollbar-thumb { background: transparent; }
+        #tabContentTable.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
+        #tabContentTable.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
         #canvasPrimaryBtn:hover {
             filter: brightness(1.1);
@@ -453,16 +453,17 @@
             color: #D3D3D3;
         }
         .console-response a.ext-link {
-            color: #FFFFFF;
-            text-decoration: none;
-            transition: color 0.15s ease;
-        }
-        .console-response a.ext-link:hover {
-            color: #ECF1F6;
+            color: #D3D3D3;
             text-decoration: underline;
             text-decoration-style: dotted;
             text-decoration-thickness: 1px;
             text-underline-offset: 4px;
+            text-decoration-color: #6D6D77;
+            transition: color 0.15s ease, text-decoration-color 0.15s ease;
+        }
+        .console-response a.ext-link:hover {
+            color: #D3D3D3;
+            text-decoration-style: solid;
             text-decoration-color: #6D6D77;
         }
         .console-response table {
@@ -758,6 +759,210 @@
             color: #D3D3D3;
         }
 
+        /* ── Line chart ── */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-right: 8px;
+        }
+        .chart-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .chart-header-left .chart-top-row {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .chart-header .chart-value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D3D3D3;
+            -webkit-font-smoothing: antialiased;
+        }
+        .chart-header .chart-subtext {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6D6D77;
+        }
+        .chart-header .chart-delta {
+            font-size: 12px;
+            font-weight: 500;
+            color: #12B76A;
+        }
+        .chart-header .chart-delta.negative {
+            color: #F34E69;
+        }
+        .chart-area {
+            position: relative;
+            flex: 1;
+            min-height: 180px;
+            max-height: 260px;
+        }
+        .chart-area svg {
+            width: 100%;
+            height: 100%;
+        }
+        .chart-grid-line {
+            stroke: #2c2c30;
+            stroke-width: 1;
+            stroke-dasharray: 1 3;
+            stroke-linecap: round;
+        }
+        .chart-y-label {
+            font-size: 9px;
+            fill: #6D6D77;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-anchor: end;
+        }
+        .chart-x-label {
+            font-size: 9px;
+            fill: #6D6D77;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-anchor: middle;
+        }
+        .chart-line-glow {
+            fill: none;
+            stroke: rgba(112, 106, 231, 0.05);
+            stroke-width: 7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .chart-line-outline {
+            fill: none;
+            stroke: #101012;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .chart-line-outline-prev {
+            fill: none;
+            stroke: #101012;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 4 4;
+        }
+        .chart-line-current {
+            fill: none;
+            stroke: #706AE7;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .chart-line-previous {
+            fill: none;
+            stroke: #4a4a52;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 4 4;
+        }
+        .chart-needle {
+            stroke: #6D6D77;
+            stroke-width: 1;
+            stroke-dasharray: 3 2;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+        .chart-needle.visible {
+            opacity: 1;
+        }
+        .chart-dot {
+            r: 4;
+            fill: #101012;
+            stroke-width: 2;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+        .chart-dot.visible {
+            opacity: 1;
+        }
+        .chart-dot.current { stroke: #706AE7; }
+        .chart-dot.previous { stroke: #6D6D77; }
+        .chart-tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: #1c1c1f;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            z-index: 50;
+            white-space: nowrap;
+        }
+        .chart-tooltip.visible {
+            opacity: 1;
+        }
+        .chart-tooltip-date {
+            font-size: 11px;
+            font-weight: 600;
+            color: #D3D3D3;
+            margin-bottom: 6px;
+        }
+        .chart-tooltip-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #A0A0AA;
+            line-height: 1.6;
+        }
+        .chart-tooltip-marker {
+            width: 8px;
+            height: 3px;
+            border-radius: 1px;
+            flex-shrink: 0;
+        }
+        .chart-tooltip-marker.current {
+            background: #706AE7;
+        }
+        .chart-tooltip-marker.previous {
+            background: #6D6D77;
+        }
+        .chart-tooltip-val {
+            margin-left: auto;
+            padding-left: 16px;
+            color: #D3D3D3;
+            font-weight: 600;
+        }
+        .chart-legend {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #A0A0AA;
+        }
+        .chart-legend-line {
+            width: 16px;
+            height: 0;
+            border-top: 1.5px solid #706AE7;
+        }
+        .chart-legend-line.previous {
+            border-top: 1.5px dashed #4a4a52;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: flex; flex-direction: column; flex: 1; }
+
         /* Elicitation module */
         #elicitOptions {
             background: #171719;
@@ -952,10 +1157,10 @@
             border-color: #706AE7;
         }
         .canvas-table .col-link {
-            color: #FFFFFF;
+            color: #D3D3D3;
             font-weight: 600;
             cursor: pointer;
-            transition: color 0.15s ease;
+            transition: color 0.15s ease, text-decoration-color 0.15s ease;
         }
         .canvas-table .col-link:hover {
             color: #ECF1F6;
@@ -988,7 +1193,6 @@
             opacity: 1;
         }
         .canvas-table .row-menu:hover {
-            background: #1E1E21;
             color: #A0A0AA;
         }
         .canvas-table td:last-child {
@@ -1032,7 +1236,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 expanded" style="width: 230px; transition: none; background-color: 250ms ease;">
+        <nav id="iconRail" class="relative h-full shrink-0 overflow-hidden bg-surface-0 collapsed" style="width: 60px; transition: none; background-color: 250ms ease;">
 
             <!-- ── Rail edge: separator line + collapse/expand handle ── -->
             <div id="railEdge" style="position: absolute; right: 0; top: 0; bottom: 0; width: 20px; z-index: 10; cursor: pointer;">
@@ -1043,8 +1247,8 @@
             <div id="railTop" class="absolute top-0 left-0 right-0" style="pointer-events: none; z-index: 2;">
                 <div id="railTopDefault" class="flex items-center" style="padding: 17px 13px 0 18px; gap: 8px; overflow: hidden; transition: opacity 150ms ease;">
                     <div id="customer-logo" class="shrink-0" style="width: 24px; height: 24px; border-radius: 4px; background: #2c2c30;"></div>
-                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">OpenAI Production</span>
-                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 1; transition: opacity 150ms ease; cursor: pointer;">
+                    <span class="rail-top-label truncate flex-1" style="font-size: 13px; font-weight: 500; min-width: 0; color: #a0a0aa; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">OpenAI Production</span>
+                    <div id="searchBtn" class="rail-top-label rail-icon-sm shrink-0" title="Search" style="width: 24px; height: 24px; opacity: 0; transition: opacity 150ms ease; cursor: pointer;">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5788 11.8163C9.57969 12.5599 8.34124 13 7 13C3.68629 13 1 10.3137 1 7C1 3.68629 3.68629 1 7 1C10.3137 1 13 3.68629 13 7C13 8.34124 12.5599 9.57969 11.8163 10.5788L15.2437 14.0063C15.5854 14.348 15.5854 14.902 15.2437 15.2437C14.902 15.5854 14.348 15.5854 14.0063 15.2437L10.5788 11.8163ZM11.25 7C11.25 9.34721 9.34721 11.25 7 11.25C4.65279 11.25 2.75 9.34721 2.75 7C2.75 4.65279 4.65279 2.75 7 2.75C9.34721 2.75 11.25 4.65279 11.25 7Z" fill="currentColor"/></svg>
                     </div>
                 </div>
@@ -1059,7 +1263,7 @@
                 </div>
             </div>
 
-            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease; opacity: 0; pointer-events: none;">
+            <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease; opacity: 1; pointer-events: auto;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center linear-border" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
@@ -1071,7 +1275,7 @@
                 </div>
             </div>
 
-            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 1; pointer-events: auto; transition: opacity 250ms ease;">
+            <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
                 <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
                     <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
                         <span class="flex items-center text-text-primary" style="gap: 6px;">
@@ -1112,11 +1316,11 @@
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #D3D3D3;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_switcher)"><path d="M4.01562 5.58594C4.01562 6.76868 4.01562 8.36941 4.01562 9.39124C4.01562 9.94353 4.46334 10.3906 5.01562 10.3906H14.2656C14.8179 10.3906 15.2656 9.94291 15.2656 9.39062V1.78125C15.2656 1.22897 14.8179 0.78125 14.2656 0.78125H5.01563C4.46334 0.78125 4.01562 1.22897 4.01562 1.78125V3.18359" stroke="currentColor" stroke-width="1.5"/><path d="M10.0156 5.58594L1.76563 5.58594C1.21334 5.58594 0.765626 6.03365 0.765626 6.58594L0.765625 14.1953C0.765625 14.7476 1.21334 15.1953 1.76562 15.1953L11.0156 15.1953C11.5679 15.1953 12.0156 14.7476 12.0156 14.1953L12.0156 12.793" stroke="currentColor" stroke-width="1.5"/><path d="M9.00003 7.31155L10.7256 5.58594L9.00003 3.86032" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_switcher"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Dashboard</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Dashboard</span>
                     </div>
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #D3D3D3;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C6.17545 1 7.57452 2.17756 7.91797 3.75H13.375C13.7892 3.75 14.125 4.08579 14.125 4.5C14.125 4.91421 13.7892 5.25 13.375 5.25H7.91797C7.57452 6.82244 6.17545 8 4.5 8C2.567 8 1 6.433 1 4.5C1 2.567 2.567 1 4.5 1ZM4.5 2.5C3.39543 2.5 2.5 3.39543 2.5 4.5C2.5 5.60457 3.39543 6.5 4.5 6.5C5.60457 6.5 6.5 5.60457 6.5 4.5C6.5 3.39543 5.60457 2.5 4.5 2.5Z" fill="currentColor"/></svg></span>
-                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 1; transition: opacity 150ms ease;">Settings</span>
+                        <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #D3D3D3; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
                     </div>
                 </div>
             </div>
@@ -1212,22 +1416,23 @@
                             </ul>
                             <p>The majority came from the <code>424242</code> BIN range at an <strong>18.4%</strong> failure rate vs. the 1.2% baseline.</p>
                             <div class="artifact-pills">
-                                <div class="artifact-ref">
+                                <div class="artifact-ref" data-artifact="chart">
                                     <svg width="10" height="10" viewBox="0 0 12 12" fill="none" class="shrink-0">
-                                        <path d="M10.5004 1.40625C10.5004 1.04381 10.2066 0.75 9.84418 0.75C9.48174 0.75 9.18793 1.04381 9.18793 1.40625V7.96875C9.18793 8.33119 9.48174 8.625 9.84418 8.625C10.2066 8.625 10.5004 8.33119 10.5004 7.96875V1.40625Z" fill="currentColor"/>
                                         <path d="M1.95098 1.40625C1.95098 1.07488 1.68235 0.806248 1.35098 0.806248C1.01961 0.806248 0.750977 1.07488 0.750977 1.40625V9.9C0.750977 10.6456 1.35539 11.25 2.10098 11.25H10.9703C11.3017 11.25 11.5703 10.9814 11.5703 10.65C11.5703 10.3186 11.3017 10.05 10.9703 10.05H2.10098C2.01813 10.05 1.95098 9.98284 1.95098 9.9V1.40625Z" fill="currentColor"/>
-                                        <path d="M6.84418 2.625C7.20661 2.625 7.50043 2.91881 7.50043 3.28125V7.96875C7.50043 8.33119 7.20661 8.625 6.84418 8.625C6.48174 8.625 6.18793 8.33119 6.18793 7.96875V3.28125C6.18793 2.91881 6.48174 2.625 6.84418 2.625Z" fill="currentColor"/>
-                                        <path d="M4.50043 5.15625C4.50043 4.79381 4.20661 4.5 3.84418 4.5C3.48174 4.5 3.18793 4.79381 3.18793 5.15625V7.96875C3.18793 8.33119 3.48174 8.625 3.84418 8.625C4.20661 8.625 4.50043 8.33119 4.50043 7.96875V5.15625Z" fill="currentColor"/>
+                                        <path d="M3.5 8.25C3.5 8.25 4.5 5.5 6 5.5C7.5 5.5 7.5 6.5 8.5 4.5C9 3.5 10 2 10.5 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                                     </svg>
-                                    <span>Recent invoices</span>
+                                    <span>Revenue over time</span>
                                 </div>
-                                <div class="artifact-ref">
-                                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" class="shrink-0">
-                                        <path d="M2.5 6.09375C2.5 5.83487 2.70987 5.625 2.96875 5.625H4.21875C4.47763 5.625 4.6875 5.83487 4.6875 6.09375C4.6875 6.35263 4.47763 6.5625 4.21875 6.5625H2.96875C2.70987 6.5625 2.5 6.35263 2.5 6.09375Z" fill="currentColor"/>
-                                        <path d="M2.96875 3.125C2.70987 3.125 2.5 3.33487 2.5 3.59375C2.5 3.85263 2.70987 4.0625 2.96875 4.0625H6.71875C6.97763 4.0625 7.1875 3.85263 7.1875 3.59375C7.1875 3.33487 6.97763 3.125 6.71875 3.125H2.96875Z" fill="currentColor"/>
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.625 7.8125V2.1875C0.625 1.32456 1.32456 0.625 2.1875 0.625H7.8125C8.67545 0.625 9.375 1.32456 9.375 2.1875V6.35723C9.375 6.68875 9.24331 7.0067 9.00889 7.24112L7.24112 9.00888C7.0067 9.2433 6.68875 9.375 6.35723 9.375L2.1875 9.375C1.32455 9.375 0.625 8.67544 0.625 7.8125ZM1.5625 7.8125L1.5625 2.1875C1.5625 1.84232 1.84232 1.5625 2.1875 1.5625L7.8125 1.5625C8.15768 1.5625 8.4375 1.84232 8.4375 2.1875L8.4375 5.3125L6.40625 5.3125C5.80219 5.3125 5.3125 5.80219 5.3125 6.40625L5.3125 8.4375L2.1875 8.4375C1.84232 8.4375 1.5625 8.15768 1.5625 7.8125ZM6.25 8.4375H6.35723C6.44011 8.4375 6.5196 8.40458 6.5782 8.34597L8.34597 6.5782C8.40458 6.5196 8.4375 6.44011 8.4375 6.35723V6.25H6.40625C6.31996 6.25 6.25 6.31995 6.25 6.40625V8.4375Z" fill="currentColor"/>
+                                <div class="artifact-ref" data-artifact="table">
+                                    <svg width="12" height="10" viewBox="0 0 12 10" fill="none" class="shrink-0">
+                                        <path d="M0.9375 1.875C1.45312 1.875 1.875 1.45312 1.875 0.9375C1.875 0.421875 1.45312 0 0.9375 0C0.421875 0 0 0.421875 0 0.9375C0 1.4625 0.421875 1.875 0.9375 1.875Z" fill="currentColor"/>
+                                        <path d="M0.9375 5.625C1.45312 5.625 1.875 5.20312 1.875 4.6875C1.875 4.17188 1.45312 3.75 0.9375 3.75C0.421875 3.75 0 4.17188 0 4.6875C0 5.2125 0.421875 5.625 0.9375 5.625Z" fill="currentColor"/>
+                                        <path d="M0.9375 9.375C1.45312 9.375 1.875 8.95312 1.875 8.4375C1.875 7.92188 1.45312 7.5 0.9375 7.5C0.421875 7.5 0 7.92188 0 8.4375C0 8.9625 0.421875 9.375 0.9375 9.375Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 0.84375C2.625 0.481313 2.91881 0.1875 3.28125 0.1875H10.5938C10.9562 0.1875 11.25 0.481313 11.25 0.84375C11.25 1.20619 10.9562 1.5 10.5938 1.5H3.28125C2.91881 1.5 2.625 1.20619 2.625 0.84375Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 4.68823C2.625 4.3258 2.91881 4.03198 3.28125 4.03198H10.5938C10.9562 4.03198 11.25 4.3258 11.25 4.68823C11.25 5.05067 10.9562 5.34448 10.5938 5.34448H3.28125C2.91881 5.34448 2.625 5.05067 2.625 4.68823Z" fill="currentColor"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2.625 8.53125C2.625 8.16881 2.91881 7.875 3.28125 7.875H10.5938C10.9562 7.875 11.25 8.16881 11.25 8.53125C11.25 8.89369 10.9562 9.1875 10.5938 9.1875H3.28125C2.91881 9.1875 2.625 8.89369 2.625 8.53125Z" fill="currentColor"/>
                                     </svg>
-                                    <span>failed_payments.sql</span>
+                                    <span>Failed payments</span>
                                 </div>
                             </div>
                         </div>
@@ -1249,11 +1454,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Acme Corp</a></td><td><a class="ext-link" href="mailto:billing@acmecorp.io" target="_blank">billing@acmecorp.io</a></td><td>$42,800</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Northwind Ltd</a></td><td><a class="ext-link" href="mailto:ap@northwind.co" target="_blank">ap@northwind.co</a></td><td>$31,200</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Contoso Inc</a></td><td><a class="ext-link" href="mailto:finance@contoso.com" target="_blank">finance@contoso.com</a></td><td>$28,450</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Fabrikam</a></td><td><a class="ext-link" href="mailto:pay@fabrikam.dev" target="_blank">pay@fabrikam.dev</a></td><td>$19,600</td></tr>
-                                    <tr><td><a class="ext-link" href="#" target="_blank">Tailspin Toys</a></td><td><a class="ext-link" href="mailto:ar@tailspintoys.com" target="_blank">ar@tailspintoys.com</a></td><td>$14,300</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Acme Corp</a></td><td>billing@acmecorp.io</td><td>$42,800</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Northwind Ltd</a></td><td>ap@northwind.co</td><td>$31,200</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Contoso Inc</a></td><td>finance@contoso.com</td><td>$28,450</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Fabrikam</a></td><td>pay@fabrikam.dev</td><td>$19,600</td></tr>
+                                    <tr><td><a class="ext-link" href="#" target="_blank">Tailspin Toys</a></td><td>ar@tailspintoys.com</td><td>$14,300</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1290,8 +1495,14 @@
         <!-- CANVAS PANEL                                        -->
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
-            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
-                <div class="tab-pill active" data-tab="a">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 12px 16px; gap: 8px;">
+                <div class="tab-pill active" data-tab="chart">
+                    <span>Revenue over time</span>
+                    <div class="tab-close">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
+                <div class="tab-pill inactive" data-tab="table">
                     <span>Failed payments</span>
                     <div class="tab-close">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
@@ -1300,10 +1511,10 @@
             </div>
 
             <div class="flex flex-col flex-1 w-full" style="padding: 0 16px; min-height: 0;">
-                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px; margin-bottom: 16px;">
-                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Failed payments &gt;$500 in December 2025</span>
+                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px; margin-bottom: 20px;">
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600; position: relative; top: 1px;" class="text-text-primary">Revenue over time – Dec 2025</span>
                     <div class="flex items-center" style="gap: 6px;">
-                        <button id="canvasPrimaryBtn" style="height: 24px; padding: 0 10px; border-radius: 5px; border: none; background: linear-gradient(to bottom, #7a74ed, #6560d9); color: #fff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: filter 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1); -webkit-font-smoothing: antialiased;">Primary</button>
+                        <button id="canvasPrimaryBtn" style="display: none; height: 24px; padding: 0 10px; border-radius: 5px; border: none; background: linear-gradient(to bottom, #7a74ed, #6560d9); color: #fff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: filter 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1); -webkit-font-smoothing: antialiased;">Primary</button>
                     <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
@@ -1312,13 +1523,56 @@
                         </svg>
                         <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 150px; padding: 3px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
                             <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
-                            <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download .csv</div>
+                            <div id="canvasMenuDownload" class="canvas-menu-item" style="display: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download</div>
                             <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
                         </div>
                     </div>
                     </div>
                 </div>
-                <div id="canvasContent" class="flex-1 w-full" style="min-height: 0; overflow-y: auto;">
+
+                <!-- ── Chart tab content ── -->
+                <div id="tabContentChart" class="tab-content active" style="min-height: 0; flex: 1;">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <div class="chart-header-left">
+                                <div class="chart-top-row">
+                                    <span class="chart-value">$487,200</span>
+                                    <span class="chart-delta">+18.4%</span>
+                                </div>
+                                <span class="chart-subtext">Past 30 days</span>
+                            </div>
+                            <div class="chart-legend">
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-line"></div>
+                                    <span>Revenue</span>
+                                </div>
+                                <div class="chart-legend-item">
+                                    <div class="chart-legend-line previous"></div>
+                                    <span>Previous period</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-area" id="chartArea">
+                            <svg id="chartSvg" preserveAspectRatio="none"></svg>
+                            <div class="chart-tooltip" id="chartTooltip">
+                                <div class="chart-tooltip-date" id="tooltipDate"></div>
+                                <div class="chart-tooltip-row">
+                                    <div class="chart-tooltip-marker current"></div>
+                                    <span>Revenue</span>
+                                    <span class="chart-tooltip-val" id="tooltipCurrent"></span>
+                                </div>
+                                <div class="chart-tooltip-row">
+                                    <div class="chart-tooltip-marker previous"></div>
+                                    <span>Previous period</span>
+                                    <span class="chart-tooltip-val" id="tooltipPrevious"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Table tab content ── -->
+                <div id="tabContentTable" class="tab-content" style="min-height: 0; flex: 1; overflow-y: auto;">
                     <table class="canvas-table" id="canvasTable">
                         <thead>
                             <tr>
@@ -1360,6 +1614,9 @@
                         <span style="font-size: 12px; font-weight: 500; color: #6D6D77;">Loading more rows…</span>
                     </div>
                 </div>
+            </div>
+            <div class="shrink-0" style="height: 64px; display: flex; align-items: center; padding: 0 16px;">
+                <p style="font-size: 11px; color: #6D6D77; line-height: 1.5;">By using Console, you agree to the <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Console Terms</a> and <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Privacy Policy</a>. Do not share sensitive data.</p>
             </div>
         </section>
     </div>
@@ -1620,16 +1877,39 @@
         })();
 
         // ── Tab switching ────────────────────────────────
+        const tabHeadings = {
+            chart: 'Revenue over time – Dec 2025',
+            table: 'Failed payments >$500 in December 2025'
+        };
+        function switchTab(tabId) {
+            document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
+                const isTarget = t.dataset.tab === tabId;
+                t.classList.toggle('active', isTarget);
+                t.classList.toggle('inactive', !isTarget);
+            });
+            document.getElementById('tabContentChart').classList.toggle('active', tabId === 'chart');
+            document.getElementById('tabContentTable').classList.toggle('active', tabId === 'table');
+            document.getElementById('canvasHeading').textContent = tabHeadings[tabId] || '';
+            document.getElementById('canvasHeading').parentElement.style.marginBottom = tabId === 'chart' ? '20px' : '16px';
+            document.getElementById('canvasPrimaryBtn').style.display = tabId === 'chart' ? 'none' : '';
+            document.getElementById('canvasMenuDownload').style.display = tabId === 'chart' ? 'none' : '';
+            document.getElementById('configTrigger').style.display = tabId === 'chart' ? '' : 'none';
+            if (tabId !== 'chart') {
+                document.getElementById('configPanel').classList.remove('open');
+                document.getElementById('configTrigger').classList.remove('hidden');
+            }
+            if (tabId === 'chart' && !window._chartRendered) renderChart();
+        }
         document.getElementById('tabBar').addEventListener('click', (e) => {
             const bar = document.getElementById('tabBar');
             if (bar._suppressClick) { bar._suppressClick = false; return; }
             if (e.target.closest('.tab-close')) return;
             const pill = e.target.closest('.tab-pill');
             if (!pill || pill.classList.contains('active')) return;
-            document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
-                t.classList.toggle('active', t === pill);
-                t.classList.toggle('inactive', t !== pill);
-            });
+            switchTab(pill.dataset.tab);
+        });
+        document.querySelectorAll('.artifact-ref[data-artifact]').forEach(pill => {
+            pill.addEventListener('click', () => switchTab(pill.dataset.artifact));
         });
 
         // ── Draggable tab reorder ────────────────────────
@@ -2098,7 +2378,7 @@
 
         // ── Canvas table scrollbar: show on scroll, fade after idle ──
         (() => {
-            const content = document.getElementById('canvasContent');
+            const content = document.getElementById('tabContentTable');
             let timer;
             content.addEventListener('scroll', () => {
                 content.classList.add('is-scrolling');
@@ -2304,6 +2584,175 @@
             new ResizeObserver(check).observe(messagesList);
         })();
 
+        // ── Line chart (Stripe-style) ─────────────────────
+        function renderChart() {
+            window._chartRendered = true;
+            const area = document.getElementById('chartArea');
+            const svg = document.getElementById('chartSvg');
+            const tooltip = document.getElementById('chartTooltip');
+            const tooltipDate = document.getElementById('tooltipDate');
+            const tooltipCurrent = document.getElementById('tooltipCurrent');
+            const tooltipPrevious = document.getElementById('tooltipPrevious');
+
+            const dayLabels = ['Dec 1','Dec 2','Dec 3','Dec 4','Dec 5','Dec 6','Dec 7','Dec 8','Dec 9','Dec 10','Dec 11','Dec 12','Dec 13','Dec 14','Dec 15','Dec 16','Dec 17','Dec 18','Dec 19','Dec 20','Dec 21','Dec 22','Dec 23','Dec 24','Dec 25','Dec 26','Dec 27','Dec 28','Dec 29','Dec 30','Dec 31'];
+            const current = [
+                29200,29600, 30000,30400, 30800,30200, 29800,29200, 28600,28100, 27800,28000,
+                28200,28600, 29000,29800, 30600,30900, 31200,31500, 31800,32400, 33000,33600,
+                34200,33900, 33600,33400, 33200,33500, 33800,34200, 34600,34900, 35200,34800,
+                34400,34000, 33600,33800, 34000,34100, 34200,34800, 35400,34700, 34000,33700,
+                33400,33000, 32600,32200, 31800,32100, 32400,32800, 33200,33800, 34400,34700,
+                35000,35500
+            ];
+            const previous = [
+                28800,29200, 29600,30200, 30800,31100, 31400,31100, 30800,30500, 30200,29800,
+                29400,29200, 29000,28600, 28200,28800, 29400,29800, 30200,30600, 31000,31300,
+                31600,31400, 31200,31000, 30800,31100, 31400,31700, 32000,31600, 31200,30800,
+                30400,30600, 30800,31000, 31200,31600, 32000,31700, 31400,31000, 30600,30400,
+                30200,30800, 31400,31800, 32200,32400, 32600,32700, 32800,32500, 32200,31800,
+                31400,31700
+            ];
+            const pad = { top: 8, right: 8, bottom: 24, left: 44 };
+
+            function draw() {
+                const w = area.clientWidth;
+                const h = area.clientHeight;
+                if (!w || !h) return;
+
+                svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+                svg.setAttribute('width', w);
+                svg.setAttribute('height', h);
+
+                const all = [...current, ...previous];
+                const minV = Math.min(...all) * 0.9;
+                const maxV = Math.max(...all) * 1.05;
+
+                const cw = w - pad.left - pad.right;
+                const ch = h - pad.top - pad.bottom;
+
+                function x(i) { return pad.left + (i / (current.length - 1)) * cw; }
+                function y(v) { return pad.top + ch - ((v - minV) / (maxV - minV)) * ch; }
+
+                const gridSteps = 4;
+                let gridLines = '';
+                let yLabels = '';
+                for (let i = 0; i <= gridSteps; i++) {
+                    const val = minV + (i / gridSteps) * (maxV - minV);
+                    const yy = y(val);
+                    gridLines += `<line x1="${pad.left - 6}" y1="${yy}" x2="${pad.left}" y2="${yy}" stroke="#2c2c30" stroke-width="1"/>`;
+                    gridLines += `<line x1="${pad.left}" y1="${yy}" x2="${w - pad.right}" y2="${yy}" class="chart-grid-line"/>`;
+                    const label = '$' + Math.round(val / 1000) + 'K';
+                    yLabels += `<text x="${pad.left - 10}" y="${yy + 4}" class="chart-y-label">${label}</text>`;
+                }
+
+                let xLabels = '';
+                const xLabelIndices = [0, 12, 24, 36, 48, 60];
+                xLabelIndices.forEach(i => {
+                    if (i >= current.length) return;
+                    const isFirst = i === 0;
+                    const isLast = i === xLabelIndices[xLabelIndices.length - 1];
+                    const lx = isFirst ? x(i) + 12 : (isLast ? x(i) - 8 : x(i));
+                    const anchor = isFirst ? 'start' : (isLast ? 'end' : 'middle');
+                    const label = dayLabels[i / 2];
+                    xLabels += `<text x="${lx}" y="${h - 2}" class="chart-x-label" text-anchor="${anchor}">${label}</text>`;
+                });
+
+                function pathD(data) {
+                    if (data.length < 2) return '';
+                    const pts = data.map((v, i) => [x(i), y(v)]);
+                    const t = 0;
+                    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+                    for (let i = 0; i < pts.length - 1; i++) {
+                        const p0 = pts[Math.max(0, i - 1)];
+                        const p1 = pts[i];
+                        const p2 = pts[i + 1];
+                        const p3 = pts[Math.min(pts.length - 1, i + 2)];
+                        const cp1x = p1[0] + (p2[0] - p0[0]) * t / 3;
+                        const cp1y = p1[1] + (p2[1] - p0[1]) * t / 3;
+                        const cp2x = p2[0] - (p3[0] - p1[0]) * t / 3;
+                        const cp2y = p2[1] - (p3[1] - p1[1]) * t / 3;
+                        d += ` C${cp1x.toFixed(1)},${cp1y.toFixed(1)} ${cp2x.toFixed(1)},${cp2y.toFixed(1)} ${pts[i+1][0].toFixed(1)},${pts[i+1][1].toFixed(1)}`;
+                    }
+                    return d;
+                }
+
+                const needle = `<line id="chartNeedle" class="chart-needle" x1="0" y1="${pad.top}" x2="0" y2="${h - pad.bottom}"/>`;
+                const dotCurrent = `<circle id="dotCurrent" class="chart-dot current" cx="0" cy="0"/>`;
+                const dotPrevious = `<circle id="dotPrevious" class="chart-dot previous" cx="0" cy="0"/>`;
+
+                const currentPath = pathD(current);
+
+                svg.innerHTML = gridLines + yLabels + xLabels +
+                    `<path d="${pathD(previous)}" class="chart-line-outline-prev"/>` +
+                    `<path d="${pathD(previous)}" class="chart-line-previous"/>` +
+                    `<path d="${currentPath}" class="chart-line-outline"/>` +
+                    `<path d="${currentPath}" class="chart-line-glow"/>` +
+                    `<path d="${currentPath}" class="chart-line-current"/>` +
+                    needle + dotCurrent + dotPrevious;
+
+                const needleEl = document.getElementById('chartNeedle');
+                const dotCur = document.getElementById('dotCurrent');
+                const dotPrev = document.getElementById('dotPrevious');
+
+                function findNearest(clientX) {
+                    const rect = area.getBoundingClientRect();
+                    const mx = clientX - rect.left;
+                    let closest = 0, closestDist = Infinity;
+                    for (let i = 0; i < current.length; i += 2) {
+                        const d = Math.abs(x(i) - mx);
+                        if (d < closestDist) { closestDist = d; closest = i; }
+                    }
+                    return closest;
+                }
+
+                function showTooltip(idx, clientX) {
+                    const px = x(idx);
+                    needleEl.setAttribute('x1', px);
+                    needleEl.setAttribute('x2', px);
+                    needleEl.classList.add('visible');
+                    dotCur.setAttribute('cx', px);
+                    dotCur.setAttribute('cy', y(current[idx]));
+                    dotCur.classList.add('visible');
+                    dotPrev.setAttribute('cx', px);
+                    dotPrev.setAttribute('cy', y(previous[idx]));
+                    dotPrev.classList.add('visible');
+
+                    const dayLabel = dayLabels[idx / 2];
+                    tooltipDate.textContent = dayLabel + ', 2025';
+                    tooltipCurrent.textContent = '$' + current[idx].toLocaleString();
+                    tooltipPrevious.textContent = '$' + previous[idx].toLocaleString();
+                    tooltip.classList.add('visible');
+
+                    const rect = area.getBoundingClientRect();
+                    let tx = px + 12;
+                    if (tx + 180 > rect.width) tx = px - 192;
+                    let ty = Math.min(y(current[idx]), y(previous[idx])) - 20;
+                    if (ty < 0) ty = 10;
+                    tooltip.style.left = tx + 'px';
+                    tooltip.style.top = ty + 'px';
+                }
+
+                function hideTooltip() {
+                    needleEl.classList.remove('visible');
+                    dotCur.classList.remove('visible');
+                    dotPrev.classList.remove('visible');
+                    tooltip.classList.remove('visible');
+                }
+
+                area.onmousemove = (e) => {
+                    const idx = findNearest(e.clientX);
+                    showTooltip(idx, e.clientX);
+                };
+                area.onmouseleave = hideTooltip;
+            }
+
+            draw();
+            window.addEventListener('resize', draw);
+            new ResizeObserver(draw).observe(area);
+        }
+
+        // Render chart on load since it's the active tab
+        requestAnimationFrame(() => renderChart());
+
         // ── Initialize ───────────────────────────────────
         state.railOpen = false;
         applyLayout();
@@ -2311,6 +2760,93 @@
             els.rail.style.transition = 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease, border-color 0.15s ease, box-shadow 0.15s ease';
         });
 
+    </script>
+
+    <!-- ── Config Panel ── -->
+    <button id="configTrigger" style="position: fixed; bottom: 16px; right: 16px; z-index: 9999; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #2c2c30; background: #1a1a1d; color: #6D6D77; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v1.25M8 13.25v1.25M1.5 8h1.25M13.25 8h1.25M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/>
+        </svg>
+    </button>
+    <div id="configPanel" style="position: fixed; bottom: 16px; right: 16px; z-index: 10000; background: #1a1a1d; border: 1px solid #2c2c30; border-radius: 10px; padding: 10px 10px 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3); transform-origin: bottom right; transform: scale(0.9); opacity: 0; pointer-events: none; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-size: 10px; font-weight: 600; color: #6D6D77; text-transform: uppercase; letter-spacing: 0.5px;">Layout</div>
+            <button id="configClose" style="width: 16px; height: 16px; border: none; background: transparent; color: #6D6D77; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 3px; transition: color 0.15s ease;">
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+            </button>
+        </div>
+        <div style="display: flex; gap: 2px; background: #111113; border-radius: 6px; padding: 2px;">
+            <button class="config-toggle active" data-layout="default" style="flex: 1; height: 24px; padding: 0 10px; border: none; border-radius: 5px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap;">Default</button>
+            <button class="config-toggle" data-layout="large" style="flex: 1; height: 24px; padding: 0 10px; border: none; border-radius: 5px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap;">Large</button>
+        </div>
+    </div>
+
+    <style>
+        #configTrigger:hover {
+            color: #A0A0AA;
+            border-color: #3a3a3a;
+        }
+        #configClose:hover {
+            color: #D3D3D3;
+        }
+        #configTrigger.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #configPanel.open {
+            transform: scale(1) !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        .config-toggle {
+            background: transparent;
+            color: #6D6D77;
+        }
+        .config-toggle:hover {
+            color: #A0A0AA;
+        }
+        .config-toggle.active {
+            background: #252528;
+            color: #D3D3D3;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+    </style>
+
+    <script>
+        (function() {
+            const trigger = document.getElementById('configTrigger');
+            const panel = document.getElementById('configPanel');
+
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                trigger.classList.add('hidden');
+                panel.classList.add('open');
+            });
+
+            function closePanel() {
+                panel.classList.remove('open');
+                trigger.classList.remove('hidden');
+            }
+
+            document.getElementById('configClose').addEventListener('click', (e) => {
+                e.stopPropagation();
+                closePanel();
+            });
+
+            document.addEventListener('click', (e) => {
+                if (panel.classList.contains('open') && !panel.contains(e.target)) {
+                    closePanel();
+                }
+            });
+
+            document.querySelectorAll('.config-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.config-toggle').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.body.dataset.layout = btn.dataset.layout;
+                });
+            });
+        })();
     </script>
 </body>
 </html>
