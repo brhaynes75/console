@@ -202,16 +202,16 @@
             right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            width: 22px;
-            height: 22px;
+            width: 16px;
+            height: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 4px;
+            border-radius: 3px;
             color: #6D6D77;
             cursor: pointer;
             opacity: 0;
-            transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+            transition: opacity 0.15s ease, color 0.15s ease;
         }
         .sidebar-item:hover .item-menu-btn,
         .sidebar-item .item-menu-btn.active {
@@ -221,7 +221,12 @@
             color: #D3D3D3;
         }
         .sidebar-item .truncate {
-            padding-right: 24px;
+            position: relative;
+            padding-right: 20px;
+            overflow: hidden;
+            text-overflow: clip;
+            -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+            mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
         }
         .item-popup {
             display: none;
@@ -472,22 +477,22 @@
                                 <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                                     <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
-                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                    <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
                                 <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                                     <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
-                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                    <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
                                 <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                                     <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
-                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                    <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
                                 <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
                                     <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
-                                    <div class="item-menu-btn"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                                    <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
                             </div>
                         </div>
@@ -700,7 +705,7 @@
         <div class="item-popup-row" data-action="pin">Pin</div>
         <div class="item-popup-row" data-action="rename">Rename</div>
         <div class="item-popup-sep"></div>
-        <div class="item-popup-row" data-action="archive">Archive</div>
+        <div class="item-popup-row" data-action="delete">Delete</div>
     </div>
 
     <script>
@@ -1241,24 +1246,21 @@
                 const isLastUnpin = isPinned && pinnedItems.children.length === 1;
 
                 if (isLastUnpin) {
-                    // Last unpin — item stays visible, FLIP into recents while sections collapse
                     const pinnedSection = document.getElementById('pinnedSection');
                     const recentsHeader = document.getElementById('recentsHeader');
                     const pinnedHeader = pinnedSection.querySelector('.chat-section-header');
 
                     const dur = 220;
                     const ease = 'cubic-bezier(0.15, 0.9, 0.2, 1.18)';
-
+                    const layoutEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
                     const firstRect = item.getBoundingClientRect();
                     const phH = pinnedHeader.offsetHeight;
                     const psMB = parseFloat(getComputedStyle(pinnedSection).marginBottom) || 0;
                     const rhH = recentsHeader.offsetHeight;
                     const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
 
-                    // Move item to recents before animating
                     recentItems.prepend(item);
 
-                    // Wrap headers for collapse
                     const phWrap = document.createElement('div');
                     phWrap.style.cssText = `height: ${phH}px; overflow: hidden;`;
                     pinnedHeader.parentNode.insertBefore(phWrap, pinnedHeader);
@@ -1272,22 +1274,20 @@
 
                     pinnedSection.style.marginBottom = psMB + 'px';
 
-                    // FLIP: compensate for position change
                     const lastRect = item.getBoundingClientRect();
                     const deltaY = firstRect.top - lastRect.top;
                     item.style.transform = `translateY(${deltaY}px)`;
                     phWrap.offsetHeight;
 
-                    // Fade out headers, collapse wrappers, slide item
                     pinnedHeader.style.transition = `opacity 0.15s ease`;
                     recentsHeader.style.transition = `opacity 0.15s ease`;
                     pinnedHeader.style.opacity = '0';
                     recentsHeader.style.opacity = '0';
 
-                    phWrap.style.transition = `height ${dur}ms ${ease}`;
-                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
-                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
-                    item.style.transition = `transform ${dur}ms ${ease}`;
+                    phWrap.style.transition = `height ${dur}ms ${layoutEase}`;
+                    rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${layoutEase}`;
+                    item.style.transition = `transform ${dur}ms ${layoutEase}`;
 
                     phWrap.style.height = '0px';
                     rhWrap.style.height = '0px';
@@ -1310,13 +1310,13 @@
                         });
                     });
                 } else if (!isPinned && pinnedItems.children.length === 0) {
-                    // First pin — space opens first, then headers fade in
                     const pinnedSection = document.getElementById('pinnedSection');
                     const recentsHeader = document.getElementById('recentsHeader');
                     const pinnedHeader = pinnedSection.querySelector('.chat-section-header');
 
                     const dur = 220;
                     const ease = 'cubic-bezier(0.15, 0.9, 0.2, 1.18)';
+                    const layoutEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
                     const fadeDelay = 60;
 
                     pinnedItems.appendChild(item);
@@ -1344,9 +1344,9 @@
                     rhWrap.style.marginTop = '0px';
                     phWrap.offsetHeight;
 
-                    phWrap.style.transition = `height ${dur}ms ${ease}`;
-                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
-                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
+                    phWrap.style.transition = `height ${dur}ms ${layoutEase}`;
+                    rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${layoutEase}`;
                     phWrap.style.height = phH + 'px';
                     rhWrap.style.height = rhH + 'px';
                     pinnedSection.style.marginBottom = psMB + 'px';
@@ -1369,9 +1369,9 @@
                         });
                     });
                 } else if (!isPinned && recentItems.querySelectorAll('.sidebar-item').length === 1) {
-                    // Last pin — item stays visible, FLIP into pinned while recents collapses
                     const dur = 220;
                     const ease = 'cubic-bezier(0.15, 0.9, 0.2, 1.18)';
+                    const layoutEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
                     const recentsHeader = document.getElementById('recentsHeader');
                     const pinnedSection = document.getElementById('pinnedSection');
 
@@ -1401,10 +1401,10 @@
 
                     recentsHeader.style.transition = `opacity ${dur}ms ease`;
                     recentsHeader.style.opacity = '0';
-                    rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                    rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
                     rhWrap.style.height = '0px';
                     rhWrap.style.marginTop = '0px';
-                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${ease}`;
+                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${layoutEase}`;
                     pinnedSection.style.marginBottom = '0px';
 
                     item.addEventListener('transitionend', function cleanup(ev) {
@@ -1422,6 +1422,7 @@
                 } else {
                     const dur = 220;
                     const ease = 'cubic-bezier(0.15, 0.9, 0.2, 1.18)';
+                    const layoutEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
 
                     const recentsHeader = document.getElementById('recentsHeader');
                     const recentsCount = recentItems.querySelectorAll('.sidebar-item').length;
@@ -1438,7 +1439,7 @@
                         item.remove();
 
                         const wrapper = document.createElement('div');
-                        wrapper.style.cssText = `height: 0; overflow: hidden;`;
+                        wrapper.style.cssText = `height: 0; overflow: hidden; margin-left: -4px; margin-right: -4px; padding-left: 4px; padding-right: 4px;`;
                         item.setAttribute('style', origStyle);
                         item.style.opacity = '0';
                         wrapper.appendChild(item);
@@ -1468,14 +1469,14 @@
                         }
 
                         placeholder.offsetHeight;
-                        const t = `height ${dur}ms ${ease}`;
+                        const t = `height ${dur}ms ${layoutEase}`;
                         placeholder.style.transition = t;
                         wrapper.style.transition = t;
                         placeholder.style.height = '0px';
                         wrapper.style.height = h + 'px';
 
                         if (rhWrap && recentsWillAppear) {
-                            rhWrap.style.transition = `height ${dur}ms ${ease}, margin-top ${dur}ms ${ease}`;
+                            rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
                             rhWrap.style.height = rhTargetH + 'px';
                             rhWrap.style.marginTop = rhTargetMT + 'px';
                             recentsHeader.style.transition = `opacity ${dur}ms ease`;
