@@ -345,10 +345,15 @@
             transform: translateY(-50%) translateX(-4px) !important;
         }
 
-        #tabContentTable { scrollbar-gutter: stable; }
-        #tabContentTable::-webkit-scrollbar-thumb { background: transparent; }
-        #tabContentTable.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
-        #tabContentTable.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+        #tabBar.scrolled {
+            box-shadow: 0 8px 24px rgba(16,16,18,0.9), 0 4px 12px rgba(16,16,18,0.7);
+        }
+
+        #canvas { scrollbar-gutter: stable; }
+        #canvas::-webkit-scrollbar { width: 14px; }
+        #canvas::-webkit-scrollbar-thumb { background: transparent; border: 4px solid transparent; background-clip: padding-box; border-radius: 7px; }
+        #canvas.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border: 4px solid transparent; background-clip: padding-box; }
+        #canvas.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); border: 4px solid transparent; background-clip: padding-box; }
 
         #canvasPrimaryBtn:hover {
             filter: brightness(1.1);
@@ -1044,10 +1049,7 @@
             font-weight: 500;
         }
         .canvas-table thead {
-            position: sticky;
-            top: 0;
             z-index: 1;
-            background: #101012;
         }
         .canvas-table th {
             text-align: left;
@@ -1077,7 +1079,7 @@
             color: #A0A0AA;
         }
         .canvas-table tbody tr {
-            transition: background-color 0.15s ease;
+            transition: background-color 0.2s ease;
             cursor: pointer;
         }
         .canvas-table tbody tr:hover {
@@ -1090,7 +1092,7 @@
             white-space: nowrap;
         }
         .canvas-table tr:last-child td {
-            border-bottom: none;
+            border-bottom: 1px solid #1E1E21;
         }
         .canvas-table .col-amount {
             font-variant-numeric: tabular-nums;
@@ -1105,7 +1107,7 @@
         }
         .canvas-table .header-check {
             position: absolute;
-            left: 6px;
+            left: 0;
             top: 50%;
             transform: translateY(-50%);
             width: 14px;
@@ -1131,7 +1133,7 @@
         }
         .canvas-table .row-check {
             position: absolute;
-            left: 6px;
+            left: 0;
             top: 50%;
             transform: translateY(-50%);
             width: 14px;
@@ -1228,9 +1230,79 @@
         @keyframes tableLoaderSpin {
             to { transform: rotate(360deg); }
         }
+
+        /* ── Small layout variant ── */
+        body[data-layout="default"] #canvasContent {
+            padding: 0 16px !important;
+        }
+        body[data-layout="default"] #canvasHeadingRow {
+            height: 32px !important;
+            margin-bottom: 20px !important;
+            margin-top: 14px !important;
+        }
+        body[data-layout="default"] #canvasFooter {
+            display: none !important;
+        }
+        body[data-layout="default"] #canvasHeadingSub {
+            display: none !important;
+        }
+
+        body[data-layout="large"] #tabBar {
+            padding-left: 46px !important;
+            padding-right: 56px !important;
+        }
+
+        /* ── Large layout variant ── */
+        body[data-layout="large"] #canvasContent {
+            padding: 32px 56px 0 !important;
+        }
+        body[data-layout="large"] #canvasFooter {
+            padding: 0 56px 24px !important;
+        }
+        body[data-layout="large"] #canvasHeading {
+            font-size: 20px !important;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+        body[data-layout="large"] #canvasHeadingSub {
+            display: block !important;
+        }
+        body[data-layout="large"] #canvasHeadingRow {
+            height: auto !important;
+            margin-bottom: 36px !important;
+            align-items: flex-start !important;
+        }
+        body[data-layout="large"] .chart-header .chart-value {
+            font-size: 13px !important;
+            font-weight: 600;
+        }
+        body[data-layout="large"] .chart-header .chart-subtext {
+            font-size: 13px !important;
+        }
+        body[data-layout="large"] .chart-header .chart-delta {
+            font-size: 14px !important;
+        }
+        body[data-layout="large"] .chart-header {
+            margin-bottom: 32px !important;
+        }
+        body[data-layout="large"] .chart-area {
+            min-height: 180px !important;
+            max-height: 285px !important;
+        }
+        body[data-layout="large"] .canvas-table th {
+            font-size: 13px !important;
+        }
+        body[data-layout="large"] .canvas-table td {
+            font-size: 13px !important;
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+        }
+        body[data-layout="large"] .chart-legend {
+            font-size: 12px !important;
+        }
     </style>
 </head>
-<body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
+<body class="bg-surface-0 text-text-primary h-screen overflow-hidden" data-layout="default">
     <div id="app" class="h-full flex">
 
         <!-- ═══════════════════════════════════════════════════ -->
@@ -1331,7 +1403,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0;">
             <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="height: 56px; padding: 0 16px;">
-                <span style="font-size: 13px; font-weight: 600; line-height: 24px; color: #a0a0aa;">Failed payments in the last month</span>
+                <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments in the last month</span>
             </div>
 
             <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 10px 16px 20px 16px;">
@@ -1494,28 +1566,31 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CANVAS PANEL                                        -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
-            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 12px 16px; gap: 8px;">
-                <div class="tab-pill active" data-tab="chart">
-                    <span>Revenue over time</span>
-                    <div class="tab-close">
-                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
-                    </div>
-                </div>
-                <div class="tab-pill inactive" data-tab="table">
+        <div id="canvasWrap" class="panel-transition flex flex-col bg-surface-0 min-w-0" style="flex: 1 1 60%; position: relative;">
+            <div id="tabBar" class="flex items-center w-full shrink-0 bg-surface-0" style="padding: 17px 16px 12px 16px; gap: 8px; position: relative; z-index: 4; transition: box-shadow 0.2s ease;">
+                <div class="tab-pill active" data-tab="table">
                     <span>Failed payments</span>
                     <div class="tab-close">
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
+                <div class="tab-pill inactive" data-tab="chart">
+                    <span>Revenue over time</span>
+                    <div class="tab-close">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
             </div>
-
-            <div class="flex flex-col flex-1 w-full" style="padding: 0 16px; min-height: 0;">
-                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px; margin-bottom: 20px;">
-                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600; position: relative; top: 1px;" class="text-text-primary">Revenue over time – Dec 2025</span>
+        <section id="canvas" class="flex flex-col min-w-0 overflow-y-auto" style="flex: 1; gap: 12px;">
+            <div id="canvasContent" class="flex flex-col flex-1 w-full" style="padding: 0 16px; min-height: 0;">
+                <div id="canvasHeadingRow" class="flex items-center justify-between w-full shrink-0" style="margin-bottom: 16px;">
+                    <div style="display: flex; flex-direction: column;">
+                        <span id="canvasHeading" style="font-size: 13px; font-weight: 600; position: relative; top: 1px;" class="text-text-primary">Failed payments >$500 in December 2025</span>
+                        <span id="canvasHeadingSub" style="display: none; font-size: 14px; font-weight: 500; color: #6D6D77;">Greater than $500 in December 2025</span>
+                    </div>
                     <div class="flex items-center" style="gap: 6px;">
                         <button id="canvasPrimaryBtn" style="display: none; height: 24px; padding: 0 10px; border-radius: 5px; border: none; background: linear-gradient(to bottom, #7a74ed, #6560d9); color: #fff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: filter 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1); -webkit-font-smoothing: antialiased;">Primary</button>
-                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease; margin-right: -7px;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
                             <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
@@ -1523,7 +1598,7 @@
                         </svg>
                         <div id="canvasMenu" style="display: none; position: absolute; top: calc(100% + 6px); right: 0; min-width: 150px; padding: 3px; border-radius: 8px; background: #1c1c1f; border: 1px solid #2c2c30; box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3); z-index: 100;">
                             <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Share</div>
-                            <div id="canvasMenuDownload" class="canvas-menu-item" style="display: none; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download</div>
+                            <div id="canvasMenuDownload" class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Download</div>
                             <div class="canvas-menu-item" style="padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; color: #d3d3d3; cursor: pointer; transition: background-color 0.1s ease;">Save artifact</div>
                         </div>
                     </div>
@@ -1531,7 +1606,7 @@
                 </div>
 
                 <!-- ── Chart tab content ── -->
-                <div id="tabContentChart" class="tab-content active" style="min-height: 0; flex: 1;">
+                <div id="tabContentChart" class="tab-content" style="min-height: 0; flex: 1;">
                     <div class="chart-container">
                         <div class="chart-header">
                             <div class="chart-header-left">
@@ -1572,7 +1647,7 @@
                 </div>
 
                 <!-- ── Table tab content ── -->
-                <div id="tabContentTable" class="tab-content" style="min-height: 0; flex: 1; overflow-y: auto;">
+                <div id="tabContentTable" class="tab-content active" style="min-height: 0; flex: 1; margin-bottom: 48px;">
                     <table class="canvas-table" id="canvasTable">
                         <thead>
                             <tr>
@@ -1609,16 +1684,17 @@
                             <tr><td><span class="col-link">Xavier Jones</span></td><td class="col-amount">$644.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 4, 1:35 PM</td><td>Payment provider declined</td></tr>
                         </tbody>
                     </table>
-                    <div id="tableFooter" style="padding: 24px 0 40px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <div id="tableFooter" style="height: 34px; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255,255,255,0.02);">
                         <div class="table-loader"></div>
                         <span style="font-size: 12px; font-weight: 500; color: #6D6D77;">Loading more rows…</span>
                     </div>
                 </div>
             </div>
-            <div class="shrink-0" style="height: 64px; display: flex; align-items: center; padding: 0 16px;">
-                <p style="font-size: 11px; color: #6D6D77; line-height: 1.5;">By using Console, you agree to the <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Console Terms</a> and <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Privacy Policy</a>. Do not share sensitive data.</p>
-            </div>
         </section>
+            <div id="canvasFooter" style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; display: flex; align-items: flex-end; padding: 0 56px 24px; background: linear-gradient(to top, #101012 58%, transparent); pointer-events: none; z-index: 5;">
+                <p style="font-size: 11px; color: #6D6D77; line-height: 1.5; pointer-events: auto;">By using Console, you agree to the <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Console Terms</a> and <a href="#" target="_blank" style="color: #6D6D77; text-decoration: underline;">Privacy Policy</a>. Do not share sensitive data.</p>
+            </div>
+        </div>
     </div>
 
     <div id="railTooltip"></div>
@@ -1877,9 +1953,9 @@
         })();
 
         // ── Tab switching ────────────────────────────────
-        const tabHeadings = {
-            chart: 'Revenue over time – Dec 2025',
-            table: 'Failed payments >$500 in December 2025'
+        const tabData = {
+            chart: { heading: 'Revenue over time – Dec 2025', headingLarge: 'Revenue over time', sub: 'Dec 2025' },
+            table: { heading: 'Failed payments >$500 in December 2025', headingLarge: 'Failed payments', sub: 'Greater than $500 in December 2025' }
         };
         function switchTab(tabId) {
             document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
@@ -1889,15 +1965,13 @@
             });
             document.getElementById('tabContentChart').classList.toggle('active', tabId === 'chart');
             document.getElementById('tabContentTable').classList.toggle('active', tabId === 'table');
-            document.getElementById('canvasHeading').textContent = tabHeadings[tabId] || '';
-            document.getElementById('canvasHeading').parentElement.style.marginBottom = tabId === 'chart' ? '20px' : '16px';
-            document.getElementById('canvasPrimaryBtn').style.display = tabId === 'chart' ? 'none' : '';
+            const data = tabData[tabId];
+            const isLarge = document.body.dataset.layout === 'large';
+            document.getElementById('canvasHeading').textContent = isLarge ? data.headingLarge : data.heading;
+            document.getElementById('canvasHeadingSub').textContent = data.sub;
+            document.getElementById('canvasHeadingRow').style.marginBottom = tabId === 'chart' ? '20px' : '16px';
+            // document.getElementById('canvasPrimaryBtn').style.display = tabId === 'chart' ? 'none' : '';
             document.getElementById('canvasMenuDownload').style.display = tabId === 'chart' ? 'none' : '';
-            document.getElementById('configTrigger').style.display = tabId === 'chart' ? '' : 'none';
-            if (tabId !== 'chart') {
-                document.getElementById('configPanel').classList.remove('open');
-                document.getElementById('configTrigger').classList.remove('hidden');
-            }
             if (tabId === 'chart' && !window._chartRendered) renderChart();
         }
         document.getElementById('tabBar').addEventListener('click', (e) => {
@@ -2376,14 +2450,16 @@
             });
         })();
 
-        // ── Canvas table scrollbar: show on scroll, fade after idle ──
+        // ── Canvas scrollbar: show on scroll, fade after idle ──
         (() => {
-            const content = document.getElementById('tabContentTable');
+            const canvas = document.getElementById('canvas');
+            const tabBar = document.getElementById('tabBar');
             let timer;
-            content.addEventListener('scroll', () => {
-                content.classList.add('is-scrolling');
+            canvas.addEventListener('scroll', () => {
+                canvas.classList.add('is-scrolling');
+                tabBar.classList.toggle('scrolled', canvas.scrollTop > 10);
                 clearTimeout(timer);
-                timer = setTimeout(() => content.classList.remove('is-scrolling'), 1200);
+                timer = setTimeout(() => canvas.classList.remove('is-scrolling'), 1200);
             });
         })();
 
@@ -2723,8 +2799,9 @@
                     tooltip.classList.add('visible');
 
                     const rect = area.getBoundingClientRect();
-                    let tx = px + 12;
-                    if (tx + 180 > rect.width) tx = px - 192;
+                    const tooltipW = tooltip.offsetWidth || 180;
+                    let tx = px + 14;
+                    if (tx + tooltipW > rect.width) tx = px - tooltipW - 14;
                     let ty = Math.min(y(current[idx]), y(previous[idx])) - 20;
                     if (ty < 0) ty = 10;
                     tooltip.style.left = tx + 'px';
@@ -2750,8 +2827,7 @@
             new ResizeObserver(draw).observe(area);
         }
 
-        // Render chart on load since it's the active tab
-        requestAnimationFrame(() => renderChart());
+        // Chart renders on first switch to chart tab
 
         // ── Initialize ───────────────────────────────────
         state.railOpen = false;
@@ -2776,7 +2852,7 @@
             </button>
         </div>
         <div style="display: flex; gap: 2px; background: #111113; border-radius: 6px; padding: 2px;">
-            <button class="config-toggle active" data-layout="default" style="flex: 1; height: 24px; padding: 0 10px; border: none; border-radius: 5px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap;">Default</button>
+            <button class="config-toggle active" data-layout="default" style="flex: 1; height: 24px; padding: 0 10px; border: none; border-radius: 5px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap;">Small</button>
             <button class="config-toggle" data-layout="large" style="flex: 1; height: 24px; padding: 0 10px; border: none; border-radius: 5px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.15s ease; white-space: nowrap;">Large</button>
         </div>
     </div>
@@ -2814,6 +2890,14 @@
 
     <script>
         (function() {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const ease = 'padding 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    document.getElementById('canvasContent').style.transition = ease;
+                    document.getElementById('canvasFooter').style.transition = ease;
+                });
+            });
+
             const trigger = document.getElementById('configTrigger');
             const panel = document.getElementById('configPanel');
 
@@ -2844,6 +2928,9 @@
                     document.querySelectorAll('.config-toggle').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     document.body.dataset.layout = btn.dataset.layout;
+                    const activeTab = document.querySelector('#tabBar .tab-pill.active');
+                    if (activeTab) switchTab(activeTab.dataset.tab);
+                    requestAnimationFrame(() => window.dispatchEvent(new Event('resize')));
                 });
             });
         })();
