@@ -488,7 +488,7 @@
             <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease;">
                 <div class="flex flex-col items-center w-full">
                     <div class="flex items-center justify-center w-full">
-                        <div id="newChatBtn" class="relative flex items-center justify-center linear-border" data-tooltip="New conversation" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
+                        <div id="newChatBtn" class="relative flex items-center justify-center linear-border" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
                             <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
                                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
                             </span>
@@ -891,6 +891,17 @@
                 const after = original.slice(idx + q.length);
                 titleEl.innerHTML = '<span style="color:#6a6a70">' + before + '</span><span style="color:#D3D3D3">' + match + '</span><span style="color:#6a6a70">' + after + '</span>';
             });
+
+            const pinnedSection = document.getElementById('pinnedSection');
+            const pinnedItems = document.getElementById('pinnedItems');
+            const recentsHeader = document.getElementById('recentsHeader');
+            const recentItems = document.getElementById('recentItems');
+            if (q) {
+                const hasPinnedVisible = pinnedItems.querySelector('.sidebar-item:not([style*="display: none"])');
+                const hasRecentsVisible = recentItems.querySelector('.sidebar-item:not([style*="display: none"])');
+                pinnedSection.style.display = hasPinnedVisible ? '' : 'none';
+                recentsHeader.style.display = hasRecentsVisible && hasPinnedVisible ? '' : 'none';
+            }
         });
 
         // Click rail edge → toggle expand/collapse
