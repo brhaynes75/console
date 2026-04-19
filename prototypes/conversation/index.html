@@ -287,24 +287,21 @@
             transition: background 0.2s ease;
         }
         #convHeader.scrolled::after {
-            background: #1E1E21;
+            background: transparent;
         }
         #convHeader.scrolled {
             box-shadow: 0 8px 24px rgba(16,16,18,0.9), 0 4px 12px rgba(16,16,18,0.7);
+            z-index: 4;
         }
 
         /* Anchored prompt bar (shown when conversation fills viewport) */
         #promptBarAnchored {
             display: none;
             flex-shrink: 0;
-            height: 64px;
-            align-items: center;
-            padding: 0 16px;
+            align-items: flex-start;
+            padding: 16px 16px;
             border-top: 1px solid #1E1E21;
             background: #101012;
-        }
-        #promptBarAnchored #promptRow {
-            padding-top: 0;
         }
 
         #searchInput::placeholder {
@@ -1173,9 +1170,9 @@
                 </div>
             </div>
 
-            <div class="flex flex-col flex-1 w-full" style="gap: 28px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
-                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
-                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
+            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 32px 56px 0; border-radius: 6px; min-height: 0;">
+                <div class="flex items-center justify-between w-full shrink-0" style="height: auto; margin-bottom: 16px;">
+                    <span id="canvasHeading" style="font-size: 20px; font-weight: 600; letter-spacing: -0.3px;" class="text-text-primary">Chart heading</span>
                     <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
@@ -2045,18 +2042,25 @@
             }
 
             function check() {
-                const contentH = getMessagesHeight();
-                const viewH = messagesArea.clientHeight;
-
-                if (contentH >= viewH && !isAnchored) {
-                    anchoredBar.appendChild(promptRow);
-                    anchoredBar.style.display = 'flex';
-                    isAnchored = true;
-                    messagesArea.scrollTop = messagesArea.scrollHeight;
-                } else if (contentH < viewH && isAnchored) {
-                    messagesList.appendChild(promptRow);
-                    anchoredBar.style.display = 'none';
-                    isAnchored = false;
+                if (!isAnchored) {
+                    const promptRect = promptRow.getBoundingClientRect();
+                    const areaRect = messagesArea.getBoundingClientRect();
+                    const spaceBelow = areaRect.bottom - promptRect.top;
+                    const neededHeight = promptRow.offsetHeight + 20;
+                    if (spaceBelow < neededHeight) {
+                        anchoredBar.appendChild(promptRow);
+                        anchoredBar.style.display = 'flex';
+                        isAnchored = true;
+                    }
+                } else {
+                    const contentH = getMessagesHeight();
+                    const promptH = promptRow.offsetHeight;
+                    const viewH = messagesArea.clientHeight;
+                    if (contentH + promptH + 10 <= viewH) {
+                        messagesList.appendChild(promptRow);
+                        anchoredBar.style.display = 'none';
+                        isAnchored = false;
+                    }
                 }
             }
 
