@@ -43,7 +43,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
-        #messagesArea { scrollbar-gutter: stable; }
+        #messagesArea { scrollbar-gutter: stable; overflow-anchor: none; }
         #messagesArea::-webkit-scrollbar-thumb { background: transparent; transition: background 0.3s ease; }
         #messagesArea.is-scrolling::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); }
         #messagesArea.is-scrolling::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
@@ -107,15 +107,15 @@
 
         .tab-pill.active {
             color: #D3D3D3;
-            background-color: #1E1E21;
+            background-color: rgba(30, 30, 33, 0.5);
         }
         .tab-pill.inactive {
-            color: #A0A0AA;
+            color: #6D6D77;
             background-color: transparent;
         }
         .tab-pill.inactive:hover {
             color: #D3D3D3;
-            background-color: #1E1E21;
+            background-color: transparent;
         }
 
         .sidebar-item {
@@ -164,9 +164,11 @@
             display: none;
             position: fixed;
             min-width: 140px;
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
             padding: 3px;
             border-radius: 8px;
-            background: #1c1c1f;
+            background: rgba(28, 28, 31, 0.55);
             border: 1px solid #2c2c30;
             box-shadow: 0 8px 24px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
             z-index: 9999;
@@ -314,7 +316,9 @@
             position: fixed;
             pointer-events: none;
             z-index: 9999;
-            background: #252528;
+            background: rgba(37, 37, 40, 0.55);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
             color: #D3D3D3;
             font-size: 12px;
             font-weight: 500;
@@ -446,20 +450,11 @@
         }
         .console-response a.ext-link {
             color: #D3D3D3;
-            text-decoration: underline;
-            text-decoration-style: dotted;
-            text-decoration-thickness: 1px;
-            text-underline-offset: 4px;
-            text-decoration-color: #6D6D77;
-            transition: color 0.15s ease, text-decoration-color 0.15s ease;
+            text-decoration: none;
+            transition: color 0.15s ease;
         }
         .console-response a.ext-link:hover {
             color: #D3D3D3;
-            text-decoration: underline;
-            text-decoration-style: solid;
-            text-decoration-thickness: 1px;
-            text-underline-offset: 4px;
-            text-decoration-color: #6D6D77;
         }
         .console-response table {
             width: 100%;
@@ -479,6 +474,31 @@
             padding: 5px 12px 5px 0;
             color: #A0A0AA;
             border-bottom: 1px solid #1E1E21;
+        }
+        .console-response td a.ext-link {
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .console-response td a.ext-link::after {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #6D6D77;
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.75C8 1.33579 8.33579 1 8.75 1H14.25C14.6642 1 15 1.33579 15 1.75V7.25C15 7.66421 14.6642 8 14.25 8C13.8358 8 13.5 7.66421 13.5 7.25V3.56066L6.40533 10.6553C6.11244 10.9482 5.63756 10.9482 5.34467 10.6553C5.05178 10.3624 5.05178 9.88756 5.34467 9.59467L12.4393 2.5H8.75C8.33579 2.5 8 2.16421 8 1.75Z' fill='black'/%3E%3Cpath d='M2.5 4.75C2.5 4.05964 3.05964 3.5 3.75 3.5H5.625C6.03921 3.5 6.375 3.16421 6.375 2.75C6.375 2.33579 6.03921 2 5.625 2H3.75C2.23122 2 1 3.23122 1 4.75V12.25C1 13.7688 2.23122 15 3.75 15H11.25C12.7688 15 14 13.7688 14 12.25V10.375C14 9.96079 13.6642 9.625 13.25 9.625C12.8358 9.625 12.5 9.96079 12.5 10.375V12.25C12.5 12.9404 11.9404 13.5 11.25 13.5H3.75C3.05964 13.5 2.5 12.9404 2.5 12.25V4.75Z' fill='black'/%3E%3C/svg%3E");
+            mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M8 1.75C8 1.33579 8.33579 1 8.75 1H14.25C14.6642 1 15 1.33579 15 1.75V7.25C15 7.66421 14.6642 8 14.25 8C13.8358 8 13.5 7.66421 13.5 7.25V3.56066L6.40533 10.6553C6.11244 10.9482 5.63756 10.9482 5.34467 10.6553C5.05178 10.3624 5.05178 9.88756 5.34467 9.59467L12.4393 2.5H8.75C8.33579 2.5 8 2.16421 8 1.75Z' fill='black'/%3E%3Cpath d='M2.5 4.75C2.5 4.05964 3.05964 3.5 3.75 3.5H5.625C6.03921 3.5 6.375 3.16421 6.375 2.75C6.375 2.33579 6.03921 2 5.625 2H3.75C2.23122 2 1 3.23122 1 4.75V12.25C1 13.7688 2.23122 15 3.75 15H11.25C12.7688 15 14 13.7688 14 12.25V10.375C14 9.96079 13.6642 9.625 13.25 9.625C12.8358 9.625 12.5 9.96079 12.5 10.375V12.25C12.5 12.9404 11.9404 13.5 11.25 13.5H3.75C3.05964 13.5 2.5 12.9404 2.5 12.25V4.75Z' fill='black'/%3E%3C/svg%3E");
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            flex-shrink: 0;
+            opacity: 0;
+            transform: translateX(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .console-response td a.ext-link:hover::after {
+            opacity: 1;
+            transform: translateX(0);
         }
         .console-response tr:last-child td {
             border-bottom: none;
@@ -829,7 +849,8 @@
     </style>
 </head>
 <body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
-    <div id="app" class="h-full flex">
+    <div id="app" class="h-full flex" style="position: relative;">
+        <div id="topGradient" style="position: absolute; top: 0; left: 0; right: 0; height: 30%; background: linear-gradient(to bottom, rgba(37, 37, 40, 0.2) 0%, transparent 100%); pointer-events: none; z-index: 9998;"></div>
 
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- SIDEBAR — 60px collapsed / 230px expanded          -->
@@ -1842,14 +1863,7 @@
         // ── Task module toggle ───────────────────────────
         document.getElementById('taskDemo').addEventListener('click', (e) => {
             if (e.target.closest('button, a, .code-actions')) return;
-            const task = document.getElementById('taskDemo');
-            const area = document.getElementById('messagesArea');
-            const topBefore = task.getBoundingClientRect().top;
-            task.classList.toggle('expanded');
-            requestAnimationFrame(() => {
-                const topAfter = task.getBoundingClientRect().top;
-                area.scrollTop += topAfter - topBefore;
-            });
+            document.getElementById('taskDemo').classList.toggle('expanded');
         });
 
         // ── Elicitation keyboard + click ─────────────────
