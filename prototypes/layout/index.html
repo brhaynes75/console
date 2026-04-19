@@ -289,6 +289,43 @@
         .sidebar-item.active div:first-child {
             color: #D3D3D3;
         }
+        .sidebar-item.empty-state div:first-child {
+            color: #6D6D77;
+        }
+        @keyframes renameBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .sidebar-item .rename-area {
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            height: 21px;
+        }
+        .sidebar-item .rename-typed {
+            font-size: 13px;
+            font-weight: 500;
+            color: #D3D3D3;
+            white-space: pre;
+            flex-shrink: 0;
+        }
+        .sidebar-item .rename-cursor {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 0;
+            width: 1.5px;
+            height: 15px;
+            background: #D3D3D3;
+            animation: renameBlink 1s step-end infinite;
+        }
+        .sidebar-item .rename-ghost {
+            font-size: 13px;
+            font-weight: 400;
+            color: #4a4a50;
+            white-space: nowrap;
+        }
         
         .expanded .rail-bottom-row:hover {
             background-color: #222225;
@@ -1016,6 +1053,8 @@
                     const text = input.value.trim();
                     if (!text) return;
 
+                    if (window._commitNewChat) window._commitNewChat(text);
+
                     const tpl = document.getElementById('tplUserMessage');
                     const msg = tpl.content.cloneNode(true).firstElementChild;
                     msg.querySelector('span').textContent = text;
@@ -1035,6 +1074,215 @@
             });
 
             setTimeout(() => input.focus(), 100);
+        })();
+
+        // ── New chat ─────────────────────────────────────
+        (function initNewChat() {
+            const newChatBtn = document.getElementById('newChatBtn');
+            const newBtnExpanded = document.getElementById('newBtnExpanded');
+            const recentItems = document.getElementById('recentItems');
+            const promptInput = document.getElementById('promptInput');
+            const promptRow = document.getElementById('promptRow');
+            const messagesList = document.getElementById('messagesList');
+            let pendingItem = null;
+            let previousActive = null;
+            let decayTimer = null;
+            let creating = false;
+
+            function flashPendingItem() {
+                if (!pendingItem) return;
+                pendingItem.style.transition = 'background-color 150ms ease';
+                pendingItem.style.backgroundColor = '#2c2c30';
+                setTimeout(() => {
+                    pendingItem.style.transition = 'background-color 600ms ease';
+                    pendingItem.style.backgroundColor = '';
+                }, 200);
+                promptInput.focus();
+            }
+
+            function createEmptyChat() {
+                if (creating) return;
+                if (pendingItem) { flashPendingItem(); return; }
+                creating = true;
+
+                previousActive = recentItems.querySelector('.sidebar-item.active');
+                if (previousActive) previousActive.classList.remove('active');
+
+                const item = document.createElement('div');
+                item.className = 'sidebar-item active empty-state';
+                item.setAttribute('style', 'padding: 6px 8px; border-radius: 6px; cursor: pointer; overflow: hidden;');
+                item.innerHTML = `
+                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">New conversation</div>
+                    <div style="font-size: 11px;" class="text-text-muted">Just now</div>
+                    <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
+                `;
+
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = 'height: 0; overflow: hidden; transition: height 220ms cubic-bezier(0.25, 0.1, 0.25, 1);';
+                wrapper.appendChild(item);
+                recentItems.prepend(wrapper);
+
+                wrapper.offsetHeight;
+                const targetH = item.offsetHeight;
+                wrapper.style.height = targetH + 'px';
+
+                item.style.opacity = '0';
+                item.style.transition = 'opacity 200ms ease 60ms';
+                item.offsetHeight;
+                item.style.opacity = '1';
+
+                wrapper.addEventListener('transitionend', function cleanup(ev) {
+                    if (ev.propertyName !== 'height') return;
+                    wrapper.removeEventListener('transitionend', cleanup);
+                    wrapper.replaceWith(item);
+                    item.style.transition = '';
+                    item.style.opacity = '';
+                });
+
+                pendingItem = item;
+                creating = false;
+
+                clearMessages();
+                promptInput.value = '';
+                promptInput.style.height = 'auto';
+                const overlay = document.getElementById('promptOverlay');
+                const ghost = document.getElementById('promptGhost');
+                const cursor = document.getElementById('blockCursor');
+                overlay.style.display = 'flex';
+                cursor.textContent = 'A';
+                ghost.textContent = 'sk anything';
+                promptInput.focus();
+            }
+
+            function clearMessages() {
+                const messages = messagesList.querySelectorAll('.user-message, .assistant-message');
+                messages.forEach(m => m.remove());
+            }
+
+            function removeEmptyChat() {
+                if (!pendingItem) return;
+                clearTimeout(decayTimer);
+                const item = pendingItem;
+                pendingItem = null;
+
+                const h = item.offsetHeight;
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = `height: ${h}px; overflow: hidden; transition: height 220ms cubic-bezier(0.25, 0.1, 0.25, 1);`;
+                item.parentElement.insertBefore(wrapper, item);
+                wrapper.appendChild(item);
+
+                item.style.transition = 'opacity 150ms ease';
+                item.style.opacity = '0';
+
+                wrapper.offsetHeight;
+                wrapper.style.height = '0px';
+
+                wrapper.addEventListener('transitionend', function cleanup(ev) {
+                    if (ev.propertyName !== 'height') return;
+                    wrapper.removeEventListener('transitionend', cleanup);
+                    wrapper.remove();
+                });
+
+                if (previousActive) {
+                    previousActive.classList.add('active');
+                    previousActive = null;
+                }
+            }
+
+            function summarizeTitle(text) {
+                const noise = new Set(['i','me','my','we','our','you','your','it','its','the','a','an','and','or','but','is','are','was','were','be','been','am','do','does','did','have','has','had','will','would','can','could','should','may','might','shall','to','of','in','on','at','for','with','from','by','as','that','this','these','those','which','who','whom','what','where','when','how','if','then','than','so','not','no','all','each','every','some','any','most','more','also','just','only','very','really','too','about','into','out','up','over','per','via','w/','w','give','show','list','get','find','make','take','put','tell','see','know','want','need','help','try','let','please','thanks','hey','hi','ok','sure','yeah','break','made','number']);
+
+                let s = text.replace(/[.!?]+\s*.*/s, '').trim();
+                s = s.replace(/[.!?;:,]+$/g, '');
+
+                const words = s.split(/\s+/);
+                const scored = words.map((w, i) => {
+                    const clean = w.toLowerCase().replace(/[^a-z0-9$%]/g, '');
+                    if (!clean) return { w, score: -1 };
+                    const isNoise = noise.has(clean);
+                    const hasNum = /\d/.test(w) || /^\$/.test(w);
+                    let score = 0;
+                    if (hasNum) score += 8;
+                    if (!isNoise) score += 5;
+                    if (clean.length >= 6) score += 3;
+                    else if (clean.length >= 4) score += 1;
+                    score -= i * 0.15;
+                    return { w, score, idx: i };
+                }).filter(x => x.score > 0);
+
+                scored.sort((a, b) => b.score - a.score);
+                const picks = scored.slice(0, 4);
+                picks.sort((a, b) => a.idx - b.idx);
+
+                let title = picks.map(p => p.w).join(' ');
+                title = title.replace(/[.!?,;:\s]+$/g, '');
+                title = title.charAt(0).toUpperCase() + title.slice(1);
+
+                if (title.length > 24) {
+                    const kept = picks.slice(0, 3).sort((a, b) => a.idx - b.idx);
+                    title = kept.map(p => p.w).join(' ');
+                    title = title.replace(/[.!?,;:\s]+$/g, '');
+                    title = title.charAt(0).toUpperCase() + title.slice(1);
+                }
+                if (title.length > 24) {
+                    const kept = picks.slice(0, 2).sort((a, b) => a.idx - b.idx);
+                    title = kept.map(p => p.w).join(' ');
+                    title = title.replace(/[.!?,;:\s]+$/g, '');
+                    title = title.charAt(0).toUpperCase() + title.slice(1);
+                }
+
+                return title || 'New conversation';
+            }
+
+            function commitChat(text) {
+                if (!pendingItem) return;
+                clearTimeout(decayTimer);
+                const item = pendingItem;
+                pendingItem = null;
+                previousActive = null;
+
+                item.classList.remove('empty-state');
+                const titleEl = item.querySelector('div');
+                const title = summarizeTitle(text);
+                titleEl.textContent = title;
+                titleEl.style.color = '';
+
+                item._originalTitle = title;
+            }
+
+            window._commitNewChat = function(text) {
+                if (pendingItem) commitChat(text);
+            };
+
+            promptInput.addEventListener('blur', () => {
+                if (pendingItem) {
+                    decayTimer = setTimeout(() => {
+                        if (!pendingItem || document.activeElement === promptInput) return;
+                        const active = document.activeElement;
+                        const inRail = els.rail.contains(active) || active === newChatBtn || active === newBtnExpanded;
+                        if (inRail) return;
+                        removeEmptyChat();
+                    }, 200);
+                }
+            });
+
+            newChatBtn.addEventListener('mousedown', () => clearTimeout(decayTimer));
+            newBtnExpanded.addEventListener('mousedown', () => clearTimeout(decayTimer));
+
+            newChatBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (pendingItem) {
+                    flashPendingItem();
+                    return;
+                }
+                if (creating) return;
+                createEmptyChat();
+            });
+
+            newBtnExpanded.addEventListener('click', (e) => {
+                e.stopPropagation();
+                createEmptyChat();
+            });
         })();
 
         // ── Tab switching ───────────────────────────────
@@ -1222,23 +1470,32 @@
             popup.addEventListener('click', (e) => e.stopPropagation());
 
             document.getElementById('chatList').addEventListener('click', (e) => {
+                if (e.target.closest('.rename-area')) return;
                 const btn = e.target.closest('.item-menu-btn');
-                if (!btn) return;
-                e.stopPropagation();
-                const item = btn.closest('.sidebar-item');
+                if (btn) {
+                    e.stopPropagation();
+                    const item = btn.closest('.sidebar-item');
 
-                if (activeBtn === btn) { closePopup(); return; }
-                closePopup();
+                    if (activeBtn === btn) { closePopup(); return; }
+                    closePopup();
 
-                const isPinned = item.parentElement.id === 'pinnedItems';
-                pinRow.textContent = isPinned ? 'Unpin' : 'Pin';
+                    const isPinned = item.parentElement.id === 'pinnedItems';
+                    pinRow.textContent = isPinned ? 'Unpin' : 'Pin';
 
-                popup.style.display = 'block';
-                popup.style.left = e.clientX + 'px';
-                popup.style.top = e.clientY + 'px';
-                btn.classList.add('active');
-                activeBtn = btn;
-                activeItem = item;
+                    popup.style.display = 'block';
+                    popup.style.left = e.clientX + 'px';
+                    popup.style.top = e.clientY + 'px';
+                    btn.classList.add('active');
+                    activeBtn = btn;
+                    activeItem = item;
+                    return;
+                }
+
+                const item = e.target.closest('.sidebar-item');
+                if (!item) return;
+                const allItems = document.querySelectorAll('#chatList .sidebar-item');
+                allItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
             });
 
             pinRow.addEventListener('click', (e) => {
@@ -1509,6 +1766,86 @@
                         });
                     }, 160);
                 }
+            });
+
+            // ── Rename ──
+            const renameRow = popup.querySelector('[data-action="rename"]');
+            renameRow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!activeItem) return;
+                const item = activeItem;
+                closePopup();
+
+                const titleEl = item.querySelector('div');
+                const originalTitle = titleEl.textContent;
+
+                const renameArea = document.createElement('div');
+                renameArea.className = 'rename-area';
+                renameArea.innerHTML = '<span class="rename-typed"></span><span class="rename-cursor"></span><span class="rename-ghost"></span>';
+
+                titleEl.textContent = '';
+                titleEl.appendChild(renameArea);
+                renameArea.querySelector('.rename-ghost').textContent = originalTitle;
+
+                const typed = renameArea.querySelector('.rename-typed');
+                const cursor = renameArea.querySelector('.rename-cursor');
+                const ghost = renameArea.querySelector('.rename-ghost');
+
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'text';
+                hiddenInput.spellcheck = false;
+                hiddenInput.style.cssText = 'position: absolute; left: -9999px; opacity: 0;';
+                renameArea.appendChild(hiddenInput);
+
+                function updateDisplay() {
+                    const val = hiddenInput.value;
+                    typed.textContent = val;
+                    ghost.style.display = val.length > 0 ? 'none' : '';
+                    const textW = typed.offsetWidth;
+                    const areaW = renameArea.offsetWidth;
+                    if (textW > areaW - 4) {
+                        typed.style.transform = 'translateX(' + (areaW - textW - 4) + 'px)';
+                        cursor.style.left = (areaW - 4) + 'px';
+                    } else {
+                        typed.style.transform = 'translateX(0)';
+                        cursor.style.left = textW + 'px';
+                    }
+                }
+
+                function commit() {
+                    const val = hiddenInput.value.trim();
+                    const newTitle = val || originalTitle;
+
+                    titleEl.textContent = newTitle;
+                    item._originalTitle = newTitle;
+
+                    hiddenInput.removeEventListener('input', updateDisplay);
+                    hiddenInput.removeEventListener('blur', onBlur);
+                    hiddenInput.removeEventListener('keydown', onKey);
+                }
+
+                function onBlur() {
+                    setTimeout(commit, 80);
+                }
+
+                function onKey(ev) {
+                    if (ev.key === 'Enter') {
+                        ev.preventDefault();
+                        hiddenInput.removeEventListener('blur', onBlur);
+                        commit();
+                    } else if (ev.key === 'Escape') {
+                        ev.preventDefault();
+                        hiddenInput.value = '';
+                        hiddenInput.removeEventListener('blur', onBlur);
+                        commit();
+                    }
+                }
+
+                hiddenInput.addEventListener('input', updateDisplay);
+                hiddenInput.addEventListener('blur', onBlur);
+                hiddenInput.addEventListener('keydown', onKey);
+
+                setTimeout(() => hiddenInput.focus(), 50);
             });
 
         })();
