@@ -287,24 +287,21 @@
             transition: background 0.2s ease;
         }
         #convHeader.scrolled::after {
-            background: #1E1E21;
+            background: transparent;
         }
         #convHeader.scrolled {
             box-shadow: 0 8px 24px rgba(16,16,18,0.9), 0 4px 12px rgba(16,16,18,0.7);
+            z-index: 4;
         }
 
         /* Anchored prompt bar (shown when conversation fills viewport) */
         #promptBarAnchored {
             display: none;
             flex-shrink: 0;
-            height: 64px;
-            align-items: center;
-            padding: 0 16px;
+            align-items: flex-start;
+            padding: 16px 16px;
             border-top: 1px solid #1E1E21;
             background: #101012;
-        }
-        #promptBarAnchored #promptRow {
-            padding-top: 0;
         }
 
         #searchInput::placeholder {
@@ -1283,8 +1280,8 @@
         }
 
         body[data-layout="large"] #tabBar {
-            padding-left: 46px !important;
-            padding-right: 56px !important;
+            padding-left: 12px !important;
+            padding-right: 24px !important;
         }
 
         /* ── Large layout variant ── */
@@ -1602,7 +1599,7 @@
         <!-- CANVAS PANEL                                        -->
         <!-- ═══════════════════════════════════════════════════ -->
         <div id="canvasWrap" class="panel-transition flex flex-col bg-surface-0 min-w-0" style="flex: 1 1 60%; position: relative;">
-            <div id="tabBar" class="flex items-center w-full shrink-0" style="padding: 17px 16px 12px 16px; gap: 8px; position: relative; z-index: 4; transition: box-shadow 0.2s ease; background: transparent;">
+            <div id="tabBar" class="flex items-center w-full shrink-0" style="height: 56px; padding: 0 16px; gap: 8px; position: relative; z-index: 4; transition: box-shadow 0.2s ease; background: transparent;">
                 <div class="tab-pill active" data-tab="chart">
                     <span>Revenue over time</span>
                     <div class="tab-close">
@@ -2660,19 +2657,25 @@
             }
 
             function check() {
-                const contentH = getMessagesHeight();
-                const viewH = messagesArea.clientHeight;
-
-                if (contentH >= viewH && !isAnchored) {
-                    anchoredBar.appendChild(promptRow);
-                    anchoredBar.style.display = 'flex';
-                    const wasAtBottom = messagesArea.scrollTop + messagesArea.clientHeight >= messagesArea.scrollHeight - 20;
-                    isAnchored = true;
-                    if (wasAtBottom) messagesArea.scrollTop = messagesArea.scrollHeight;
-                } else if (contentH < viewH && isAnchored) {
-                    messagesList.appendChild(promptRow);
-                    anchoredBar.style.display = 'none';
-                    isAnchored = false;
+                if (!isAnchored) {
+                    const promptRect = promptRow.getBoundingClientRect();
+                    const areaRect = messagesArea.getBoundingClientRect();
+                    const spaceBelow = areaRect.bottom - promptRect.top;
+                    const neededHeight = promptRow.offsetHeight + 20;
+                    if (spaceBelow < neededHeight) {
+                        anchoredBar.appendChild(promptRow);
+                        anchoredBar.style.display = 'flex';
+                        isAnchored = true;
+                    }
+                } else {
+                    const contentH = getMessagesHeight();
+                    const promptH = promptRow.offsetHeight;
+                    const viewH = messagesArea.clientHeight;
+                    if (contentH + promptH + 10 <= viewH) {
+                        messagesList.appendChild(promptRow);
+                        anchoredBar.style.display = 'none';
+                        isAnchored = false;
+                    }
                 }
             }
 
