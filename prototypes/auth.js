@@ -5,7 +5,7 @@
   // Hide page immediately
   document.documentElement.style.visibility = 'hidden';
 
-  if (sessionStorage.getItem(STORAGE_KEY) === '1') {
+  if (localStorage.getItem(STORAGE_KEY) === '1') {
     document.documentElement.style.visibility = '';
     return;
   }
@@ -42,7 +42,7 @@
     input.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') {
         if (input.value === PASSWORD) {
-          sessionStorage.setItem(STORAGE_KEY, '1');
+          localStorage.setItem(STORAGE_KEY, '1');
           overlay.remove();
           style.remove();
         } else {
