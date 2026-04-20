@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console – Layout Baseline</title>
     <script src="/auth.js"></script>
-    <!-- System font stack — no web font load needed -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -105,7 +107,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-size: 13px;
             font-weight: 500;
             line-height: 1.6;
@@ -290,7 +292,7 @@
             color: #D3D3D3;
         }
         .sidebar-item.empty-state div:first-child {
-            color: #6D6D77;
+            color: rgba(160, 160, 170, 0.35);
         }
         .sidebar-item.empty-state .item-menu-btn {
             display: none;
@@ -345,7 +347,7 @@
 
         @keyframes blockBlink {
             0%, 50% { background: #c9c9c9; color: #0d0d0d; }
-            51%, 100% { background: transparent; color: #555555; }
+            51%, 100% { background: transparent; color: rgba(160, 160, 170, 0.35); }
         }
         #promptInput {
             caret-color: transparent;
@@ -441,6 +443,139 @@
         .canvas-menu-item:hover {
             background-color: #28282c !important;
         }
+
+        /* Console text response */
+        .console-response {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #C9C9C9;
+        }
+        .console-response p { margin-bottom: 10px; }
+        .console-response p:last-child { margin-bottom: 0; }
+        .console-response ul {
+            margin: 4px 0 10px 0;
+            padding-left: 16px;
+            list-style: none;
+        }
+        .console-response ul li {
+            position: relative;
+            padding-left: 4px;
+            margin-bottom: 4px;
+        }
+        .console-response ul li::before {
+            content: '•';
+            position: absolute;
+            left: -12px;
+            color: #6D6D77;
+        }
+        .console-response code {
+            font-family: 'SF Mono', 'Fira Code', Menlo, Monaco, monospace;
+            font-size: 12px;
+            background: #1E1E21;
+            padding: 1px 5px;
+            border-radius: 3px;
+            color: #c9c9c9;
+        }
+        .console-response strong {
+            font-weight: 600;
+            color: #D3D3D3;
+        }
+
+        /* Task module */
+        .task-module {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 8px 0 0;
+            margin: -8px 0 -8px;
+            transition: border-color 0.2s ease;
+        }
+        .task-module:hover,
+        .task-module.expanded { border-color: #1E1E21; }
+        .task-module.expanded:hover { border-color: #3e3e44; }
+        .task-header {
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .task-module .task-dot {
+            opacity: 1;
+            transition: opacity 0.2s ease;
+        }
+        .task-module:hover .task-dot,
+        .task-module.expanded .task-dot { opacity: 0; }
+        .task-expand-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(calc(-50% - 4px));
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .task-module:hover .task-expand-icon,
+        .task-module.expanded .task-expand-icon { opacity: 1; }
+        .task-subtitle-wrap { position: relative; height: 1.4em; }
+        .task-subtitle-default, .task-subtitle-hover { transition: opacity 0.2s ease; }
+        .task-subtitle-hover { position: absolute; top: 0; left: 0; }
+        .task-module .task-subtitle-default { opacity: 1; }
+        .task-module .task-subtitle-hover { opacity: 0; }
+        .task-module:not(.expanded):hover .task-subtitle-default { opacity: 0; }
+        .task-module:not(.expanded):hover .task-subtitle-hover { opacity: 1; }
+        .task-header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+        }
+        .task-header-top { display: flex; align-items: center; gap: 6px; }
+        .task-label { font-size: 13px; font-weight: 600; color: #D3D3D3; }
+        @keyframes taskShimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        .text-shimmer {
+            background: linear-gradient(90deg, #6D6D77 0%, #6D6D77 40%, #A0A0AA 50%, #6D6D77 60%, #6D6D77 100%);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: taskShimmer 8s linear infinite;
+        }
+        .task-name { font-size: 13px; font-weight: 500; -webkit-font-smoothing: antialiased; }
+        .task-subtitle {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6D6D77;
+            padding-left: 2px;
+            -webkit-font-smoothing: antialiased;
+            display: inline-flex;
+            align-items: center;
+        }
+        .task-detail {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 400ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .task-module.expanded .task-detail { max-height: 600px; }
+        .task-detail-inner {
+            padding: 12px 0 18px 0;
+            margin: 0 18px;
+            border-top: 1px solid #1E1E21;
+        }
+        .task-body-text {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #6D6D77;
+            margin-top: 12px;
+        }
+        .task-body-text:first-child { margin-top: 0; }
     </style>
 </head>
 <body class="bg-surface-0 text-text-primary h-screen overflow-hidden">
@@ -518,23 +653,23 @@
                         <div id="recentsSection">
                             <div id="recentsHeader" class="chat-section-header" style="display: none;">Recents</div>
                             <div id="recentItems" class="flex flex-col" style="gap: 2px;">
-                                <div class="sidebar-item active" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Active conversation</div>
+                                <div class="sidebar-item active" data-chat="failed-payments" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Failed payments over $500</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
                                     <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
-                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">In-progress conversation</div>
-                                    <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                                <div class="sidebar-item" data-chat="suspicious-refunds" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Suspicious refund activity</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Today · 11:05 AM</div>
                                     <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
-                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
-                                    <div style="font-size: 11px;" class="text-text-muted">Today · 2:38 PM</div>
+                                <div class="sidebar-item" data-chat="mrr-breakdown" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">MRR breakdown by plan</div>
+                                    <div style="font-size: 11px;" class="text-text-muted">Today · 9:12 AM</div>
                                     <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
-                                <div class="sidebar-item" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
-                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Another conversation</div>
+                                <div class="sidebar-item" data-chat="customer-investigation" style="padding: 6px 8px; border-radius: 6px; cursor: pointer;">
+                                    <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">Acme Corp charge disputes</div>
                                     <div style="font-size: 11px;" class="text-text-muted">Yesterday · 8:16 AM</div>
                                     <div class="item-menu-btn"><svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg></div>
                                 </div>
@@ -571,7 +706,7 @@
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
             <!-- Header -->
             <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
-                <span id="convTitle" style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Active conversation</span>
+                <span id="convTitle" style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments over $500</span>
             </div>
 
             <!-- Messages -->
@@ -586,7 +721,7 @@
                                 style="width: 100%; background: transparent; border: none; outline: none; resize: none; font-size: 13px; font-weight: 500; line-height: 1.6; color: #c9c9c9; font-family: inherit; padding: 0; margin: 0; overflow: hidden;"></textarea>
                             <div id="promptOverlay" style="position: absolute; left: 0; top: 5px; display: flex; align-items: center; pointer-events: none;">
                                 <div id="blockCursor"></div>
-                                <span id="promptGhost" style="font-size: 13px; font-weight: 500; color: #555555; white-space: nowrap; -webkit-font-smoothing: antialiased;"></span>
+                                <span id="promptGhost" style="font-size: 13px; font-weight: 500; color: rgba(160, 160, 170, 0.35); white-space: nowrap; -webkit-font-smoothing: antialiased;"></span>
                             </div>
                         </div>
                     </div>
@@ -1181,7 +1316,7 @@
 
             function saveAndClearMessages() {
                 const current = document.querySelector('#chatList .sidebar-item.active');
-                const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message'));
+                const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message, .task-module'));
                 if (current && msgs.length > 0) {
                     current._messages = msgs;
                 }
@@ -1212,55 +1347,68 @@
                     wrapper.remove();
                 });
 
-                if (previousActive) {
+                if (previousActive && !document.querySelector('#chatList .sidebar-item.active')) {
                     previousActive.classList.add('active');
-                    previousActive = null;
                 }
+                previousActive = null;
             }
 
             function summarizeTitle(text) {
-                const noise = new Set(['i','me','my','we','our','you','your','it','its','the','a','an','and','or','but','is','are','was','were','be','been','am','do','does','did','have','has','had','will','would','can','could','should','may','might','shall','to','of','in','on','at','for','with','from','by','as','that','this','these','those','which','who','whom','what','where','when','how','if','then','than','so','not','no','all','each','every','some','any','most','more','also','just','only','very','really','too','about','into','out','up','over','per','via','w/','w','give','show','list','get','find','make','take','put','tell','see','know','want','need','help','try','let','please','thanks','hey','hi','ok','sure','yeah','break','made','number']);
+                let s = text.split(/[.!?]\s/)[0].trim();
+                s = s.replace(/[.!?;:,]+$/, '');
 
-                let s = text.replace(/[.!?]+\s*.*/s, '').trim();
-                s = s.replace(/[.!?;:,]+$/g, '');
+                const leadPatterns = [
+                    /^(hey|hi|hello|ok|sure|thanks|please)\s*,?\s*/i,
+                    /^(can|could|would|will)\s+you\s+(please\s+)?/i,
+                    /^(i('d| would| want to| need to| like to))\s+/i,
+                    /^(i\s+want\s+to\s+(see|know|get|find|have|understand)\s+)/i,
+                    /^(please\s+)/i,
+                    /^(help\s+me\s+(to\s+)?)/i,
+                    /^(show\s+me\s+(the\s+|a\s+|my\s+)?)/i,
+                    /^(give\s+me\s+(the\s+|a\s+|my\s+|an?\s+)?)/i,
+                    /^(tell\s+me\s+(the\s+|a\s+|my\s+|about\s+(the\s+|my\s+)?)?)/i,
+                    /^(get\s+me\s+(the\s+|a\s+|my\s+)?)/i,
+                    /^(find\s+(me\s+)?(the\s+|a\s+|my\s+|all\s+)?)/i,
+                    /^(pull\s+(up\s+|out\s+|together\s+)?(the\s+|a\s+|my\s+|all\s+)?)/i,
+                    /^(list\s+(out\s+|all\s+)?(the\s+|a\s+|my\s+)?)/i,
+                    /^(create\s+(me\s+)?(a\s+|an?\s+)?)/i,
+                    /^(generate\s+(me\s+)?(a\s+|an?\s+)?)/i,
+                    /^(build\s+(me\s+)?(a\s+|an?\s+)?)/i,
+                    /^(write\s+(me\s+)?(a\s+|an?\s+)?)/i,
+                    /^(what\s+is\s+(the\s+|my\s+|our\s+)?)/i,
+                    /^(what\s+are\s+(the\s+|my\s+|our\s+)?)/i,
+                    /^(what's\s+(the\s+|my\s+|our\s+)?)/i,
+                    /^(how\s+(do|does|can|could|would)\s+(i|we|you)\s+)/i,
+                    /^(where\s+(is|are|do|does|can)\s+(the\s+|my\s+)?)/i,
+                ];
+                for (const p of leadPatterns) s = s.replace(p, '');
+
+                s = s.replace(/\s+(please|for me|if you can|if possible|when you get a chance|thanks|thank you)$/i, '');
+
+                const stop = /^(and|but|or|then|also|so)\s+/i;
+                while (stop.test(s)) s = s.replace(stop, '');
+
+                s = s.trim();
+                if (!s) return 'New conversation';
 
                 const words = s.split(/\s+/);
-                const scored = words.map((w, i) => {
-                    const clean = w.toLowerCase().replace(/[^a-z0-9$%]/g, '');
-                    if (!clean) return { w, score: -1 };
-                    const isNoise = noise.has(clean);
-                    const isDollar = /^\$/.test(w);
-                    const isBarNum = /^\d+$/.test(clean);
-                    let score = 0;
-                    if (isDollar) score += 8;
-                    else if (isBarNum) score -= 2;
-                    if (!isNoise) score += 5;
-                    if (clean.length >= 6) score += 3;
-                    else if (clean.length >= 4) score += 1;
-                    score -= i * 0.15;
-                    return { w, score, idx: i };
-                }).filter(x => x.score > 0);
-
-                scored.sort((a, b) => b.score - a.score);
-                const picks = scored.slice(0, 4);
-                picks.sort((a, b) => a.idx - b.idx);
-
-                let title = picks.map(p => p.w).join(' ');
-                title = title.replace(/[.!?,;:\s]+$/g, '');
-                title = title.charAt(0).toUpperCase() + title.slice(1);
-
-                if (title.length > 24) {
-                    const kept = picks.slice(0, 3).sort((a, b) => a.idx - b.idx);
-                    title = kept.map(p => p.w).join(' ');
-                    title = title.replace(/[.!?,;:\s]+$/g, '');
-                    title = title.charAt(0).toUpperCase() + title.slice(1);
+                let title = '';
+                for (let i = 0; i < words.length; i++) {
+                    const next = title ? title + ' ' + words[i] : words[i];
+                    if (next.length > 28) break;
+                    title = next;
                 }
-                if (title.length > 24) {
-                    const kept = picks.slice(0, 2).sort((a, b) => a.idx - b.idx);
-                    title = kept.map(p => p.w).join(' ');
-                    title = title.replace(/[.!?,;:\s]+$/g, '');
-                    title = title.charAt(0).toUpperCase() + title.slice(1);
-                }
+
+                title = title.replace(/[.!?,;:\s]+$/, '');
+                title = title.replace(/\s+(the|a|an|of|in|on|at|for|with|from|by|to|and|or|but|over|about|into|that|which|who|per|via|w\/|w)$/i, '');
+                title = title.replace(/[.!?,;:\s]+$/, '');
+
+                const acronyms = new Set(['MRR','ARR','API','SQL','CSV','JSON','HTML','CSS','URL','AWS','GCP','SDK','KPI','ROI','LTV','CAC','SLA','ARPU','P&L','YoY','MoM','QoQ','B2B','B2C','SaaS','UI','UX','ID','BIN']);
+                title = title.split(/\s+/).map((w, i) => {
+                    if (acronyms.has(w.toUpperCase())) return w.toUpperCase();
+                    if (/^\$/.test(w)) return w;
+                    return i === 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase();
+                }).join(' ');
 
                 return title || 'New conversation';
             }
@@ -1286,10 +1434,13 @@
                 if (pendingItem) commitChat(text);
             };
 
+            let railInteracting = false;
             promptInput.addEventListener('blur', () => {
                 if (pendingItem) {
                     decayTimer = setTimeout(() => {
                         if (!pendingItem || document.activeElement === promptInput) return;
+                        if (!pendingItem.classList.contains('active')) return;
+                        if (railInteracting) { railInteracting = false; return; }
                         const active = document.activeElement;
                         const inRail = els.rail.contains(active) || active === newChatBtn || active === newBtnExpanded;
                         if (inRail) return;
@@ -1298,10 +1449,10 @@
                 }
             });
 
-            newChatBtn.addEventListener('mousedown', () => clearTimeout(decayTimer));
-            newBtnExpanded.addEventListener('mousedown', () => clearTimeout(decayTimer));
-            document.getElementById('railEdge').addEventListener('mousedown', () => clearTimeout(decayTimer));
-            document.getElementById('railCollapsed').addEventListener('mousedown', () => clearTimeout(decayTimer));
+            newChatBtn.addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
+            newBtnExpanded.addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
+            document.getElementById('railEdge').addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
+            document.getElementById('railCollapsed').addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
 
             newChatBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1536,7 +1687,7 @@
                 const convTitle = document.getElementById('convTitle');
 
                 if (current) {
-                    const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message'));
+                    const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message, .task-module'));
                     current._messages = msgs;
                     msgs.forEach(m => m.remove());
                 }
@@ -1588,7 +1739,13 @@
                     const rhH = recentsHeader.offsetHeight;
                     const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
 
-                    recentItems.prepend(item);
+                    const emptyChat = recentItems.querySelector('.sidebar-item.empty-state');
+                    if (emptyChat) {
+                        const emptyParent = emptyChat.closest('div[style*="overflow"]') || emptyChat;
+                        emptyParent.after(item);
+                    } else {
+                        recentItems.prepend(item);
+                    }
 
                     const phWrap = document.createElement('div');
                     phWrap.style.cssText = `height: ${phH}px; overflow: hidden;`;
@@ -1774,7 +1931,13 @@
                         wrapper.appendChild(item);
 
                         if (isPinned) {
-                            recentItems.prepend(wrapper);
+                            const emptyChat = recentItems.querySelector('.sidebar-item.empty-state');
+                            if (emptyChat) {
+                                const emptyParent = emptyChat.closest('div[style*="overflow"]') || emptyChat;
+                                emptyParent.after(wrapper);
+                            } else {
+                                recentItems.prepend(wrapper);
+                            }
                         } else {
                             pinnedItems.appendChild(wrapper);
                         }
@@ -2081,6 +2244,89 @@
                 }
             }
         });
+
+        // ── Seed chat conversations ────────────────────────
+        (function seedChats() {
+            const chatData = {
+                'failed-payments': {
+                    prompt: 'Pull all failed payments over $500 from December, break them down by decline code and issuing bank.',
+                    task: 'Find failed payments',
+                    tools: 3,
+                    response: '<p>Here are the failed payments over $500 from December, broken down by decline code and issuing bank.</p><p>A few things stand out:</p><ul><li><strong>Total failed charges:</strong> 1,247 across 340 unique customers</li><li><strong>Top decline code:</strong> <code>card_declined</code> at 43%, followed by <code>insufficient_funds</code> at 28%</li><li><strong>Highest-volume issuer:</strong> Chase accounts for 31% of all failures — disproportionate to their 19% share of total volume</li></ul><p>The artifact to the right has the full breakdown. Worth noting: retry rates for Chase-issued cards are at 22%, well above the 15% threshold.</p>'
+                },
+                'suspicious-refunds': {
+                    prompt: 'Flag any customers with more than 3 refunds in the last 30 days. Include the total refunded amount and original charge details.',
+                    task: 'Scan refund activity',
+                    tools: 4,
+                    response: '<p>I found 18 customers with more than 3 refunds in the past 30 days. Here\'s what stands out:</p><ul><li><strong>Highest refund count:</strong> <code>cus_R8k2mNpQ</code> with 11 refunds totaling $4,280</li><li><strong>Pattern detected:</strong> 6 of the 18 customers share the same BIN range (424242), suggesting possible card testing</li><li><strong>Refund-to-charge ratio:</strong> 3 customers have ratios above 80%, which typically triggers Stripe\'s early fraud warning</li></ul><p>I\'d recommend reviewing the top 6 accounts flagged in the artifact. Two of them have active disputes pending.</p>'
+                },
+                'mrr-breakdown': {
+                    prompt: 'What\'s my current MRR broken down by plan tier? Include the change from last month.',
+                    task: 'Calculate MRR',
+                    tools: 2,
+                    response: '<p>Here\'s your MRR breakdown by plan tier as of today:</p><ul><li><strong>Enterprise:</strong> $182,400/mo — up 6.2% from last month (+$10,600)</li><li><strong>Pro:</strong> $94,300/mo — up 3.1% (+$2,830)</li><li><strong>Starter:</strong> $23,100/mo — down 1.4% (-$328)</li></ul><p>Total MRR is <strong>$299,800</strong>, up 4.6% month-over-month. Enterprise growth is driving most of the increase — 8 new accounts landed in the last 2 weeks. Starter churn is slightly elevated; 12 downgrades this month vs. 7 last month.</p>'
+                },
+                'customer-investigation': {
+                    prompt: 'Look into all charge disputes filed by Acme Corp (cus_Nk4pLmQ9) in the last 90 days. What\'s the pattern?',
+                    task: 'Investigate disputes',
+                    tools: 5,
+                    response: '<p>Acme Corp has filed 7 disputes in the last 90 days totaling $12,340. Here\'s the pattern:</p><ul><li><strong>Dispute reason:</strong> All 7 are <code>product_not_received</code> — none are fraud-related</li><li><strong>Timing:</strong> Disputes are filed exactly 14 days after each charge, suggesting an internal process rather than genuine non-delivery</li><li><strong>Win rate:</strong> You\'ve won 2 of 3 that have been resolved, with strong delivery evidence</li></ul><p>This looks like a procurement team following a standard review process rather than actual fraud. I\'d recommend reaching out to their accounts payable contact to streamline — the remaining 4 disputes are still open and within the response window.</p>'
+                }
+            };
+
+            const taskDotSvg = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="margin-right: 4px; position: relative; top: -2px;"><path d="M1 2.5V6.5C1 7.6 1.9 8.5 3 8.5H7.5" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round"/></svg>';
+            const expandSvg = '<svg class="task-expand-icon" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M8 2L11 5M8 2L5 5M8 14L11 11M8 14L5 11" stroke="#6D6D77" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+            function buildMessages(data) {
+                const userMsg = document.createElement('div');
+                userMsg.className = 'user-message flex items-start justify-between w-full linear-border';
+                userMsg.setAttribute('style', 'min-height: 32px; padding: 5px 14px; border-radius: 6px; cursor: pointer; box-sizing: border-box;');
+                userMsg.innerHTML = '<span class="flex-1" style="font-size: 13px; font-weight: 400; line-height: 1.6; color: #c9c9c9;">' + data.prompt + '</span>';
+                userMsg.addEventListener('click', () => userMsg.classList.toggle('expanded'));
+
+                const taskEl = document.createElement('div');
+                taskEl.className = 'task-module';
+                taskEl.innerHTML =
+                    '<div class="task-header">' +
+                        '<div class="task-dot shrink-0" style="padding-top: 7px;"><div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2e2e32;"></div></div>' +
+                        '<div class="task-header-left">' +
+                            '<div class="task-header-top"><span class="task-label">Task</span><span class="task-name text-shimmer">' + data.task + '</span></div>' +
+                            '<div class="task-subtitle-wrap">' +
+                                '<div class="task-subtitle task-subtitle-default">' + taskDotSvg + 'Used ' + data.tools + ' tools</div>' +
+                                '<div class="task-subtitle task-subtitle-hover">' + taskDotSvg + 'Click to expand</div>' +
+                            '</div>' +
+                        '</div>' +
+                        expandSvg +
+                    '</div>' +
+                    '<div class="task-detail"><div class="task-detail-inner"><div class="task-body-text">Querying the Stripe API and analytics warehouse to gather the requested data.</div></div></div>';
+                taskEl.querySelector('.task-header').addEventListener('click', () => taskEl.classList.toggle('expanded'));
+
+                const respEl = document.createElement('div');
+                respEl.className = 'assistant-message flex items-start w-full';
+                respEl.setAttribute('style', 'gap: 10px; padding: 5px 0;');
+                respEl.innerHTML =
+                    '<div class="shrink-0" style="padding-top: 7px;"><div style="width: 8px; height: 8px; border-radius: 1.5px; background: #2e2e32;"></div></div>' +
+                    '<div class="console-response flex-1" style="min-width: 0;">' + data.response + '</div>';
+
+                return [userMsg, taskEl, respEl];
+            }
+
+            document.querySelectorAll('#chatList .sidebar-item[data-chat]').forEach(item => {
+                const key = item.dataset.chat;
+                if (chatData[key]) {
+                    const msgs = buildMessages(chatData[key]);
+                    item._messages = msgs;
+                    item._originalTitle = item.querySelector('div').textContent;
+                }
+            });
+
+            const activeItem = document.querySelector('#chatList .sidebar-item.active');
+            if (activeItem && activeItem._messages) {
+                const messagesList = document.getElementById('messagesList');
+                const promptRow = document.getElementById('promptRow');
+                activeItem._messages.forEach(m => messagesList.insertBefore(m, promptRow));
+            }
+        })();
 
         // ── Initialize ────────────────────────
         setRailOpen(false);
