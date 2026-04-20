@@ -292,6 +292,9 @@
         .sidebar-item.empty-state div:first-child {
             color: #6D6D77;
         }
+        .sidebar-item.empty-state .item-menu-btn {
+            display: none;
+        }
         @keyframes renameBlink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
@@ -571,7 +574,7 @@
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
             <!-- Header -->
             <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
-                <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Conversation title</span>
+                <span id="convTitle" style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Active conversation</span>
             </div>
 
             <!-- Messages -->
@@ -651,10 +654,10 @@
             </div>
 
             <!-- Canvas content area -->
-            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 32px 56px 0; border-radius: 6px; min-height: 0;">
+            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
-                <div class="flex items-center justify-between w-full shrink-0" style="height: auto; margin-bottom: 16px;">
-                    <span id="canvasHeading" style="font-size: 20px; font-weight: 600; letter-spacing: -0.3px;" class="text-text-primary">Chart heading</span>
+                <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
+                    <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
                     <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
@@ -862,6 +865,14 @@
                     item.style.display = '';
                     if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
                 });
+                const pinnedSection = document.getElementById('pinnedSection');
+                const pinnedItems = document.getElementById('pinnedItems');
+                const recentsHeader = document.getElementById('recentsHeader');
+                const recentItems = document.getElementById('recentItems');
+                const hasPinned = pinnedItems.querySelectorAll('.sidebar-item').length > 0;
+                const hasRecents = recentItems.querySelectorAll('.sidebar-item').length > 0;
+                pinnedSection.style.display = hasPinned ? '' : 'none';
+                recentsHeader.style.display = (hasPinned && hasRecents) ? '' : 'none';
             }
         }
 
@@ -896,11 +907,16 @@
             const pinnedItems = document.getElementById('pinnedItems');
             const recentsHeader = document.getElementById('recentsHeader');
             const recentItems = document.getElementById('recentItems');
+            const hasPinned = pinnedItems.querySelectorAll('.sidebar-item').length > 0;
+            const hasRecents = recentItems.querySelectorAll('.sidebar-item').length > 0;
             if (q) {
                 const hasPinnedVisible = pinnedItems.querySelector('.sidebar-item:not([style*="display: none"])');
                 const hasRecentsVisible = recentItems.querySelector('.sidebar-item:not([style*="display: none"])');
                 pinnedSection.style.display = hasPinnedVisible ? '' : 'none';
                 recentsHeader.style.display = hasRecentsVisible && hasPinnedVisible ? '' : 'none';
+            } else {
+                pinnedSection.style.display = hasPinned ? '' : 'none';
+                recentsHeader.style.display = (hasPinned && hasRecents) ? '' : 'none';
             }
         });
 
@@ -1116,6 +1132,8 @@
                 if (pendingItem) { flashPendingItem(); return; }
                 creating = true;
 
+                saveAndClearMessages();
+
                 previousActive = recentItems.querySelector('.sidebar-item.active');
                 if (previousActive) previousActive.classList.remove('active');
 
@@ -1153,7 +1171,6 @@
                 pendingItem = item;
                 creating = false;
 
-                clearMessages();
                 promptInput.value = '';
                 promptInput.style.height = 'auto';
                 const overlay = document.getElementById('promptOverlay');
@@ -1165,9 +1182,13 @@
                 promptInput.focus();
             }
 
-            function clearMessages() {
-                const messages = messagesList.querySelectorAll('.user-message, .assistant-message');
-                messages.forEach(m => m.remove());
+            function saveAndClearMessages() {
+                const current = document.querySelector('#chatList .sidebar-item.active');
+                const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message'));
+                if (current && msgs.length > 0) {
+                    current._messages = msgs;
+                }
+                msgs.forEach(m => m.remove());
             }
 
             function removeEmptyChat() {
@@ -1211,9 +1232,11 @@
                     const clean = w.toLowerCase().replace(/[^a-z0-9$%]/g, '');
                     if (!clean) return { w, score: -1 };
                     const isNoise = noise.has(clean);
-                    const hasNum = /\d/.test(w) || /^\$/.test(w);
+                    const isDollar = /^\$/.test(w);
+                    const isBarNum = /^\d+$/.test(clean);
                     let score = 0;
-                    if (hasNum) score += 8;
+                    if (isDollar) score += 8;
+                    else if (isBarNum) score -= 2;
                     if (!isNoise) score += 5;
                     if (clean.length >= 6) score += 3;
                     else if (clean.length >= 4) score += 1;
@@ -1259,6 +1282,7 @@
                 titleEl.style.color = '';
 
                 item._originalTitle = title;
+                document.getElementById('convTitle').textContent = title;
             }
 
             window._commitNewChat = function(text) {
@@ -1279,6 +1303,8 @@
 
             newChatBtn.addEventListener('mousedown', () => clearTimeout(decayTimer));
             newBtnExpanded.addEventListener('mousedown', () => clearTimeout(decayTimer));
+            document.getElementById('railEdge').addEventListener('mousedown', () => clearTimeout(decayTimer));
+            document.getElementById('railCollapsed').addEventListener('mousedown', () => clearTimeout(decayTimer));
 
             newChatBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1504,9 +1530,40 @@
 
                 const item = e.target.closest('.sidebar-item');
                 if (!item) return;
+                const current = document.querySelector('#chatList .sidebar-item.active');
+                if (current === item) return;
+
+                const messagesList = document.getElementById('messagesList');
+                const promptRow = document.getElementById('promptRow');
+                const promptInput = document.getElementById('promptInput');
+                const convTitle = document.getElementById('convTitle');
+
+                if (current) {
+                    const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message'));
+                    current._messages = msgs;
+                    msgs.forEach(m => m.remove());
+                }
+
                 const allItems = document.querySelectorAll('#chatList .sidebar-item');
                 allItems.forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
+
+                if (item._messages && item._messages.length > 0) {
+                    item._messages.forEach(m => messagesList.insertBefore(m, promptRow));
+                }
+
+                const titleEl = item.querySelector('div');
+                convTitle.textContent = titleEl.textContent || 'New conversation';
+
+                promptInput.value = '';
+                promptInput.style.height = 'auto';
+                const overlay = document.getElementById('promptOverlay');
+                const ghost = document.getElementById('promptGhost');
+                const cursor = document.getElementById('blockCursor');
+                overlay.style.display = 'flex';
+                cursor.textContent = 'A';
+                ghost.textContent = 'sk anything';
+                promptInput.focus();
             });
 
             pinRow.addEventListener('click', (e) => {
@@ -1829,6 +1886,10 @@
 
                     titleEl.textContent = newTitle;
                     item._originalTitle = newTitle;
+
+                    if (item.classList.contains('active')) {
+                        document.getElementById('convTitle').textContent = newTitle;
+                    }
 
                     hiddenInput.removeEventListener('input', updateDisplay);
                     hiddenInput.removeEventListener('blur', onBlur);
