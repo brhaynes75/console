@@ -300,18 +300,15 @@
             51%, 100% { opacity: 0; }
         }
         .sidebar-item .rename-area {
-            display: flex;
-            align-items: center;
             position: relative;
             overflow: hidden;
-            height: 21px;
+            white-space: nowrap;
         }
         .sidebar-item .rename-typed {
             font-size: 13px;
             font-weight: 500;
             color: #D3D3D3;
             white-space: pre;
-            flex-shrink: 0;
         }
         .sidebar-item .rename-cursor {
             position: absolute;
@@ -325,7 +322,7 @@
         }
         .sidebar-item .rename-ghost {
             font-size: 13px;
-            font-weight: 400;
+            font-weight: 500;
             color: #4a4a50;
             white-space: nowrap;
         }
@@ -1847,17 +1844,20 @@
                 const titleEl = item.querySelector('div');
                 const originalTitle = titleEl.textContent;
 
-                const renameArea = document.createElement('div');
-                renameArea.className = 'rename-area';
-                renameArea.innerHTML = '<span class="rename-typed"></span><span class="rename-cursor"></span><span class="rename-ghost"></span>';
+                titleEl.classList.remove('truncate');
+                titleEl.classList.add('rename-area');
+                titleEl.innerHTML = '<span class="rename-typed"></span><span class="rename-cursor" style="display:none;"></span><span class="rename-ghost" style="display:none;"></span>';
 
-                titleEl.textContent = '';
-                titleEl.appendChild(renameArea);
-                renameArea.querySelector('.rename-ghost').textContent = originalTitle;
+                const renameArea = titleEl;
+                const typed = titleEl.querySelector('.rename-typed');
+                const cursor = titleEl.querySelector('.rename-cursor');
+                const ghost = titleEl.querySelector('.rename-ghost');
+                ghost.textContent = originalTitle;
 
-                const typed = renameArea.querySelector('.rename-typed');
-                const cursor = renameArea.querySelector('.rename-cursor');
-                const ghost = renameArea.querySelector('.rename-ghost');
+                const sSpan = document.createElement('span');
+                sSpan.textContent = originalTitle;
+                sSpan.style.cssText = 'background: rgba(59,130,246,0.4); border-radius: 1px;';
+                typed.appendChild(sSpan);
 
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'text';
@@ -1865,10 +1865,13 @@
                 hiddenInput.style.cssText = 'position: absolute; left: -9999px; opacity: 0;';
                 renameArea.appendChild(hiddenInput);
 
+                hiddenInput.value = originalTitle;
+
                 function updateDisplay() {
                     const val = hiddenInput.value;
                     typed.textContent = val;
                     ghost.style.display = val.length > 0 ? 'none' : '';
+                    cursor.style.display = (hiddenInput.selectionStart !== hiddenInput.selectionEnd) ? 'none' : '';
                     const textW = typed.offsetWidth;
                     const areaW = renameArea.offsetWidth;
                     if (textW > areaW - 4) {
@@ -1884,6 +1887,8 @@
                     const val = hiddenInput.value.trim();
                     const newTitle = val || originalTitle;
 
+                    titleEl.classList.remove('rename-area');
+                    titleEl.classList.add('truncate');
                     titleEl.textContent = newTitle;
                     item._originalTitle = newTitle;
 
@@ -1900,6 +1905,52 @@
                     setTimeout(commit, 80);
                 }
 
+                function updateSelection() {
+                    const start = hiddenInput.selectionStart;
+                    const end = hiddenInput.selectionEnd;
+                    const val = hiddenInput.value;
+                    if (start !== end && val.length > 0) {
+                        cursor.style.display = 'none';
+                        const before = val.substring(0, start);
+                        const sel = val.substring(start, end);
+                        const after = val.substring(end);
+                        typed.innerHTML = '';
+                        if (before) {
+                            const bSpan = document.createElement('span');
+                            bSpan.textContent = before;
+                            typed.appendChild(bSpan);
+                        }
+                        const sSpan = document.createElement('span');
+                        sSpan.textContent = sel;
+                        sSpan.style.cssText = 'background: rgba(59,130,246,0.4); border-radius: 1px;';
+                        typed.appendChild(sSpan);
+                        if (after) {
+                            const aSpan = document.createElement('span');
+                            aSpan.textContent = after;
+                            typed.appendChild(aSpan);
+                        }
+                    } else {
+                        typed.textContent = val;
+                        cursor.style.display = '';
+                        ghost.style.display = val.length > 0 ? 'none' : '';
+                        const caretPos = start;
+                        const measure = document.createElement('span');
+                        measure.style.cssText = 'font-size:13px;font-weight:500;white-space:pre;visibility:hidden;position:absolute;';
+                        measure.textContent = val.substring(0, caretPos);
+                        renameArea.appendChild(measure);
+                        const caretX = measure.offsetWidth;
+                        measure.remove();
+                        const areaW = renameArea.offsetWidth;
+                        if (caretX > areaW - 4) {
+                            typed.style.transform = 'translateX(' + (areaW - caretX - 4) + 'px)';
+                            cursor.style.left = (areaW - 4) + 'px';
+                        } else {
+                            typed.style.transform = 'translateX(0)';
+                            cursor.style.left = caretX + 'px';
+                        }
+                    }
+                }
+
                 function onKey(ev) {
                     if (ev.key === 'Enter') {
                         ev.preventDefault();
@@ -1911,13 +1962,17 @@
                         hiddenInput.removeEventListener('blur', onBlur);
                         commit();
                     }
+                    requestAnimationFrame(updateSelection);
                 }
 
-                hiddenInput.addEventListener('input', updateDisplay);
+                hiddenInput.addEventListener('input', () => { updateDisplay(); updateSelection(); });
                 hiddenInput.addEventListener('blur', onBlur);
                 hiddenInput.addEventListener('keydown', onKey);
 
-                setTimeout(() => hiddenInput.focus(), 50);
+                setTimeout(() => {
+                    hiddenInput.focus();
+                    hiddenInput.select();
+                }, 50);
             });
 
         })();
