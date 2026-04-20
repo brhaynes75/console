@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console – Conversation Modules</title>
     <script src="/auth.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,7 +33,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-size: 13px;
             font-weight: 500;
             line-height: 1.6;
@@ -847,13 +850,13 @@
         .chart-y-label {
             font-size: 12px;
             fill: #6D6D77;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             text-anchor: end;
         }
         .chart-x-label {
             font-size: 12px;
             fill: #6D6D77;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             text-anchor: middle;
         }
         .chart-line-glow {
@@ -2864,12 +2867,12 @@
     </script>
 
     <!-- ── Config Panel ── -->
-    <button id="configTrigger" style="position: fixed; bottom: 16px; right: 16px; z-index: 9999; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #2c2c30; background: #1a1a1d; color: #6D6D77; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <button id="configTrigger" style="position: fixed; bottom: 16px; right: 16px; z-index: 9999; width: 32px; height: 32px; border-radius: 8px; border: 1px solid #2c2c30; background: #1a1a1d; color: #6D6D77; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: opacity 0.15s ease, border-color 0.15s ease, color 0.15s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2); font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
             <circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v1.25M8 13.25v1.25M1.5 8h1.25M13.25 8h1.25M3.4 3.4l.9.9M11.7 11.7l.9.9M3.4 12.6l.9-.9M11.7 4.3l.9-.9"/>
         </svg>
     </button>
-    <div id="configPanel" style="position: fixed; bottom: 16px; right: 16px; z-index: 10000; background: #1a1a1d; border: 1px solid #2c2c30; border-radius: 10px; padding: 10px 10px 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3); transform-origin: bottom right; transform: scale(0.9); opacity: 0; pointer-events: none; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <div id="configPanel" style="position: fixed; bottom: 16px; right: 16px; z-index: 10000; background: #1a1a1d; border: 1px solid #2c2c30; border-radius: 10px; padding: 10px 10px 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3); transform-origin: bottom right; transform: scale(0.9); opacity: 0; pointer-events: none; transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
             <div style="font-size: 10px; font-weight: 600; color: #6D6D77; text-transform: uppercase; letter-spacing: 0.5px;">Layout</div>
             <button id="configClose" style="width: 16px; height: 16px; border: none; background: transparent; color: #6D6D77; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 3px; transition: color 0.15s ease;">
