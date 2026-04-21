@@ -1825,56 +1825,41 @@
                     const rhH = recentsHeader.offsetHeight;
                     const rhMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
 
+                    const recentItemsList = Array.from(recentItems.querySelectorAll('.sidebar-item'));
+                    const firstRects = new Map();
+                    firstRects.set(item, firstRect);
+                    recentItemsList.forEach(el => firstRects.set(el, el.getBoundingClientRect()));
+
+                    item.setAttribute('style', origStyle);
                     insertByTimestamp(item, recentItems);
+                    pinnedSection.style.display = 'none';
+                    recentsHeader.style.display = 'none';
 
-                    const phWrap = document.createElement('div');
-                    phWrap.style.cssText = `height: ${phH}px; overflow: hidden;`;
-                    pinnedHeader.parentNode.insertBefore(phWrap, pinnedHeader);
-                    phWrap.appendChild(pinnedHeader);
+                    const allItems = Array.from(recentItems.querySelectorAll('.sidebar-item'));
+                    allItems.forEach(el => {
+                        const first = firstRects.get(el);
+                        if (!first) return;
+                        const last = el.getBoundingClientRect();
+                        const dy = first.top - last.top;
+                        if (Math.abs(dy) < 1) return;
+                        el.style.transform = `translateY(${dy}px)`;
+                    });
 
-                    recentsHeader.style.marginTop = '0';
-                    const rhWrap = document.createElement('div');
-                    rhWrap.style.cssText = `height: ${rhH}px; overflow: hidden; margin-top: ${rhMT}px;`;
-                    recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
-                    rhWrap.appendChild(recentsHeader);
+                    recentItems.offsetHeight;
 
-                    pinnedSection.style.marginBottom = psMB + 'px';
-
-                    const lastRect = item.getBoundingClientRect();
-                    const deltaY = firstRect.top - lastRect.top;
-                    item.style.transform = `translateY(${deltaY}px)`;
-                    phWrap.offsetHeight;
-
-                    pinnedHeader.style.transition = `opacity 0.15s ease`;
-                    recentsHeader.style.transition = `opacity 0.15s ease`;
-                    pinnedHeader.style.opacity = '0';
-                    recentsHeader.style.opacity = '0';
-
-                    phWrap.style.transition = `height ${dur}ms ${layoutEase}`;
-                    rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
-                    pinnedSection.style.transition = `margin-bottom ${dur}ms ${layoutEase}`;
-                    item.style.transition = `transform ${dur}ms ${layoutEase}`;
-
-                    phWrap.style.height = '0px';
-                    rhWrap.style.height = '0px';
-                    rhWrap.style.marginTop = '0px';
-                    pinnedSection.style.marginBottom = '0px';
-                    item.style.transform = 'translateY(0)';
-
-                    item.addEventListener('transitionend', function cleanup(ev) {
-                        if (ev.propertyName !== 'transform') return;
-                        item.removeEventListener('transitionend', cleanup);
-                        requestAnimationFrame(() => {
-                            item.setAttribute('style', origStyle);
-                            phWrap.replaceWith(pinnedHeader);
-                            rhWrap.replaceWith(recentsHeader);
-                            pinnedSection.removeAttribute('style');
-                            pinnedSection.style.display = 'none';
-                            pinnedHeader.removeAttribute('style');
-                            recentsHeader.removeAttribute('style');
-                            recentsHeader.style.display = 'none';
+                    allItems.forEach(el => {
+                        if (!el.style.transform) return;
+                        el.style.transition = `transform 300ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
+                        el.style.transform = 'translateY(0)';
+                        el.addEventListener('transitionend', function end(ev) {
+                            if (ev.propertyName !== 'transform') return;
+                            el.removeEventListener('transitionend', end);
+                            el.style.transition = '';
+                            el.style.transform = '';
                         });
                     });
+
+                    updateSections();
                 } else if (!isPinned && pinnedItems.children.length === 0) {
                     const pinnedSection = document.getElementById('pinnedSection');
                     const recentsHeader = document.getElementById('recentsHeader');
@@ -1985,88 +1970,79 @@
                             updateSections();
                         });
                     });
-                } else {
-                    const dur = 220;
-                    const ease = 'cubic-bezier(0.15, 0.9, 0.2, 1.18)';
-                    const layoutEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
-
+                } else if (isPinned) {
+                    const flipEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
                     const recentsHeader = document.getElementById('recentsHeader');
-                    const recentsCount = recentItems.querySelectorAll('.sidebar-item').length;
-                    const pinnedCount = pinnedItems.querySelectorAll('.sidebar-item').length;
-                    const recentsWillAppear = isPinned && recentsCount === 0 && pinnedCount > 1;
 
-                    item.style.transition = 'opacity 0.15s ease';
-                    item.style.opacity = '0';
+                    const pinnedSiblings = Array.from(pinnedItems.querySelectorAll('.sidebar-item'));
+                    const recentSiblings = Array.from(recentItems.querySelectorAll('.sidebar-item'));
+                    const allEls = [item, ...pinnedSiblings, ...recentSiblings];
+                    const firstRects = new Map();
+                    allEls.forEach(el => firstRects.set(el, el.getBoundingClientRect()));
 
-                    setTimeout(() => {
-                        const placeholder = document.createElement('div');
-                        placeholder.style.cssText = `height: ${h}px; overflow: hidden;`;
-                        item.parentElement.insertBefore(placeholder, item);
-                        item.remove();
+                    item.setAttribute('style', origStyle);
+                    insertByTimestamp(item, recentItems);
+                    updateSections();
 
-                        const wrapper = document.createElement('div');
-                        wrapper.style.cssText = `height: 0; overflow: hidden; margin-left: -4px; margin-right: -4px; padding-left: 4px; padding-right: 4px;`;
-                        item.setAttribute('style', origStyle);
-                        item.style.opacity = '0';
-                        wrapper.appendChild(item);
+                    allEls.forEach(el => {
+                        const first = firstRects.get(el);
+                        if (!first) return;
+                        const last = el.getBoundingClientRect();
+                        const dy = first.top - last.top;
+                        if (Math.abs(dy) < 1) return;
+                        el.style.transform = `translateY(${dy}px)`;
+                    });
 
-                        if (isPinned) {
-                            insertByTimestamp(wrapper, recentItems);
-                        } else {
-                            pinnedItems.appendChild(wrapper);
-                        }
+                    recentItems.offsetHeight;
 
-                        let rhWrap = null;
-                        let rhTargetH = 0;
-                        let rhTargetMT = 0;
-
-                        if (recentsWillAppear) {
-                            recentsHeader.style.display = '';
-                            rhTargetH = recentsHeader.offsetHeight;
-                            rhTargetMT = parseFloat(getComputedStyle(recentsHeader).marginTop) || 0;
-                            recentsHeader.style.opacity = '0';
-                            recentsHeader.style.marginTop = '0';
-                            rhWrap = document.createElement('div');
-                            rhWrap.style.cssText = 'height: 0; overflow: hidden;';
-                            recentsHeader.parentNode.insertBefore(rhWrap, recentsHeader);
-                            rhWrap.appendChild(recentsHeader);
-                        } else {
-                            updateSections();
-                        }
-
-                        placeholder.offsetHeight;
-                        const t = `height ${dur}ms ${layoutEase}`;
-                        placeholder.style.transition = t;
-                        wrapper.style.transition = t;
-                        placeholder.style.height = '0px';
-                        wrapper.style.height = h + 'px';
-
-                        if (rhWrap && recentsWillAppear) {
-                            rhWrap.style.transition = `height ${dur}ms ${layoutEase}, margin-top ${dur}ms ${layoutEase}`;
-                            rhWrap.style.height = rhTargetH + 'px';
-                            rhWrap.style.marginTop = rhTargetMT + 'px';
-                            recentsHeader.style.transition = `opacity ${dur}ms ease`;
-                            recentsHeader.style.opacity = '1';
-                        }
-
-                        item.style.transition = `opacity ${dur}ms ease`;
-                        item.style.opacity = '1';
-
-                        wrapper.addEventListener('transitionend', function cleanup(ev) {
-                            if (ev.propertyName !== 'height') return;
-                            wrapper.removeEventListener('transitionend', cleanup);
-                            requestAnimationFrame(() => {
-                                item.setAttribute('style', origStyle);
-                                wrapper.replaceWith(item);
-                                placeholder.remove();
-                                if (rhWrap) {
-                                    rhWrap.replaceWith(recentsHeader);
-                                    recentsHeader.removeAttribute('style');
-                                }
-                                updateSections();
-                            });
+                    allEls.forEach(el => {
+                        if (!el.style.transform) return;
+                        el.style.transition = `transform 300ms ${flipEase}`;
+                        el.style.transform = 'translateY(0)';
+                        el.addEventListener('transitionend', function end(ev) {
+                            if (ev.propertyName !== 'transform') return;
+                            el.removeEventListener('transitionend', end);
+                            el.style.transition = '';
+                            el.style.transform = '';
                         });
-                    }, 160);
+                    });
+                } else {
+                    const flipEase = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const pinnedSection = document.getElementById('pinnedSection');
+
+                    const recentSiblings = Array.from(recentItems.querySelectorAll('.sidebar-item'));
+                    const pinnedSiblings = Array.from(pinnedItems.querySelectorAll('.sidebar-item'));
+                    const allEls = [item, ...recentSiblings, ...pinnedSiblings];
+                    const firstRects = new Map();
+                    allEls.forEach(el => firstRects.set(el, el.getBoundingClientRect()));
+
+                    item.setAttribute('style', origStyle);
+                    pinnedItems.appendChild(item);
+                    updateSections();
+
+                    allEls.forEach(el => {
+                        const first = firstRects.get(el);
+                        if (!first) return;
+                        const last = el.getBoundingClientRect();
+                        const dy = first.top - last.top;
+                        if (Math.abs(dy) < 1) return;
+                        el.style.transform = `translateY(${dy}px)`;
+                    });
+
+                    pinnedItems.offsetHeight;
+
+                    allEls.forEach(el => {
+                        if (!el.style.transform) return;
+                        el.style.transition = `transform 300ms ${flipEase}`;
+                        el.style.transform = 'translateY(0)';
+                        el.addEventListener('transitionend', function end(ev) {
+                            if (ev.propertyName !== 'transform') return;
+                            el.removeEventListener('transitionend', end);
+                            el.style.transition = '';
+                            el.style.transform = '';
+                        });
+                    });
                 }
             });
 
