@@ -364,6 +364,42 @@
         #recentsHeader {
             margin-top: 4px;
         }
+        #newBtnWrap {
+            position: relative;
+            z-index: 2;
+            margin: 0 -18px -12px;
+            padding: 0 18px 20px;
+            background: linear-gradient(to bottom, #101012 60%, transparent);
+        }
+
+        #chatList {
+            scrollbar-gutter: stable;
+        }
+        #chatList::-webkit-scrollbar {
+            width: 4px;
+        }
+        #chatList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #chatList::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 2px;
+            transition: background 0.3s ease;
+        }
+        #chatList.scrolling::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+        }
+
+        #railBottom::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 100%;
+            height: 32px;
+            background: linear-gradient(to bottom, transparent, #101012);
+            pointer-events: none;
+        }
         .rail-bottom-row {
             margin-left: -4px;
             margin-right: -4px;
@@ -746,18 +782,19 @@
 
             <!-- ── Expanded view (sidebar) ── -->
             <div id="railExpanded" class="absolute inset-0 flex flex-col" style="width: 230px; padding: 66px 18px 0 18px; opacity: 0; pointer-events: none; transition: opacity 250ms ease;">
-                <div id="railExpandedInner" class="flex flex-col" style="gap: 22px; min-height: 0;">
+                <div id="railExpandedInner" class="flex flex-col" style="gap: 0; min-height: 0; position: relative;">
                     <!-- + New button -->
-                    <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
-                        <span class="flex items-center text-text-primary" style="gap: 6px;">
-                            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
-                            New
-                        </span>
+                    <div id="newBtnWrap">
+                        <div id="newBtnExpanded" class="flex items-center justify-center linear-border" style="height: 32px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; transition: height 200ms ease, opacity 200ms ease; overflow: hidden; user-select: none;">
+                            <span class="flex items-center text-text-primary" style="gap: 6px;">
+                                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M8 3V13M3 8H13"/></svg>
+                                New
+                            </span>
+                        </div>
                     </div>
 
                     <!-- Conversation list -->
-                    <!-- Conversation list -->
-                    <div id="chatList" class="flex-1 overflow-y-auto flex flex-col" style="gap: 0; min-height: 0; padding: 0 4px;">
+                    <div id="chatList" class="flex-1 overflow-y-auto flex flex-col" style="gap: 0; min-height: 0; padding: 16px 4px 0; margin-right: -18px; padding-right: 18px;">
                         <div id="pinnedSection" style="display: none;">
                             <div class="chat-section-header">Pinned</div>
                             <div id="pinnedItems" class="flex flex-col" style="gap: 2px;"></div>
@@ -793,7 +830,7 @@
             </div>
 
             <!-- ── Bottom icons (persistent across states) ── -->
-            <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2;">
+            <div id="railBottom" class="absolute bottom-0 left-0 right-0 flex flex-col" style="padding: 0 18px 18px 18px; pointer-events: auto; z-index: 2; background: #101012;">
                 <div class="flex flex-col" style="gap: 2px;">
                     <div class="rail-bottom-row flex items-center" data-tooltip="Go to Dashboard" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #c9c9c9;"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><g clip-path="url(#clip0_switcher)"><path d="M4.01562 5.58594C4.01562 6.76868 4.01562 8.36941 4.01562 9.39124C4.01562 9.94353 4.46334 10.3906 5.01562 10.3906H14.2656C14.8179 10.3906 15.2656 9.94291 15.2656 9.39062V1.78125C15.2656 1.22897 14.8179 0.78125 14.2656 0.78125H5.01563C4.46334 0.78125 4.01562 1.22897 4.01562 1.78125V3.18359" stroke="currentColor" stroke-width="1.5"/><path d="M10.0156 5.58594L1.76563 5.58594C1.21334 5.58594 0.765626 6.03365 0.765626 6.58594L0.765625 14.1953C0.765625 14.7476 1.21334 15.1953 1.76562 15.1953L11.0156 15.1953C11.5679 15.1953 12.0156 14.7476 12.0156 14.1953L12.0156 12.793" stroke="currentColor" stroke-width="1.5"/><path d="M9.00003 7.31155L10.7256 5.58594L9.00003 3.86032" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></g><defs><clipPath id="clip0_switcher"><rect width="16" height="16" fill="white"/></clipPath></defs></svg></span>
@@ -802,8 +839,8 @@
                     <div class="rail-bottom-row flex items-center" data-tooltip="Settings" style="padding: 6px 8px 6px 4px; gap: 12px; overflow: hidden; border-radius: 6px; cursor: pointer;">
                         <span class="shrink-0" style="color: #c9c9c9;">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 8C13.433 8 15 9.567 15 11.5C15 13.433 13.433 15 11.5 15C9.82456 15 8.42548 13.8224 8.08203 12.25H2.625C2.21079 12.25 1.875 11.9142 1.875 11.5C1.875 11.0858 2.21079 10.75 2.625 10.75H8.08203C8.42548 9.17757 9.82456 8.00001 11.5 8ZM11.5 9.5C10.3954 9.50001 9.5 10.3954 9.5 11.5C9.5 12.6046 10.3954 13.5 11.5 13.5C12.6046 13.5 13.5 12.6046 13.5 11.5C13.5 10.3954 12.6046 9.5 11.5 9.5Z" fill="currentColor"/>
-                                <path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 1C6.17545 1 7.57452 2.17756 7.91797 3.75H13.375C13.7892 3.75 14.125 4.08579 14.125 4.5C14.125 4.91421 13.7892 5.25 13.375 5.25H7.91797C7.57452 6.82244 6.17545 8 4.5 8C2.567 8 1 6.433 1 4.5C1 2.567 2.567 1 4.5 1ZM4.5 2.5C3.39543 2.5 2.5 3.39543 2.5 4.5C2.5 5.60457 3.39543 6.5 4.5 6.5C5.60457 6.5 6.5 5.60457 6.5 4.5C6.5 3.39543 5.60457 2.5 4.5 2.5Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.99996 10C9.10453 10 9.99996 9.10457 9.99996 8C9.99996 6.89543 9.10453 6 7.99996 6C6.89539 6 5.99996 6.89543 5.99996 8C5.99996 9.10457 6.89539 10 7.99996 10ZM7.99996 11.5C9.93295 11.5 11.5 9.933 11.5 8C11.5 6.067 9.93295 4.5 7.99996 4.5C6.06696 4.5 4.49996 6.067 4.49996 8C4.49996 9.933 6.06696 11.5 7.99996 11.5Z" fill="currentColor"/>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M7.40917 14.5H8.59082L8.64285 13.6676C8.68604 12.9765 9.12642 12.4062 9.72215 12.1591C10.3207 11.9109 11.0352 12.0054 11.5529 12.4622L12.1784 13.014L13.0139 12.1785L12.4622 11.5531C12.0053 11.0354 11.9109 10.3208 12.1591 9.72222C12.4062 9.12646 12.9765 8.68604 13.6676 8.64285L14.5 8.59082V7.40918L13.6676 7.35715C12.9765 7.31396 12.4062 6.87355 12.1591 6.27781C11.9109 5.67926 12.0053 4.9647 12.4622 4.44695L13.0139 3.82163L12.1784 2.98608L11.553 3.53784C11.0353 3.99467 10.3207 4.0891 9.72218 3.84089C9.12644 3.59384 8.68604 3.02347 8.64285 2.33241L8.59082 1.5H7.40917L7.35715 2.33236C7.31396 3.02345 6.87354 3.59384 6.27778 3.8409C5.67921 4.08913 4.96463 3.99471 4.44686 3.53785L3.82153 2.98609L2.98598 3.82164L3.53784 4.44708C3.99465 4.9648 4.08908 5.67931 3.84088 6.27784C3.59384 6.87357 3.02348 7.31396 2.33245 7.35715L1.5 7.40917V8.59082L2.33241 8.64285C3.02346 8.68604 3.59383 9.12643 3.84089 9.72218C4.0891 10.3207 3.99467 11.0353 3.53784 11.553L2.98597 12.1785L3.82152 13.014L4.44696 12.4622C4.9647 12.0053 5.67925 11.9109 6.27781 12.1591C6.87356 12.4062 7.31396 12.9765 7.35715 13.6676L7.40917 14.5ZM4.51386 14.3779C4.57751 14.3386 4.63866 14.2934 4.69655 14.2424L5.4394 13.5869C5.51167 13.5231 5.61418 13.5078 5.70322 13.5447C5.79219 13.5816 5.85406 13.665 5.86007 13.7612L5.92186 14.7498C5.92668 14.8269 5.93797 14.902 5.95519 14.9748C5.96527 15.0175 5.9774 15.0593 5.99145 15.1002C6.17209 15.6264 6.67094 16 7.2526 16H8.7474C9.32903 16 9.82785 15.6264 10.0085 15.1003C10.0226 15.0594 10.0347 15.0175 10.0448 14.9749C10.062 14.9021 10.0733 14.8269 10.0781 14.7498L10.1399 13.7611C10.1459 13.665 10.2078 13.5816 10.2967 13.5447C10.3858 13.5078 10.4882 13.5232 10.5605 13.5869L11.3033 14.2424C11.3612 14.2935 11.4224 14.3387 11.4861 14.378C11.5234 14.401 11.5615 14.422 11.6004 14.441C12.1001 14.6852 12.717 14.5967 13.1283 14.1854L14.1853 13.1284C14.5966 12.7171 14.6851 12.1002 14.4408 11.6004C14.4218 11.5616 14.4009 11.5234 14.3779 11.4862C14.3385 11.4225 14.2934 11.3614 14.2423 11.3035L13.5869 10.5607C13.5231 10.4884 13.5077 10.3859 13.5447 10.2968C13.5816 10.2078 13.665 10.1459 13.7612 10.1399L14.7498 10.0781C14.8269 10.0733 14.902 10.062 14.9748 10.0448C15.0174 10.0347 15.0593 10.0226 15.1002 10.0086C15.6263 9.82795 16 9.32909 16 8.7474V7.2526C16 6.67093 15.6264 6.17209 15.1002 5.99144C15.0593 5.9774 15.0175 5.96527 14.9748 5.95519C14.902 5.93797 14.8269 5.92668 14.7498 5.92186L13.7612 5.86007C13.665 5.85406 13.5816 5.79219 13.5447 5.70321C13.5078 5.61417 13.5231 5.51166 13.5869 5.43938L14.2423 4.69666C14.2934 4.63873 14.3386 4.57754 14.3779 4.51384C14.4009 4.47658 14.4219 4.43846 14.4409 4.39963C14.6851 3.89987 14.5966 3.28297 14.1853 2.87168L13.1283 1.8147C12.717 1.40342 12.1001 1.31487 11.6004 1.55913C11.5615 1.57811 11.5234 1.5991 11.4861 1.6221C11.4224 1.66142 11.3613 1.70662 11.3033 1.75773L10.5606 2.41309C10.4883 2.47686 10.3858 2.49223 10.2968 2.4553C10.2078 2.41841 10.1459 2.33497 10.1399 2.23884L10.0781 1.25016C10.0733 1.17312 10.062 1.09795 10.0448 1.02516C10.0347 0.982504 10.0226 0.940667 10.0085 0.899751C9.8279 0.373623 9.32906 0 8.7474 0H7.2526C6.67091 0 6.17205 0.373663 5.99142 0.899834C5.97738 0.940737 5.96526 0.982562 5.95518 1.0252C5.93797 1.09798 5.92668 1.17314 5.92186 1.25016L5.86007 2.2388C5.85406 2.33495 5.79218 2.41842 5.70318 2.45532C5.61412 2.49225 5.51159 2.47688 5.43929 2.41309L4.69656 1.75774C4.63865 1.70665 4.57748 1.66146 4.51381 1.62215C4.47655 1.59915 4.43844 1.57817 4.39962 1.55919C3.89985 1.31487 3.2829 1.40341 2.87159 1.81472L1.81461 2.8717C1.40332 3.28298 1.31477 3.89987 1.55903 4.39963C1.57802 4.43848 1.59902 4.47662 1.62203 4.5139C1.66134 4.57758 1.70653 4.63876 1.75763 4.69667L2.41308 5.43951C2.47684 5.51177 2.4922 5.61425 2.45529 5.70326C2.4184 5.79221 2.33499 5.85406 2.23888 5.86007L1.25016 5.92186C1.17311 5.92668 1.09792 5.93797 1.02512 5.9552C0.982451 5.96529 0.940602 5.97742 0.899674 5.99147C0.373587 6.17215 0 6.67097 0 7.2526V8.7474C0 9.32905 0.373619 9.82789 0.899741 10.0085C0.940658 10.0226 0.982497 10.0347 1.02516 10.0448C1.09795 10.062 1.17312 10.0733 1.25016 10.0781L2.23884 10.1399C2.33497 10.1459 2.41841 10.2078 2.4553 10.2968C2.49222 10.3858 2.47686 10.4883 2.41309 10.5606L1.75762 11.3034C1.70654 11.3613 1.66137 11.4225 1.62207 11.4861C1.59906 11.5234 1.57806 11.5615 1.55907 11.6004C1.31475 12.1001 1.40328 12.7171 1.81459 13.1284L2.87157 14.1854C3.28289 14.5967 3.89985 14.6852 4.39963 14.4409C4.43846 14.4219 4.47659 14.4009 4.51386 14.3779Z" fill="currentColor"/>
                             </svg>
                         </span>
                         <span class="rail-bottom-label" style="font-size: 13px; font-weight: 500; line-height: 1.6; color: #c9c9c9; white-space: nowrap; opacity: 0; transition: opacity 150ms ease;">Settings</span>
@@ -1092,10 +1129,12 @@
             state.searching = active;
             const def = els.railTopDefault;
             const search = els.railTopSearch;
-            const newBtn = els.newBtnExpanded;
-            const inner = els.railExpandedInner;
+            const newBtnWrap = document.getElementById('newBtnWrap');
+            const chatList = document.getElementById('chatList');
             const input = els.searchInput;
             const items = els.railExpanded.querySelectorAll('.sidebar-item');
+            const dur = '200ms';
+            const ease = 'cubic-bezier(0.25, 0.1, 0.25, 1)';
 
             const activeItem = els.railExpanded.querySelector('.sidebar-item.active');
 
@@ -1104,9 +1143,10 @@
                 def.style.pointerEvents = 'none';
                 search.style.opacity = '1';
                 search.style.pointerEvents = 'auto';
-                newBtn.style.opacity = '0';
-                newBtn.style.height = '0';
-                inner.style.gap = '0';
+
+                newBtnWrap.style.display = 'none';
+                chatList.style.paddingTop = '0';
+
                 setTimeout(() => input.focus(), 160);
             } else {
                 search.style.opacity = '0';
@@ -1115,9 +1155,10 @@
                 def.style.pointerEvents = 'auto';
                 input.value = '';
                 window.getSelection().removeAllRanges();
-                newBtn.style.opacity = '1';
-                newBtn.style.height = '32px';
-                inner.style.gap = '22px';
+
+                newBtnWrap.style.display = '';
+                chatList.style.paddingTop = '16px';
+
                 items.forEach(item => {
                     item.style.display = '';
                     if (item._originalTitle) item.querySelector('div').textContent = item._originalTitle;
@@ -1164,14 +1205,14 @@
             const pinnedItems = document.getElementById('pinnedItems');
             const recentsHeader = document.getElementById('recentsHeader');
             const recentItems = document.getElementById('recentItems');
-            const hasPinned = pinnedItems.querySelectorAll('.sidebar-item').length > 0;
-            const hasRecents = recentItems.querySelectorAll('.sidebar-item').length > 0;
             if (q) {
-                const hasPinnedVisible = pinnedItems.querySelector('.sidebar-item:not([style*="display: none"])');
-                const hasRecentsVisible = recentItems.querySelector('.sidebar-item:not([style*="display: none"])');
+                const hasPinnedVisible = Array.from(pinnedItems.querySelectorAll('.sidebar-item')).some(el => el.style.display !== 'none');
+                const hasRecentsVisible = Array.from(recentItems.querySelectorAll('.sidebar-item')).some(el => el.style.display !== 'none');
                 pinnedSection.style.display = hasPinnedVisible ? '' : 'none';
                 recentsHeader.style.display = hasRecentsVisible && hasPinnedVisible ? '' : 'none';
             } else {
+                const hasPinned = pinnedItems.querySelectorAll('.sidebar-item').length > 0;
+                const hasRecents = recentItems.querySelectorAll('.sidebar-item').length > 0;
                 pinnedSection.style.display = hasPinned ? '' : 'none';
                 recentsHeader.style.display = (hasPinned && hasRecents) ? '' : 'none';
             }
@@ -1395,10 +1436,11 @@
                 if (previousActive) previousActive.classList.remove('active');
 
                 document.getElementById('convTitle').textContent = 'New conversation';
+                document.getElementById('convMenuBtn').style.display = 'none';
 
                 const item = document.createElement('div');
                 item.className = 'sidebar-item active empty-state';
-                item.setAttribute('style', 'padding: 6px 8px; border-radius: 6px; cursor: pointer; overflow: hidden;');
+                item.setAttribute('style', 'padding: 6px 8px; border-radius: 6px; cursor: pointer;');
                 item.innerHTML = `
                     <div style="font-size: 13px; font-weight: 500;" class="text-text-secondary truncate">New conversation</div>
                     <div style="font-size: 11px;" class="text-text-muted">Just now</div>
@@ -1412,7 +1454,7 @@
                 });
 
                 const wrapper = document.createElement('div');
-                wrapper.style.cssText = 'height: 0; overflow: hidden; transition: height 220ms cubic-bezier(0.25, 0.1, 0.25, 1);';
+                wrapper.style.cssText = 'height: 0; overflow: hidden; transition: height 220ms cubic-bezier(0.25, 0.1, 0.25, 1); margin: 0 -4px; padding: 0 4px;';
                 wrapper.appendChild(item);
                 recentItems.prepend(wrapper);
 
@@ -1495,6 +1537,7 @@
                         nextItem._messages.forEach(m => messagesList.insertBefore(m, promptRow));
                     }
                 }
+                document.getElementById('convMenuBtn').style.display = '';
                 previousActive = null;
             }
 
@@ -1576,6 +1619,7 @@
 
                 item._originalTitle = title;
                 document.getElementById('convTitle').textContent = title;
+                document.getElementById('convMenuBtn').style.display = '';
             }
 
             window._commitNewChat = function(text) {
@@ -1583,12 +1627,16 @@
             };
 
             let railInteracting = false;
+            let lastConvMousedown = 0;
+            els.conv.addEventListener('mousedown', () => { lastConvMousedown = Date.now(); });
+
             promptInput.addEventListener('blur', () => {
                 if (pendingItem) {
                     decayTimer = setTimeout(() => {
                         if (!pendingItem || document.activeElement === promptInput) return;
                         if (!pendingItem.classList.contains('active')) return;
                         if (railInteracting) { railInteracting = false; return; }
+                        if (Date.now() - lastConvMousedown < 300) { promptInput.focus(); return; }
                         const active = document.activeElement;
                         const inRail = els.rail.contains(active) || active === newChatBtn || active === newBtnExpanded;
                         if (inRail) return;
@@ -1965,6 +2013,7 @@
 
                 const titleEl = item.querySelector('div');
                 convTitle.textContent = titleEl.textContent || 'New conversation';
+                document.getElementById('convMenuBtn').style.display = item.classList.contains('empty-state') ? 'none' : '';
 
                 promptInput.value = '';
                 promptInput.style.height = 'auto';
@@ -2464,16 +2513,13 @@
                 setTimeout(() => {
                     closePopup();
 
-                    item.style.transition = 'height 200ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 150ms ease, margin 200ms cubic-bezier(0.25, 0.1, 0.25, 1), padding 200ms cubic-bezier(0.25, 0.1, 0.25, 1)';
-                    item.style.height = itemH + 'px';
-                    item.style.overflow = 'hidden';
-                    item.offsetHeight;
-                    item.style.opacity = '0';
-                    item.style.height = '0px';
-                    item.style.padding = '0 8px';
-                    item.style.marginBottom = '0px';
+                    const wasPinned = item.parentElement && item.parentElement.id === 'pinnedItems';
+                    const pinnedSection = document.getElementById('pinnedSection');
+                    const recentsHeader = document.getElementById('recentsHeader');
+                    const isLastPinned = wasPinned && pinnedItems.querySelectorAll('.sidebar-item').length <= 1 && pinnedSection.style.display !== 'none';
 
-                    if (wasActive) {
+                    function switchConversation() {
+                        if (!wasActive) return;
                         const messagesArea = document.getElementById('messagesArea');
                         const ml = document.getElementById('messagesList');
                         const pr = document.getElementById('promptRow');
@@ -2487,9 +2533,7 @@
 
                             const oldLayer = document.createElement('div');
                             oldLayer.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;transition:opacity 200ms ease;z-index:1;overflow-y:auto;padding:0 16px 20px 16px;pointer-events:none;display:flex;flex-direction:column;gap:16px;max-width:900px;';
-                            while (ml.firstChild) {
-                                oldLayer.appendChild(ml.firstChild);
-                            }
+                            while (ml.firstChild) oldLayer.appendChild(ml.firstChild);
                             messagesArea.style.position = 'relative';
                             messagesArea.appendChild(oldLayer);
 
@@ -2518,17 +2562,67 @@
                         }
                     }
 
-                    const onCollapse = (ev) => {
-                        if (ev.propertyName !== 'height') return;
-                        item.removeEventListener('transitionend', onCollapse);
+                    if (isLastPinned) {
+                        const recentItemsList = Array.from(recentItems.querySelectorAll('.sidebar-item'));
+                        const firstRects = new Map();
+                        recentItemsList.forEach(el => firstRects.set(el, el.getBoundingClientRect()));
+
                         item.remove();
-                        updateSections();
+                        pinnedSection.style.display = 'none';
+                        recentsHeader.style.display = 'none';
+
+                        recentItemsList.forEach(el => {
+                            const first = firstRects.get(el);
+                            if (!first) return;
+                            const last = el.getBoundingClientRect();
+                            const dy = first.top - last.top;
+                            if (Math.abs(dy) < 1) return;
+                            el.style.transform = `translateY(${dy}px)`;
+                        });
+
+                        recentItems.offsetHeight;
+
+                        recentItemsList.forEach(el => {
+                            if (!el.style.transform) return;
+                            el.style.transition = 'transform 300ms cubic-bezier(0.25, 0.1, 0.25, 1)';
+                            el.style.transform = 'translateY(0)';
+                            el.addEventListener('transitionend', function end(ev2) {
+                                if (ev2.propertyName !== 'transform') return;
+                                el.removeEventListener('transitionend', end);
+                                el.style.transition = '';
+                                el.style.transform = '';
+                            });
+                        });
+
+                        switchConversation();
 
                         if (wasActive && !document.querySelector('#chatList .sidebar-item.active')) {
                             document.getElementById('newBtnExpanded').click();
                         }
-                    };
-                    item.addEventListener('transitionend', onCollapse);
+                    } else {
+                        item.style.transition = 'height 200ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 150ms ease, margin 200ms cubic-bezier(0.25, 0.1, 0.25, 1), padding 200ms cubic-bezier(0.25, 0.1, 0.25, 1)';
+                        item.style.height = itemH + 'px';
+                        item.style.overflow = 'hidden';
+                        item.offsetHeight;
+                        item.style.opacity = '0';
+                        item.style.height = '0px';
+                        item.style.padding = '0 8px';
+                        item.style.marginBottom = '0px';
+
+                        switchConversation();
+
+                        const onCollapse = (ev) => {
+                            if (ev.propertyName !== 'height') return;
+                            item.removeEventListener('transitionend', onCollapse);
+                            item.remove();
+                            updateSections();
+
+                            if (wasActive && !document.querySelector('#chatList .sidebar-item.active')) {
+                                document.getElementById('newBtnExpanded').click();
+                            }
+                        };
+                        item.addEventListener('transitionend', onCollapse);
+                    }
                 }, 130);
             });
 
@@ -2630,12 +2724,23 @@
                         setRailOpen(true);
                     }
                 }
-                if (e.key === '\\') {
+                if (e.key === '\\' || e.key === '/') {
                     e.preventDefault();
                     document.getElementById('newBtnExpanded').click();
                 }
             }
         });
+
+        // ── Chat list scrollbar: show on scroll, fade after idle ──
+        (() => {
+            const cl = document.getElementById('chatList');
+            let t;
+            cl.addEventListener('scroll', () => {
+                cl.classList.add('scrolling');
+                clearTimeout(t);
+                t = setTimeout(() => cl.classList.remove('scrolling'), 800);
+            });
+        })();
 
         // ── Seed chat conversations ────────────────────────
         (function seedChats() {
