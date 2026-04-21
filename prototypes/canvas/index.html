@@ -364,12 +364,13 @@
         #canvasPrimaryBtn:hover {
             filter: brightness(1.1);
         }
+        #canvasMenuBtn {
+            color: #6D6D77;
+        }
         #canvasMenuBtn:hover {
-            background-color: #222225;
-            color: #d3d3d3;
+            color: #D3D3D3;
         }
         #canvasMenuBtn.active {
-            background-color: #222225;
             color: #d3d3d3;
         }
         .canvas-menu-item:hover {
@@ -1271,9 +1272,125 @@
             color: #12B76A;
         }
 
+        /* ── Text file viewer ── */
+        .text-file-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 36px;
+            padding: 0 8px;
+            background: #1E1E21;
+            border: none;
+            border-radius: 8px;
+            margin: 0 -8px 20px;
+        }
+        .text-file-bar .file-name {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6D6D77;
+        }
+        .text-file-bar .view-toggles {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .text-file-bar .view-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #6D6D77;
+            transition: color 0.15s ease, background-color 0.15s ease;
+        }
+        .text-file-bar .view-toggle:hover {
+            color: #A0A0AA;
+        }
+        .text-file-bar .view-toggle.active {
+            color: #D3D3D3;
+        }
+
+        .text-code-view {
+            font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #D3D3D3;
+            counter-reset: line;
+        }
+        .text-code-view .code-line {
+            display: flex;
+            min-height: 22px;
+        }
+        .text-code-view .line-num {
+            display: inline-block;
+            width: 32px;
+            text-align: right;
+            padding-right: 16px;
+            color: #3a3a3e;
+            user-select: none;
+            flex-shrink: 0;
+        }
+        .text-code-view .line-content {
+            flex: 1;
+            min-width: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .text-code-view .md-heading {
+            color: #D3D3D3;
+            font-weight: 600;
+        }
+        .text-code-view .md-bullet {
+            color: #6D6D77;
+        }
+
+        .text-rendered-view {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #D3D3D3;
+        }
+        .text-rendered-view h1 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D3D3D3;
+            margin-bottom: 16px;
+        }
+        .text-rendered-view h2 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #D3D3D3;
+            margin-top: 24px;
+            margin-bottom: 8px;
+        }
+        .text-rendered-view p {
+            margin-bottom: 16px;
+        }
+        .text-rendered-view ol, .text-rendered-view ul {
+            padding-left: 20px;
+            margin-bottom: 16px;
+        }
+        .text-rendered-view ol { list-style-type: decimal; }
+        .text-rendered-view ul { list-style-type: disc; }
+        .text-rendered-view li {
+            margin-bottom: 4px;
+            color: #D3D3D3;
+        }
+        .text-rendered-view li::marker {
+            color: #6D6D77;
+        }
+
         /* ── Small layout variant ── */
         body[data-layout="default"] #canvasContent {
-            padding: 0 16px !important;
+            padding: 0 32px 0 24px !important;
+        }
+        body[data-layout="default"] #tabBar {
+            padding-left: 16px !important;
+            padding-right: 32px !important;
+        }
+        body[data-layout="default"] .tab-pill {
+            padding-left: 8px !important;
         }
         body[data-layout="default"] #canvasHeadingRow {
             height: 32px !important;
@@ -1439,11 +1556,11 @@
         <!-- CONVERSATION PANEL — Module showcase                -->
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0;">
-            <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="height: 56px; padding: 0 16px;">
+            <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
                 <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments in the last month</span>
             </div>
 
-            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 10px 16px 20px 16px;">
+            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 15px 16px 20px 16px;">
                 <div id="messagesList" style="display: flex; flex-direction: column; gap: 20px; max-width: 900px;">
 
                     <!-- ── USER PROMPT ── -->
@@ -1617,17 +1734,26 @@
                         <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
                     </div>
                 </div>
+                <div class="tab-pill inactive" data-tab="text">
+                    <span>Tax skill</span>
+                    <div class="tab-close">
+                        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                    </div>
+                </div>
             </div>
         <section id="canvas" class="flex flex-col min-w-0 overflow-y-auto" style="flex: 1; gap: 12px;">
             <div id="canvasContent" class="flex flex-col flex-1 w-full" style="padding: 0 16px; min-height: 0;">
                 <div id="canvasHeadingRow" class="flex items-center justify-between w-full shrink-0" style="height: 32px; margin-bottom: 20px; margin-top: 9px;">
                     <div style="display: flex; flex-direction: column;">
-                        <span id="canvasHeading" style="font-size: 13px; font-weight: 600; position: relative; top: 1px;" class="text-text-primary">Revenue over time</span>
+                        <span id="canvasHeading" style="font-size: 13px; font-weight: 600; position: relative; top: 1px;" class="text-text-primary">Revenue over time – Dec 2025</span>
                         <span id="canvasHeadingSub" style="display: none; font-size: 14px; font-weight: 500; color: #6D6D77;">Dec 2025</span>
                     </div>
                     <div class="flex items-center" style="gap: 6px;">
                         <button id="canvasPrimaryBtn" style="display: none; height: 24px; padding: 0 10px; border-radius: 5px; border: none; background: linear-gradient(to bottom, #7a74ed, #6560d9); color: #fff; font-size: 12px; font-weight: 600; font-family: inherit; cursor: pointer; transition: filter 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1); -webkit-font-smoothing: antialiased;">Primary</button>
-                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                    <div id="canvasToggle" style="display: none; width: 36px; height: 20px; border-radius: 10px; background: #706AE7; cursor: pointer; position: relative; transition: background-color 0.2s ease; flex-shrink: 0;">
+                        <div style="position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: transform 0.2s ease;"></div>
+                    </div>
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
                             <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
@@ -1720,6 +1846,86 @@
                             <tr><td><span class="col-link">Xavier Jones</span></td><td class="col-amount">$644.00</td><td><span class="status-badge succeeded">Succeeded</span></td><td>Dec 4, 1:35 PM</td><td>Payment provider declined</td></tr>
                         </tbody>
                     </table>
+                    <div style="height: 50px; flex-shrink: 0;"></div>
+                </div>
+
+                <!-- ── Text file tab content ── -->
+                <div id="tabContentText" class="tab-content" style="min-height: 0; flex: 1;">
+                    <div class="text-file-bar">
+                        <span class="file-name">tax-skill.md</span>
+                        <div class="view-toggles">
+                            <div class="view-toggle active" data-view="code" title="Code">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 4L2 8l3.5 4M10.5 4L14 8l-3.5 4"/></svg>
+                            </div>
+                            <div class="view-toggle" data-view="rendered" title="Preview">
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 8C1.5 8 4 3.5 8 3.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8Z"/><circle cx="8" cy="8" r="2"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="textCodeView" class="text-code-view">
+                        <div class="code-line"><span class="line-num">1</span><span class="line-content"><span class="md-heading"># Explain tax calculation</span></span></div>
+                        <div class="code-line"><span class="line-num">2</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">3</span><span class="line-content"><span class="md-heading">## When to use this skill</span></span></div>
+                        <div class="code-line"><span class="line-num">4</span><span class="line-content">When the user asks why their taxes were zero, or different in genral than what they would've expected</span></div>
+                        <div class="code-line"><span class="line-num">5</span><span class="line-content">(e.g. "the taxes or tax rates are wrong").</span></div>
+                        <div class="code-line"><span class="line-num">6</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">7</span><span class="line-content">This can also help when the user thinks they should or shouldn't collect taxes in a given "location"</span></div>
+                        <div class="code-line"><span class="line-num">8</span><span class="line-content">(origin or destination) but when we did.</span></div>
+                        <div class="code-line"><span class="line-num">9</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">10</span><span class="line-content"><span class="md-heading">## A summary of how to calculate taxes using Stripe Tax</span></span></div>
+                        <div class="code-line"><span class="line-num">11</span><span class="line-content">To be tax compliant you need to:</span></div>
+                        <div class="code-line"><span class="line-num">12</span><span class="line-content"><span class="md-bullet">1.</span> Understand which locations require you to collect tax.</span></div>
+                        <div class="code-line"><span class="line-num">13</span><span class="line-content"><span class="md-bullet">2.</span> Register for tax in those locations.</span></div>
+                        <div class="code-line"><span class="line-num">14</span><span class="line-content"><span class="md-bullet">3.</span> Calculate and collect tax.</span></div>
+                        <div class="code-line"><span class="line-num">15</span><span class="line-content"><span class="md-bullet">4.</span> Report, file, and remit the tax you collected.</span></div>
+                        <div class="code-line"><span class="line-num">16</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">17</span><span class="line-content">Each country handles tax on sold products and services differently, often calling it by a different</span></div>
+                        <div class="code-line"><span class="line-num">18</span><span class="line-content">name. In the US, businesses deal with sales tax. Throughout Europe, it's called value-added tax (VAT).</span></div>
+                        <div class="code-line"><span class="line-num">19</span><span class="line-content">Canada and most countries in the Asia Pacific region refer to it as goods and services tax (GST).</span></div>
+                        <div class="code-line"><span class="line-num">20</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">21</span><span class="line-content">Stripe calulcates tax on a transaction taking into account some or all of the following factors:</span></div>
+                        <div class="code-line"><span class="line-num">22</span><span class="line-content"><span class="md-bullet">*</span> The location of the seller</span></div>
+                        <div class="code-line"><span class="line-num">23</span><span class="line-content"><span class="md-bullet">*</span> The location of the customer</span></div>
+                        <div class="code-line"><span class="line-num">24</span><span class="line-content"><span class="md-bullet">*</span> The location where the activity is performed</span></div>
+                        <div class="code-line"><span class="line-num">25</span><span class="line-content"><span class="md-bullet">*</span> The type of products sold</span></div>
+                        <div class="code-line"><span class="line-num">26</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">27</span><span class="line-content"><span class="md-heading">## How Stripe uses addresses</span></span></div>
+                        <div class="code-line"><span class="line-num">28</span><span class="line-content">Stripe Tax uses a single address as your customer's location when calculating tax. How we choose an</span></div>
+                        <div class="code-line"><span class="line-num">29</span><span class="line-content">address doesn't depend on the type of product you will sell.</span></div>
+                        <div class="code-line"><span class="line-num">30</span><span class="line-content"></span></div>
+                        <div class="code-line"><span class="line-num">31</span><span class="line-content">Stripe calculates tax on a transaction taking into account some or all of the following factors:</span></div>
+                    </div>
+
+                    <div id="textRenderedView" class="text-rendered-view" style="display: none;">
+                        <h1>Explain tax calculation</h1>
+
+                        <h2>When to use this skill</h2>
+                        <p>When the user asks why their taxes were zero, or different in genral than what they would've expected (e.g. "the taxes or tax rates are wrong").</p>
+                        <p>This can also help when the user thinks they should or shouldn't collect taxes in a given "location" (origin or destination) but when we did.</p>
+
+                        <h2>A summary of how to calculate taxes using Stripe Tax</h2>
+                        <p>To be tax compliant you need to:</p>
+                        <ol>
+                            <li>Understand which locations require you to collect tax.</li>
+                            <li>Register for tax in those locations.</li>
+                            <li>Calculate and collect tax.</li>
+                            <li>Report, file, and remit the tax you collected.</li>
+                        </ol>
+                        <p>Each country handles tax on sold products and services differently, often calling it by a different name. In the US, businesses deal with sales tax. Throughout Europe, it's called value-added tax (VAT). Canada and most countries in the Asia Pacific region refer to it as goods and services tax (GST).</p>
+                        <p>Stripe calculates tax on a transaction taking into account some or all of the following factors:</p>
+                        <ul>
+                            <li>The location of the seller</li>
+                            <li>The location of the customer</li>
+                            <li>The location where the activity is performed</li>
+                            <li>The type of products sold</li>
+                        </ul>
+
+                        <h2>How Stripe uses addresses</h2>
+                        <p>Stripe Tax uses a single address as your customer's location when calculating tax. How we choose an address doesn't depend on the type of product you will sell.</p>
+                        <p>Stripe calculates tax on a transaction taking into account some or all of the following factors:</p>
+                    </div>
+
                     <div style="height: 50px; flex-shrink: 0;"></div>
                 </div>
             </div>
@@ -1985,7 +2191,8 @@
         // ── Tab switching ────────────────────────────────
         const tabData = {
             chart: { heading: 'Revenue over time – Dec 2025', headingLarge: 'Revenue over time', sub: 'Dec 2025' },
-            table: { heading: 'Failed payments >$500 in December 2025', headingLarge: 'Failed payments', sub: 'Greater than $500 in December 2025' }
+            table: { heading: 'Failed payments >$500 in December 2025', headingLarge: 'Failed payments', sub: 'Greater than $500 in December 2025' },
+            text: { heading: 'Tax skill', headingLarge: 'Tax skill', sub: 'Updated Mar 30, 12:30 PM' }
         };
         function switchTab(tabId) {
             document.querySelectorAll('#tabBar .tab-pill').forEach(t => {
@@ -1995,12 +2202,32 @@
             });
             document.getElementById('tabContentChart').classList.toggle('active', tabId === 'chart');
             document.getElementById('tabContentTable').classList.toggle('active', tabId === 'table');
+            document.getElementById('tabContentText').classList.toggle('active', tabId === 'text');
             const data = tabData[tabId];
             const isLarge = document.body.dataset.layout === 'large';
             document.getElementById('canvasHeading').textContent = isLarge ? data.headingLarge : data.heading;
-            document.getElementById('canvasHeadingSub').textContent = data.sub;
+            const subEl = document.getElementById('canvasHeadingSub');
+            subEl.textContent = data.sub;
+            const toggleEl = document.getElementById('canvasToggle');
+            if (tabId === 'text') {
+                subEl.style.display = '';
+                subEl.style.fontSize = '12px';
+                subEl.style.color = '#6D6D77';
+                document.getElementById('canvasHeadingRow').style.height = 'auto';
+                document.getElementById('canvasHeadingRow').style.marginBottom = '16px';
+                document.getElementById('canvasHeading').style.fontSize = isLarge ? '' : '14px';
+                document.getElementById('canvasHeading').style.fontWeight = '600';
+                toggleEl.style.display = '';
+            } else {
+                if (!isLarge) subEl.style.display = 'none';
+                else subEl.style.display = '';
+                subEl.style.fontSize = '';
+                subEl.style.color = '';
+                document.getElementById('canvasHeadingRow').style.height = '';
+                document.getElementById('canvasHeading').style.fontSize = '';
+                toggleEl.style.display = 'none';
+            }
             document.getElementById('canvasHeadingRow').style.marginBottom = tabId === 'chart' ? '20px' : '16px';
-            // document.getElementById('canvasPrimaryBtn').style.display = tabId === 'chart' ? 'none' : '';
             document.getElementById('canvasMenuDownload').style.display = tabId === 'chart' ? 'none' : '';
             if (tabId === 'chart' && !window._chartRendered) renderChart();
         }
@@ -2016,59 +2243,119 @@
             pill.addEventListener('click', () => switchTab(pill.dataset.artifact));
         });
 
+        // ── Text file view toggle (code ↔ rendered) ──────
+        (function initTextViewToggle() {
+            const toggles = document.querySelectorAll('#tabContentText .view-toggle');
+            const codeView = document.getElementById('textCodeView');
+            const renderedView = document.getElementById('textRenderedView');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    toggles.forEach(t => t.classList.remove('active'));
+                    toggle.classList.add('active');
+                    const view = toggle.dataset.view;
+                    codeView.style.display = view === 'code' ? '' : 'none';
+                    renderedView.style.display = view === 'rendered' ? '' : 'none';
+                });
+            });
+
+            const canvasToggle = document.getElementById('canvasToggle');
+            const knob = canvasToggle.querySelector('div');
+            let toggleOn = true;
+            canvasToggle.addEventListener('click', () => {
+                toggleOn = !toggleOn;
+                canvasToggle.style.background = toggleOn ? '#706AE7' : '#3a3a3e';
+                knob.style.transform = toggleOn ? 'translateX(0)' : 'translateX(-16px)';
+            });
+        })();
+
         // ── Draggable tab reorder ────────────────────────
         (function initTabDrag() {
             const tabBar = document.getElementById('tabBar');
-            let dragPill = null, ghostEl = null, startX = 0, pillStartX = 0, didDrag = false, swapped = false, origRects = {};
+            let dragPill = null, ghostEl = null, startX = 0, pillStartX = 0, didDrag = false;
+            let origOrder = [], origRects = {}, shiftedSet = new Set();
+
             tabBar.addEventListener('mousedown', (e) => {
                 if (e.target.closest('.tab-close')) return;
                 const pill = e.target.closest('.tab-pill');
                 if (!pill) return;
-                e.preventDefault(); dragPill = pill; startX = e.clientX; didDrag = false; swapped = false;
+                e.preventDefault();
+                dragPill = pill; startX = e.clientX; didDrag = false;
+                origOrder = Array.from(tabBar.querySelectorAll('.tab-pill'));
                 origRects = {};
-                Array.from(tabBar.querySelectorAll('.tab-pill')).forEach(p => { origRects[p.dataset.tab] = p.getBoundingClientRect(); });
+                origOrder.forEach(p => { origRects[p.dataset.tab] = p.getBoundingClientRect(); });
+                shiftedSet = new Set();
             });
+
             document.addEventListener('mousemove', (e) => {
                 if (!dragPill) return;
                 const dx = e.clientX - startX;
                 if (!ghostEl && Math.abs(dx) < 4) return;
                 if (!ghostEl) {
                     didDrag = true;
-                    const rect = dragPill.getBoundingClientRect();
+                    const rect = origRects[dragPill.dataset.tab];
                     pillStartX = rect.left;
                     ghostEl = dragPill.cloneNode(true);
-                    Object.assign(ghostEl.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px', zIndex: '9999', opacity: '1', backgroundColor: '#1E1E21', pointerEvents: 'none', transition: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.3)' });
+                    Object.assign(ghostEl.style, { position: 'fixed', left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px', zIndex: '9999', opacity: '1', backgroundColor: '#1E1E21', pointerEvents: 'none', transition: 'none', boxShadow: '0 2px 8px rgba(0,0,0,0.3)', borderRadius: '5px' });
                     document.body.appendChild(ghostEl);
                     dragPill.style.opacity = '0';
                     document.body.style.cursor = 'grabbing'; document.body.style.userSelect = 'none';
                 }
                 ghostEl.style.left = (pillStartX + dx) + 'px';
-                Array.from(tabBar.querySelectorAll('.tab-pill')).filter(p => p !== dragPill).forEach(other => {
-                    const origRect = origRects[other.dataset.tab];
-                    const dragOrigRect = origRects[dragPill.dataset.tab];
-                    const dragIsLeft = dragOrigRect.left < origRect.left;
-                    const ghostLeft = parseFloat(ghostEl.style.left);
-                    const ghostRight = ghostLeft + ghostEl.offsetWidth;
-                    const otherEdge = dragIsLeft ? origRect.left : origRect.right;
-                    if (dragIsLeft && ghostRight > otherEdge && !swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(' + (dragOrigRect.left - origRect.left) + 'px)'; swapped = true; }
-                    else if (!dragIsLeft && ghostLeft < otherEdge && !swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(' + (dragOrigRect.left - origRect.left + dragOrigRect.width - origRect.width) + 'px)'; swapped = true; }
-                    else if (dragIsLeft && ghostRight <= otherEdge && swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(0)'; swapped = false; }
-                    else if (!dragIsLeft && ghostLeft >= otherEdge && swapped) { other.style.transition = 'transform 120ms ease-out'; other.style.transform = 'translateX(0)'; swapped = false; }
+                const ghostCenter = pillStartX + dx + ghostEl.offsetWidth / 2;
+                const dragOrig = origRects[dragPill.dataset.tab];
+                const dragW = dragOrig.width;
+
+                origOrder.filter(p => p !== dragPill).forEach(other => {
+                    const oRect = origRects[other.dataset.tab];
+                    const oCenter = oRect.left + oRect.width / 2;
+                    const isLeftOfDrag = oRect.left < dragOrig.left;
+
+                    if (isLeftOfDrag && ghostCenter < oCenter && !shiftedSet.has(other)) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = `translateX(${dragW + 8}px)`;
+                        shiftedSet.add(other);
+                    } else if (isLeftOfDrag && ghostCenter >= oCenter && shiftedSet.has(other)) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(0)';
+                        shiftedSet.delete(other);
+                    } else if (!isLeftOfDrag && ghostCenter > oCenter && !shiftedSet.has(other)) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = `translateX(${-(dragW + 8)}px)`;
+                        shiftedSet.add(other);
+                    } else if (!isLeftOfDrag && ghostCenter <= oCenter && shiftedSet.has(other)) {
+                        other.style.transition = 'transform 120ms ease-out';
+                        other.style.transform = 'translateX(0)';
+                        shiftedSet.delete(other);
+                    }
                 });
             });
+
             document.addEventListener('mouseup', () => {
                 if (!dragPill) return;
-                if (didDrag && swapped) {
+                if (didDrag && shiftedSet.size > 0) {
                     const pills = Array.from(tabBar.querySelectorAll('.tab-pill'));
-                    const other = pills.find(p => p !== dragPill);
-                    if (other) { other.style.transition = 'none'; other.style.transform = 'translateX(0)'; }
-                    if (pills.indexOf(dragPill) === 0) tabBar.appendChild(dragPill);
-                    else tabBar.insertBefore(dragPill, tabBar.querySelector('.tab-pill'));
+                    pills.forEach(p => { p.style.transition = 'none'; p.style.transform = ''; });
+
+                    let targetIdx = origOrder.indexOf(dragPill);
+                    origOrder.forEach((p, i) => {
+                        if (p === dragPill) return;
+                        if (shiftedSet.has(p)) {
+                            const oIdx = origOrder.indexOf(p);
+                            if (oIdx < origOrder.indexOf(dragPill)) targetIdx = Math.min(targetIdx, oIdx);
+                            else targetIdx = Math.max(targetIdx, oIdx);
+                        }
+                    });
+
+                    const currentPills = Array.from(tabBar.querySelectorAll('.tab-pill'));
+                    currentPills.forEach(p => p.remove());
+                    const newOrder = origOrder.filter(p => p !== dragPill);
+                    newOrder.splice(targetIdx, 0, dragPill);
+                    newOrder.forEach(p => tabBar.appendChild(p));
                 }
-                dragPill.style.opacity = '1';
+                if (dragPill) dragPill.style.opacity = '1';
                 if (ghostEl) { ghostEl.remove(); ghostEl = null; }
                 if (didDrag) { tabBar._suppressClick = true; setTimeout(() => { tabBar._suppressClick = false; }, 0); }
-                dragPill = null; swapped = false;
+                dragPill = null; shiftedSet = new Set();
                 document.body.style.cursor = ''; document.body.style.userSelect = '';
             });
         })();

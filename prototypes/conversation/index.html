@@ -90,7 +90,7 @@
             align-items: center;
             gap: 6px;
             height: 24px;
-            padding: 0 6px 0 10px;
+            padding: 0 6px 0 8px;
             border-radius: 5px;
             font-size: 13px;
             font-weight: 500;
@@ -351,12 +351,13 @@
             transform: translateY(-50%) translateX(-4px) !important;
         }
 
+        #canvasMenuBtn {
+            color: #6D6D77;
+        }
         #canvasMenuBtn:hover {
-            background-color: #222225;
-            color: #d3d3d3;
+            color: #D3D3D3;
         }
         #canvasMenuBtn.active {
-            background-color: #222225;
             color: #d3d3d3;
         }
         .canvas-menu-item:hover {
@@ -950,12 +951,12 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL — Module showcase                -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0;">
-            <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="height: 56px; padding: 0 16px;">
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; overflow: hidden;">
+            <div id="convHeader" class="flex items-center w-full shrink-0 bg-surface-0" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
                 <span style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments Dec</span>
             </div>
 
-            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 10px 16px 20px 16px;">
+            <div id="messagesArea" class="flex-1 overflow-y-auto" style="padding: 15px 16px 20px 16px;">
                 <div id="messagesList" style="display: flex; flex-direction: column; gap: 20px; max-width: 900px;">
 
                     <!-- ── USER PROMPT ── -->
@@ -1160,7 +1161,7 @@
         <!-- CANVAS PANEL                                        -->
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
-            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 32px 10px 16px; gap: 8px;">
                 <div class="tab-pill active" data-tab="a">
                     <span>Chart</span>
                     <div class="tab-close">
@@ -1175,10 +1176,10 @@
                 </div>
             </div>
 
-            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
+            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 3px 32px 3px 24px; border-radius: 6px; min-height: 0;">
                 <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
                     <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
-                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
                             <circle cx="8" cy="8" r="1.5" fill="currentColor"/>

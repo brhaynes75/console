@@ -159,7 +159,7 @@
             align-items: center;
             gap: 6px;
             height: 24px;
-            padding: 0 6px 0 10px;
+            padding: 0 6px 0 8px;
             border-radius: 5px;
             font-size: 13px;
             font-weight: 500;
@@ -357,7 +357,6 @@
         }
         .conv-menu-btn:hover {
             color: #A0A0AA;
-            background-color: rgba(255,255,255,0.04);
         }
 
         #convTitle.rename-area {
@@ -598,12 +597,13 @@
             transform: translateY(-50%) translateX(-4px) !important;
         }
 
+        #canvasMenuBtn {
+            color: #6D6D77;
+        }
         #canvasMenuBtn:hover {
-            background-color: #222225;
-            color: #d3d3d3;
+            color: #D3D3D3;
         }
         #canvasMenuBtn.active {
-            background-color: #222225;
             color: #d3d3d3;
         }
         .canvas-menu-item:hover {
@@ -944,7 +944,7 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <section id="canvas" class="panel-transition flex flex-col bg-surface-0 min-w-0 overflow-hidden" style="flex: 1 1 60%; gap: 12px;">
             <!-- Tab bar -->
-            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 16px 10px 16px; gap: 8px;">
+            <div id="tabBar" class="flex items-center w-full" style="padding: 17px 32px 10px 16px; gap: 8px;">
                 <div class="tab-pill active" data-tab="a">
                     <span>Chart</span>
                     <div class="tab-close">
@@ -960,11 +960,11 @@
             </div>
 
             <!-- Canvas content area -->
-            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 3px 16px; border-radius: 6px; min-height: 0;">
+            <div class="flex flex-col flex-1 w-full" style="gap: 20px; padding: 3px 32px 3px 24px; border-radius: 6px; min-height: 0;">
                 <!-- Canvas heading -->
                 <div class="flex items-center justify-between w-full shrink-0" style="height: 32px;">
                     <span id="canvasHeading" style="font-size: 13px; font-weight: 600;" class="text-text-primary">Chart heading</span>
-                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; color: #a0a0aa; transition: background-color 0.15s ease, color 0.15s ease;">
+                    <div id="canvasMenuBtn" class="flex items-center justify-center" style="position: relative; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; transition: color 0.15s ease;">
                         <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                             <circle cx="3" cy="8" r="1.5" fill="currentColor"/>
                             <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
@@ -1954,8 +1954,10 @@
                 const item = document.querySelector('#chatList .sidebar-item.active');
                 if (!item || item.classList.contains('empty-state')) return;
 
-                pinRow.style.display = 'none';
-                popupSep.style.display = 'none';
+                const isPinned = item.parentElement.id === 'pinnedItems';
+                pinRow.textContent = isPinned ? 'Unpin' : 'Pin';
+                pinRow.style.display = '';
+                popupSep.style.display = '';
 
                 const rect = convMenuBtn.getBoundingClientRect();
                 popup.style.display = 'block';
@@ -2065,7 +2067,34 @@
                 const item = activeItem;
                 const isPinned = item.parentElement === pinnedItems;
                 const origStyle = item.getAttribute('style') || '';
+                const wasFromHeader = menuSource === 'header';
                 closePopup();
+
+                if (wasFromHeader && els.rail.classList.contains('collapsed')) {
+                    const sep = document.getElementById('railSeparator');
+                    const handle = document.getElementById('railHandle');
+                    const fadeIn = 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)';
+                    const fadeOut = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    els.rail.style.transition = fadeIn;
+                    sep.style.transition = fadeIn;
+                    handle.style.transition = fadeIn;
+                    els.rail.style.backgroundColor = '#171719';
+                    sep.style.background = '#3e3e44';
+                    handle.style.background = '#A0A0AA';
+                    setTimeout(() => {
+                        els.rail.style.transition = fadeOut;
+                        sep.style.transition = fadeOut;
+                        handle.style.transition = fadeOut;
+                        els.rail.style.backgroundColor = '';
+                        sep.style.background = '#1E1E21';
+                        handle.style.background = '#3a3a3a';
+                        setTimeout(() => {
+                            els.rail.style.transition = 'width 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms ease';
+                            sep.style.transition = 'background 0.15s ease';
+                            handle.style.transition = 'background 0.15s ease, transform 0.2s cubic-bezier(0, 0, 0.2, 1)';
+                        }, 650);
+                    }, 350);
+                }
 
                 const h = item.offsetHeight;
                 const isLastUnpin = isPinned && pinnedItems.children.length === 1;
