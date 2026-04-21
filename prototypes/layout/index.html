@@ -26,6 +26,7 @@
                         'text-muted': '#6D6D77',
                         'accent': '#706AE7',
                         'icon-primary': '#c9c9c9',
+                        'text-error': '#FA7E91',
                     }
                 }
             }
@@ -259,11 +260,98 @@
         .item-popup-row:hover {
             background-color: #28282c;
         }
+        .item-popup-row--delete {
+            color: #FA7E91;
+        }
+        .item-popup-row--delete:hover {
+            background-color: rgba(250, 126, 145, 0.08);
+        }
         .item-popup-sep {
             height: 1px;
             background: #2c2c30;
             margin: 3px 6px;
         }
+        .delete-slot .item-popup-row--delete,
+        .delete-slot .item-popup-confirm {
+            transition: opacity 120ms ease;
+        }
+        .item-popup-confirm {
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        .confirm-yes,
+        .confirm-no {
+            cursor: pointer;
+            border-radius: 3px;
+            padding: 0 2px;
+            opacity: 0;
+            transform: translateX(-8px);
+        }
+        .confirm-yes {
+            color: #FA7E91;
+        }
+        .confirm-yes:hover {
+            color: #ff9dac;
+        }
+        .confirm-no {
+            color: #d3d3d3;
+        }
+        .confirm-no:hover {
+            color: #ffffff;
+        }
+        .confirm-yes.slide-in {
+            transition: transform 280ms cubic-bezier(0.34, 1.4, 0.64, 1), opacity 60ms ease;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .confirm-no.slide-in {
+            transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1) 40ms, opacity 60ms ease 40ms;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .confirm-yes.slide-out,
+        .confirm-no.slide-out {
+            transition: none;
+            opacity: 0;
+            transform: translateX(-8px);
+        }
+
+        .conv-header {
+            position: relative;
+        }
+        .conv-menu-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            color: #6D6D77;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-left: auto;
+            transition: color 0.15s ease, background-color 0.1s ease;
+        }
+        .conv-menu-btn:hover {
+            color: #A0A0AA;
+            background-color: rgba(255,255,255,0.04);
+        }
+
+        #convTitle.rename-area {
+            flex: 1;
+            min-width: 0;
+            display: block;
+            cursor: text;
+        }
+        #convTitle.rename-area + .conv-menu-btn {
+            display: none;
+        }
+
         .chat-section-header {
             font-size: 11px;
             font-weight: 500;
@@ -324,19 +412,19 @@
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
         }
-        .sidebar-item .rename-area {
+        .rename-area {
             position: relative;
             overflow: hidden;
             white-space: nowrap;
         }
-        .sidebar-item .rename-typed {
+        .rename-area .rename-typed {
             display: inline-block;
             font-size: 13px;
             font-weight: 500;
             color: #D3D3D3;
             white-space: pre;
         }
-        .sidebar-item .rename-cursor {
+        .rename-area .rename-cursor {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -346,7 +434,7 @@
             background: #D3D3D3;
             animation: renameBlink 1s step-end infinite;
         }
-        .sidebar-item .rename-ghost {
+        .rename-area .rename-ghost {
             font-size: 13px;
             font-weight: 500;
             color: #4a4a50;
@@ -727,10 +815,16 @@
         <!-- ═══════════════════════════════════════════════════ -->
         <!-- CONVERSATION PANEL                                  -->
         <!-- ═══════════════════════════════════════════════════ -->
-        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px;">
+        <section id="conversation" class="panel-transition flex flex-col bg-surface-0" style="flex: 1 1 40%; min-width: 0; gap: 15px; overflow: hidden;">
             <!-- Header -->
-            <div class="flex items-center w-full" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box;">
+            <div id="convHeader" class="conv-header flex items-center" style="padding: 17px 16px 10px 16px; height: 24px; box-sizing: content-box; gap: 6px;">
                 <span id="convTitle" style="font-size: 13px; font-weight: 500; line-height: 24px; color: #a0a0aa;">Failed payments over $500</span>
+                <div id="convMenuBtn" class="conv-menu-btn" title="Menu">
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="8" cy="8" r="1.5" fill="currentColor"/><circle cx="13" cy="8" r="1.5" fill="currentColor"/></svg>
+                </div>
+                <div id="convRenameClose" class="conv-menu-btn" title="Close" style="display: none;">
+                    <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 4L12 12M12 4L4 12"/></svg>
+                </div>
             </div>
 
             <!-- Messages -->
@@ -908,7 +1002,14 @@
         <div class="item-popup-row" data-action="pin">Pin</div>
         <div class="item-popup-row" data-action="rename">Rename</div>
         <div class="item-popup-sep"></div>
-        <div class="item-popup-row" data-action="delete">Delete</div>
+        <div class="delete-slot" style="position: relative;">
+            <div class="item-popup-row item-popup-row--delete" data-action="delete">Delete</div>
+            <div class="item-popup-confirm" data-action="confirm-row" style="opacity: 0; pointer-events: none; position: absolute; top: 0; left: 0; right: 0;">
+                <span style="color: #A0A0AA;">Delete?</span>
+                <span class="confirm-yes" data-action="confirm-delete">Yes</span>
+                <span class="confirm-no" data-action="cancel-delete">No</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1677,6 +1778,7 @@
             const recentItems = document.getElementById('recentItems');
             let activeBtn = null;
             let activeItem = null;
+            let menuSource = null; // 'sidebar' or 'header'
 
             function parseTimestamp(el) {
                 const tsEl = el.querySelector('div.text-text-muted');
@@ -1717,11 +1819,32 @@
                 }
             }
 
+            const deleteRow = popup.querySelector('[data-action="delete"]');
+            const confirmRow = popup.querySelector('[data-action="confirm-row"]');
+            const confirmYes = popup.querySelector('[data-action="confirm-delete"]');
+            const confirmNo = popup.querySelector('[data-action="cancel-delete"]');
+            const popupSep = popup.querySelector('.item-popup-sep');
+
+            function resetDeleteSlot() {
+                deleteRow.style.opacity = '';
+                deleteRow.style.pointerEvents = '';
+                confirmRow.style.opacity = '0';
+                confirmRow.style.pointerEvents = 'none';
+                confirmYes.classList.remove('slide-in', 'slide-out');
+                confirmNo.classList.remove('slide-in', 'slide-out');
+            }
+
             function closePopup() {
                 popup.style.display = 'none';
+                popup.style.transition = '';
+                popup.style.opacity = '';
+                resetDeleteSlot();
+                pinRow.style.display = '';
+                popupSep.style.display = '';
                 if (activeBtn) activeBtn.classList.remove('active');
                 activeBtn = null;
                 activeItem = null;
+                menuSource = null;
             }
 
             function updateSections() {
@@ -1739,6 +1862,29 @@
             });
 
             popup.addEventListener('click', (e) => e.stopPropagation());
+
+            // ── Conversation header menu ──
+            const convMenuBtn = document.getElementById('convMenuBtn');
+            convMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (activeBtn === convMenuBtn) { closePopup(); return; }
+                closePopup();
+
+                const item = document.querySelector('#chatList .sidebar-item.active');
+                if (!item || item.classList.contains('empty-state')) return;
+
+                pinRow.style.display = 'none';
+                popupSep.style.display = 'none';
+
+                const rect = convMenuBtn.getBoundingClientRect();
+                popup.style.display = 'block';
+                popup.style.left = rect.left + 'px';
+                popup.style.top = (rect.bottom + 4) + 'px';
+                convMenuBtn.classList.add('active');
+                activeBtn = convMenuBtn;
+                activeItem = item;
+                menuSource = 'header';
+            });
 
             document.getElementById('chatList').addEventListener('click', (e) => {
                 if (e.target.closest('.rename-area')) return;
@@ -1760,6 +1906,7 @@
                     btn.classList.add('active');
                     activeBtn = btn;
                     activeItem = item;
+                    menuSource = 'sidebar';
                     return;
                 }
 
@@ -1768,15 +1915,35 @@
                 const current = document.querySelector('#chatList .sidebar-item.active');
                 if (current === item) return;
 
+                const messagesArea = document.getElementById('messagesArea');
                 const messagesList = document.getElementById('messagesList');
                 const promptRow = document.getElementById('promptRow');
                 const promptInput = document.getElementById('promptInput');
                 const convTitle = document.getElementById('convTitle');
 
-                if (current) {
-                    const msgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message, .task-module'));
-                    current._messages = msgs;
-                    msgs.forEach(m => m.remove());
+                const hasOldContent = current && current._messages !== undefined;
+                const oldMsgs = Array.from(messagesList.querySelectorAll('.user-message, .assistant-message, .task-module'));
+
+                if (current && oldMsgs.length > 0) {
+                    current._messages = oldMsgs;
+
+                    const oldLayer = document.createElement('div');
+                    oldLayer.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;transition:opacity 180ms ease;z-index:1;overflow-y:auto;padding:0 16px 20px 16px;pointer-events:none;display:flex;flex-direction:column;gap:16px;max-width:900px;';
+                    oldMsgs.forEach(m => oldLayer.appendChild(m));
+                    messagesArea.style.position = 'relative';
+                    messagesArea.appendChild(oldLayer);
+
+                    messagesArea.offsetHeight;
+                    oldLayer.style.opacity = '0';
+
+                    oldLayer.addEventListener('transitionend', function cleanup(ev) {
+                        if (ev.propertyName !== 'opacity') return;
+                        oldLayer.removeEventListener('transitionend', cleanup);
+                        oldLayer.remove();
+                        messagesArea.style.position = '';
+                    });
+                } else if (current) {
+                    oldMsgs.forEach(m => m.remove());
                 }
 
                 const allItems = document.querySelectorAll('#chatList .sidebar-item');
@@ -1784,7 +1951,16 @@
                 item.classList.add('active');
 
                 if (item._messages && item._messages.length > 0) {
+                    messagesList.style.opacity = '0';
                     item._messages.forEach(m => messagesList.insertBefore(m, promptRow));
+                    messagesArea.offsetHeight;
+                    messagesList.style.transition = 'opacity 180ms ease';
+                    messagesList.style.opacity = '1';
+                    messagesList.addEventListener('transitionend', function end(ev) {
+                        if (ev.propertyName !== 'opacity') return;
+                        messagesList.removeEventListener('transitionend', end);
+                        messagesList.style.transition = '';
+                    });
                 }
 
                 const titleEl = item.querySelector('div');
@@ -2049,23 +2225,28 @@
 
             // ── Rename ──
             const renameRow = popup.querySelector('[data-action="rename"]');
-            renameRow.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (!activeItem) return;
-                const item = activeItem;
-                closePopup();
+            const convTitleEl = document.getElementById('convTitle');
 
-                const titleEl = item.querySelector('div');
-                const originalTitle = titleEl.textContent;
+            const convRenameClose = document.getElementById('convRenameClose');
 
-                titleEl.classList.remove('truncate');
-                titleEl.classList.add('rename-area');
-                titleEl.innerHTML = '<span class="rename-typed"></span><span class="rename-cursor" style="display:none;"></span><span class="rename-ghost" style="display:none;"></span>';
+            function startRename(targetEl, sidebarItem, source) {
+                const originalTitle = targetEl.textContent;
+                const isHeader = source === 'header';
 
-                const renameArea = titleEl;
-                const typed = titleEl.querySelector('.rename-typed');
-                const cursor = titleEl.querySelector('.rename-cursor');
-                const ghost = titleEl.querySelector('.rename-ghost');
+                if (!isHeader) {
+                    targetEl.classList.remove('truncate');
+                }
+                targetEl.classList.add('rename-area');
+
+                if (isHeader) {
+                    convRenameClose.style.display = '';
+                }
+                targetEl.innerHTML = '<span class="rename-typed"></span><span class="rename-cursor" style="display:none;"></span><span class="rename-ghost" style="display:none;"></span>';
+
+                const renameArea = targetEl;
+                const typed = targetEl.querySelector('.rename-typed');
+                const cursor = targetEl.querySelector('.rename-cursor');
+                const ghost = targetEl.querySelector('.rename-ghost');
                 ghost.textContent = originalTitle;
 
                 const sSpan = document.createElement('span');
@@ -2078,7 +2259,6 @@
                 hiddenInput.spellcheck = false;
                 hiddenInput.style.cssText = 'position: fixed; left: -9999px; top: -9999px; opacity: 0; pointer-events: none;';
                 document.body.appendChild(hiddenInput);
-
                 hiddenInput.value = originalTitle;
 
                 function measureText(str) {
@@ -2112,18 +2292,25 @@
                     const val = hiddenInput.value.trim();
                     const newTitle = val || originalTitle;
 
-                    titleEl.classList.remove('rename-area');
-                    titleEl.classList.add('truncate');
-                    titleEl.textContent = newTitle;
-                    item._originalTitle = newTitle;
-
-                    if (item.classList.contains('active')) {
-                        document.getElementById('convTitle').textContent = newTitle;
+                    targetEl.classList.remove('rename-area');
+                    if (isHeader) {
+                        convRenameClose.style.display = 'none';
+                        convRenameClose._commitFn = null;
+                        targetEl.textContent = newTitle;
+                        const sidebarTitleEl = sidebarItem.querySelector('div');
+                        if (sidebarTitleEl) sidebarTitleEl.textContent = newTitle;
+                    } else {
+                        targetEl.classList.add('truncate');
+                        targetEl.textContent = newTitle;
+                        if (sidebarItem.classList.contains('active')) {
+                            convTitleEl.textContent = newTitle;
+                        }
                     }
+                    sidebarItem._originalTitle = newTitle;
 
-                    hiddenInput.removeEventListener('input', updateDisplay);
+                    hiddenInput.removeEventListener('input', onInput);
                     hiddenInput.removeEventListener('blur', onBlur);
-                    hiddenInput.removeEventListener('focus', () => {});
+                    hiddenInput.removeEventListener('focus', onFocus);
                     hiddenInput.removeEventListener('keydown', onKey);
                     hiddenInput.removeEventListener('keyup', onKeyUp);
                     hiddenInput.remove();
@@ -2136,7 +2323,7 @@
                         commit();
                     }, 150);
                 }
-                hiddenInput.addEventListener('focus', () => clearTimeout(renameBlurTimer));
+                function onFocus() { clearTimeout(renameBlurTimer); }
 
                 function updateSelection() {
                     const start = hiddenInput.selectionStart;
@@ -2153,10 +2340,10 @@
                             bSpan.textContent = before;
                             typed.appendChild(bSpan);
                         }
-                        const sSpan = document.createElement('span');
-                        sSpan.textContent = sel;
-                        sSpan.style.cssText = 'background: rgba(59,130,246,0.4); border-radius: 1px;';
-                        typed.appendChild(sSpan);
+                        const selSpan = document.createElement('span');
+                        selSpan.textContent = sel;
+                        selSpan.style.cssText = 'background: rgba(59,130,246,0.4); border-radius: 1px;';
+                        typed.appendChild(selSpan);
                         if (after) {
                             const aSpan = document.createElement('span');
                             aSpan.textContent = after;
@@ -2193,19 +2380,156 @@
                     }
                 }
 
-                function onKeyUp() {
-                    updateSelection();
-                }
+                function onKeyUp() { updateSelection(); }
+                function onInput() { updateDisplay(); updateSelection(); }
 
-                hiddenInput.addEventListener('input', () => { updateDisplay(); updateSelection(); });
+                hiddenInput.addEventListener('input', onInput);
                 hiddenInput.addEventListener('blur', onBlur);
+                hiddenInput.addEventListener('focus', onFocus);
                 hiddenInput.addEventListener('keydown', onKey);
                 hiddenInput.addEventListener('keyup', onKeyUp);
+
+                if (isHeader) {
+                    convRenameClose._commitFn = () => {
+                        hiddenInput.removeEventListener('blur', onBlur);
+                        commit();
+                    };
+                }
 
                 setTimeout(() => {
                     hiddenInput.focus();
                     hiddenInput.select();
                 }, 50);
+            }
+
+            convRenameClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (convRenameClose._commitFn) convRenameClose._commitFn();
+            });
+
+            renameRow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!activeItem) return;
+                const item = activeItem;
+                const source = menuSource;
+                closePopup();
+
+                if (source === 'header') {
+                    startRename(convTitleEl, item, 'header');
+                } else {
+                    const titleEl = item.querySelector('div');
+                    startRename(titleEl, item, 'sidebar');
+                }
+            });
+
+            // ── Delete (with confirmation) ──
+            deleteRow.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!activeItem) return;
+                deleteRow.style.opacity = '0';
+                deleteRow.style.pointerEvents = 'none';
+                confirmRow.style.opacity = '1';
+                confirmRow.style.pointerEvents = 'auto';
+
+                confirmYes.classList.remove('slide-in', 'slide-out');
+                confirmNo.classList.remove('slide-in', 'slide-out');
+                confirmRow.offsetHeight;
+                confirmYes.classList.add('slide-in');
+                confirmNo.classList.add('slide-in');
+            });
+
+            confirmNo.addEventListener('click', (e) => {
+                e.stopPropagation();
+                confirmYes.classList.remove('slide-in');
+                confirmNo.classList.remove('slide-in');
+                confirmYes.classList.add('slide-out');
+                confirmNo.classList.add('slide-out');
+                deleteRow.style.opacity = '1';
+                deleteRow.style.pointerEvents = 'auto';
+                confirmRow.style.opacity = '0';
+                confirmRow.style.pointerEvents = 'none';
+            });
+
+            confirmYes.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (!activeItem) return;
+                const item = activeItem;
+                const wasActive = item.classList.contains('active');
+
+                popup.style.transition = 'opacity 120ms ease';
+                popup.style.opacity = '0';
+
+                const itemH = item.offsetHeight;
+
+                setTimeout(() => {
+                    closePopup();
+
+                    item.style.transition = 'height 200ms cubic-bezier(0.25, 0.1, 0.25, 1), opacity 150ms ease, margin 200ms cubic-bezier(0.25, 0.1, 0.25, 1), padding 200ms cubic-bezier(0.25, 0.1, 0.25, 1)';
+                    item.style.height = itemH + 'px';
+                    item.style.overflow = 'hidden';
+                    item.offsetHeight;
+                    item.style.opacity = '0';
+                    item.style.height = '0px';
+                    item.style.padding = '0 8px';
+                    item.style.marginBottom = '0px';
+
+                    if (wasActive) {
+                        const messagesArea = document.getElementById('messagesArea');
+                        const ml = document.getElementById('messagesList');
+                        const pr = document.getElementById('promptRow');
+                        const allItems = Array.from(document.querySelectorAll('#chatList .sidebar-item:not(.empty-state)'));
+                        const next = allItems.find(el => el !== item);
+
+                        if (next) {
+                            next.classList.add('active');
+                            const titleEl = next.querySelector('div');
+                            convTitleEl.textContent = titleEl ? titleEl.textContent : '';
+
+                            const oldLayer = document.createElement('div');
+                            oldLayer.style.cssText = 'position:absolute;top:0;left:0;right:0;bottom:0;transition:opacity 200ms ease;z-index:1;overflow-y:auto;padding:0 16px 20px 16px;pointer-events:none;display:flex;flex-direction:column;gap:16px;max-width:900px;';
+                            while (ml.firstChild) {
+                                oldLayer.appendChild(ml.firstChild);
+                            }
+                            messagesArea.style.position = 'relative';
+                            messagesArea.appendChild(oldLayer);
+
+                            ml.style.opacity = '0';
+                            if (next._messages && next._messages.length > 0) {
+                                next._messages.forEach(m => ml.insertBefore(m, null));
+                            }
+                            ml.appendChild(pr);
+
+                            messagesArea.offsetHeight;
+                            oldLayer.style.opacity = '0';
+                            ml.style.transition = 'opacity 200ms ease';
+                            ml.style.opacity = '1';
+
+                            oldLayer.addEventListener('transitionend', function cleanup(ev) {
+                                if (ev.propertyName !== 'opacity') return;
+                                oldLayer.removeEventListener('transitionend', cleanup);
+                                oldLayer.remove();
+                                ml.style.transition = '';
+                                messagesArea.style.position = '';
+                            });
+                        } else {
+                            const msgs = Array.from(ml.querySelectorAll('.user-message, .assistant-message, .task-module'));
+                            msgs.forEach(m => m.remove());
+                            convTitleEl.textContent = 'New conversation';
+                        }
+                    }
+
+                    const onCollapse = (ev) => {
+                        if (ev.propertyName !== 'height') return;
+                        item.removeEventListener('transitionend', onCollapse);
+                        item.remove();
+                        updateSections();
+
+                        if (wasActive && !document.querySelector('#chatList .sidebar-item.active')) {
+                            document.getElementById('newBtnExpanded').click();
+                        }
+                    };
+                    item.addEventListener('transitionend', onCollapse);
+                }, 130);
             });
 
         })();
@@ -2308,9 +2632,7 @@
                 }
                 if (e.key === '\\') {
                     e.preventDefault();
-                    state.canvas = state.canvas === 'visible' ? 'hidden' : 'visible';
-                    updateButtons();
-                    applyLayout();
+                    document.getElementById('newBtnExpanded').click();
                 }
             }
         });

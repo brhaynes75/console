@@ -26,6 +26,7 @@
                         'text-muted': '#6D6D77',
                         'accent': '#706AE7',
                         'icon-primary': '#c9c9c9',
+                        'text-error': '#FA7E91',
                     }
                 }
             }
@@ -2450,7 +2451,7 @@
         document.addEventListener('keydown', (e) => {
             if (e.metaKey || e.ctrlKey) {
                 if (e.key === 'b') { e.preventDefault(); setRailOpen(!state.railOpen); }
-                if (e.key === '\\') { e.preventDefault(); state.canvas = state.canvas === 'visible' ? 'hidden' : 'visible'; applyLayout(); }
+                if (e.key === '\\') { e.preventDefault(); document.getElementById('newChatBtn').click(); }
             }
         });
 
