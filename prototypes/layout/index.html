@@ -174,7 +174,8 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.12);
             transition: border-color 0.15s ease, background-color 0.15s ease;
         }
-        .linear-border:hover {
+        .linear-border:hover,
+        #newChatBtnWrap:hover .linear-border {
             border-color: #3e3e44 !important;
             background: rgba(255,255,255,0.06);
         }
@@ -769,7 +770,7 @@
 
             <!-- ── Collapsed view (icon rail) ── -->
             <div id="railCollapsed" class="absolute inset-0 flex flex-col items-center cursor-pointer" style="padding-top: 66px; transition: opacity 250ms ease;">
-                <div class="flex flex-col items-center w-full">
+                <div id="newChatBtnWrap" class="flex flex-col items-center w-full" style="cursor: pointer; position: relative; z-index: 11;">
                     <div class="flex items-center justify-center w-full">
                         <div id="newChatBtn" class="relative flex items-center justify-center linear-border" style="width: 32px; height: 32px; border-radius: 6px; cursor: pointer;">
                             <span class="relative flex items-center justify-center" style="color: #c9c9c9;">
@@ -1229,7 +1230,7 @@
         });
 
         // Interactive children stop propagation
-        els.rail.querySelectorAll('#newChatBtn, #newBtnExpanded, .rail-bottom-row').forEach(el => {
+        els.rail.querySelectorAll('#newChatBtnWrap, #newBtnExpanded, .rail-bottom-row').forEach(el => {
             el.addEventListener('click', (e) => e.stopPropagation());
         });
 
@@ -1645,12 +1646,13 @@
                 }
             });
 
-            newChatBtn.addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
+            const newChatBtnWrap = document.getElementById('newChatBtnWrap');
+            newChatBtnWrap.addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
             newBtnExpanded.addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
             document.getElementById('railEdge').addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
             document.getElementById('railCollapsed').addEventListener('mousedown', () => { clearTimeout(decayTimer); railInteracting = true; });
 
-            newChatBtn.addEventListener('click', (e) => {
+            newChatBtnWrap.addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (pendingItem) {
                     flashPendingItem();
